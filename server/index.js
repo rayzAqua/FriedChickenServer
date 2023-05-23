@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import { connecting } from "./sql_connect/connected.js";
+import routes from "./routes/routes.js";
 
 // Khai báo các thư viện sử dụng.
 const app = express();
@@ -12,10 +13,8 @@ const port = process.env.PORT;
 // Middleware cho phép phân tích nội dung được gửi từ request dưới dạng json.
 app.use(express.json());
 
-// Đường dẫn mặc định của server.
-app.use("/", (req, res) => {
-    res.send("WELCOME TO BACKEND SERVER!<br/>CREATE BY GROUP 20!<br/>HAVE FUN!");
-});
+// Routes
+routes(app);
 
 // Đăng ký một middleware để bắt lỗi. Khi hàm xử lý gặp lỗi, nếu hàm được truyền vào callback next thì sẽ trực tiếp bỏ qua
 // tất cả middleware khác và chạy vào middleware này để trả về lỗi
