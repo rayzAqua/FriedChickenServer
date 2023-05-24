@@ -1,27 +1,32 @@
+import authRouter from "./auth.js";
+import orderRouter from "./order.js";
 
 const routeHieuLe = (app) => {
-    // Route của Hiếu Lê
-
+  // Route của Hiếu Lê
 };
 
 const routeHieuPhan = (app) => {
-    // Route của Hiểu
+  // Route của Hiểu
+  app.use("/account", authRouter);
+  app.use("/order", orderRouter);
 };
 
 const routeTuanKiet = (app) => {
-    // Route của Kiệt
-}
+  // Route của Kiệt
+};
 
 const routes = (app) => {
-    routeHieuLe(app);
-    routeHieuPhan(app);
-    routeTuanKiet(app);
+  routeHieuLe(app);
+  routeHieuPhan(app);
+  routeTuanKiet(app);
 
-    // Đường dẫn mặc định của server.
-    app.use("/", (req, res) => {
-        res.send("WELCOME TO BACKEND SERVER!<br/>CREATE BY GROUP 20!<br/>HAVE FUN!");
-    });
-    // Site route
-}
+  // Đường dẫn mặc định của server.
+  app.use("/", (req, res) => {
+    res.send(
+      "WELCOME TO BACKEND SERVER!<br/>CREATE BY GROUP 20!<br/>HAVE FUN!"
+    );
+  });
+  // Site route
+};
 
 export default routes;
