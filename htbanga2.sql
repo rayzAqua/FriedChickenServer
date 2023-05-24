@@ -4,6 +4,8 @@
 -- ------------------------------------------------------
 -- Server version	8.0.32
 
+CREATE DATABASE hethonggaran;
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -751,5 +753,42 @@ DELIMITER ;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_food_list` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE PROCEDURE `sp_get_food_list`(
+    IN foodId INT,
+    IN foodName NVARCHAR(100),
+    IN categoryName NVARCHAR(100),
+    IN categoryId INT,
+    IN page INT
+)
+BEGIN
+    SELECT f.*, c.categoryId, c.name AS categoryName, p.price
+    FROM food AS f
+    INNER JOIN category AS c ON c.categoryId = f.categoryId
+    INNER JOIN productprice AS p ON p.productId = f.foodId
+    WHERE
+        (f.foodId = foodId OR foodId IS NULL)
+        AND (f.foodName LIKE CONCAT('%', foodName, '%') OR foodName IS NULL)
+        AND (c.name LIKE CONCAT('%', categoryName, '%') OR categoryName IS NULL)
+        AND (c.categoryId = categoryId OR categoryId IS NULL)
+    ORDER BY
+        (SELECT COUNT(*) FROM orderdetail AS o WHERE o.foodId = f.foodId) DESC
+    LIMIT 0, page;
+END;
 
 -- Dump completed on 2023-05-24 16:41:58

@@ -1,13 +1,13 @@
 -- MySQL dump 10.13  Distrib 8.0.32, for Win64 (x86_64)
 --
--- Host: localhost    Database: htbanga
+-- Host: localhost    Database: hethonggaran
 -- ------------------------------------------------------
 -- Server version	8.0.32
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -73,7 +73,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES (1,'khach hang 1','0111222333','kh1@gmail.com','quan 9','2023-05-22 00:18:18',0),(2,'khach hang 2','0123434221','kh2@gmail.com','quan tan binh','2023-05-22 00:18:18',5),(3,'khach hang 3','0123213823','kh3@gmail.com',NULL,'2023-05-22 00:18:18',21);
+INSERT INTO `customer` VALUES (1,'khach hang 1','0111222333','kh1@gmail.com','quan 9','2023-05-22 00:18:18',0),(2,'khach hang 2','0123434221','kh2@gmail.com','quan tan binh','2023-05-25 00:18:18',5),(3,'khach hang 3','0123213823','kh3@gmail.com',NULL,'2023-05-17 00:18:18',21);
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -102,7 +102,7 @@ CREATE TABLE `food` (
   CONSTRAINT `food_ibfk_1` FOREIGN KEY (`categoryId`) REFERENCES `category` (`categoryId`),
   CONSTRAINT `food_ibfk_2` FOREIGN KEY (`createdUser`) REFERENCES `user` (`userId`),
   CONSTRAINT `food_ibfk_3` FOREIGN KEY (`updatedUser`) REFERENCES `user` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -111,7 +111,7 @@ CREATE TABLE `food` (
 
 LOCK TABLES `food` WRITE;
 /*!40000 ALTER TABLE `food` DISABLE KEYS */;
-INSERT INTO `food` VALUES (1,'Món ăn 1',1,'1','2023-05-22 00:39:13','2023-05-22 00:39:13',1,NULL,1,NULL),(2,'Món ăn 2',1,'5','2023-05-22 00:39:13','2023-05-22 00:39:13',1,2,2,NULL),(3,'Món ăn 3',0,'10','2023-05-22 00:39:13','2023-05-22 00:39:13',2,2,3,NULL);
+INSERT INTO `food` VALUES (1,'Món ăn 1',1,'1','2023-05-22 00:39:13','2023-05-22 00:39:13',1,NULL,1,NULL),(2,'Món ăn 2',1,'5','2023-05-22 00:39:13','2023-05-22 00:39:13',1,2,2,NULL),(3,'Món ăn 3',0,'10','2023-05-22 00:39:13','2023-05-22 00:39:13',2,2,3,NULL),(4,'Món ăn 4',1,'3','2023-05-24 01:50:44','2023-05-24 01:50:44',1,NULL,2,NULL);
 /*!40000 ALTER TABLE `food` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -302,7 +302,7 @@ CREATE TABLE `orderdetail` (
   KEY `foodId` (`foodId`),
   CONSTRAINT `orderdetail_ibfk_1` FOREIGN KEY (`orderId`) REFERENCES `order` (`orderId`),
   CONSTRAINT `orderdetail_ibfk_2` FOREIGN KEY (`foodId`) REFERENCES `food` (`foodId`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -311,7 +311,7 @@ CREATE TABLE `orderdetail` (
 
 LOCK TABLES `orderdetail` WRITE;
 /*!40000 ALTER TABLE `orderdetail` DISABLE KEYS */;
-INSERT INTO `orderdetail` VALUES (1,1,1,70000.00,1),(2,1,3,30000.00,1),(3,2,1,70000.00,2),(4,2,3,30000.00,2),(5,4,3,30000.00,5),(6,5,3,30000.00,5);
+INSERT INTO `orderdetail` VALUES (1,1,1,70000.00,1),(2,1,3,30000.00,1),(3,2,1,70000.00,2),(4,2,3,30000.00,2),(5,4,3,30000.00,5),(6,5,3,30000.00,5),(7,5,2,30000.00,2),(8,5,2,30000.00,2),(9,5,2,30000.00,2);
 /*!40000 ALTER TABLE `orderdetail` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -557,11 +557,7 @@ INSERT INTO `warehouse` VALUES (1,'Thương hiệu 1','Kho 1','Quân 9',NULL,1,N
 UNLOCK TABLES;
 
 --
--- Dumping events for database 'htbanga'
---
-
---
--- Dumping routines for database 'htbanga'
+-- Dumping routines for database 'hethonggaran'
 --
 /*!50003 DROP PROCEDURE IF EXISTS `sp_create_order` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -627,6 +623,82 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_customer` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_customer`(IN page INT)
+SELECT customerId, name, phone, email, address, createdTime
+    FROM customer
+    ORDER BY createdTime DESC
+    LIMIT page, 10 ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_food` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_food`(IN page INT)
+SELECT f.foodId, f.name, f.categoryId
+    FROM food f
+    ORDER BY f.categoryId
+    LIMIT page, 10 ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_food_list` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_food_list`(
+    IN foodId INT,
+    IN foodName NVARCHAR(100),
+    IN categoryName NVARCHAR(100),
+    IN categoryId INT,
+    IN page INT
+)
+BEGIN
+    SELECT f.*, c.categoryId, c.name AS categoryName, p.price
+    FROM food AS f
+    INNER JOIN category AS c ON c.categoryId = f.categoryId
+    INNER JOIN productprice AS p ON p.productId = f.foodId
+    WHERE
+        (f.foodId = foodId OR foodId IS NULL)
+        AND (f.name LIKE CONCAT('%', foodName, '%') OR foodName IS NULL)
+        AND (c.name LIKE CONCAT('%', categoryName, '%') OR categoryName IS NULL)
+        AND (c.categoryId = categoryId OR categoryId IS NULL)
+    ORDER BY
+        (SELECT COUNT(*) FROM orderdetail AS o WHERE o.foodId = f.foodId) DESC
+    LIMIT 0, page;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_get_list_order` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -683,7 +755,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-food
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
@@ -692,4 +764,4 @@ food
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-22 22:11:16
+-- Dump completed on 2023-05-25  5:49:16
