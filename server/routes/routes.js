@@ -12,7 +12,7 @@ const routeTuanKiet = (app) => {
     // Route của Kiệt
 }
 
-const routers = (app) => {
+const routes = (app) => {
     routeHieuLe(app);
     routeHieuPhan(app);
     routeTuanKiet(app);
@@ -24,4 +24,4 @@ const routers = (app) => {
     // Site route
 }
 
-export default routers;
+export default routes;
