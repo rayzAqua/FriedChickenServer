@@ -1,8 +1,10 @@
 import authRouter from "./auth.js";
 import orderRouter from "./order.js";
+import foodRouter from "./food.js";
 
 const routeHieuLe = (app) => {
   // Route của Hiếu Lê
+  app.use("/api/foods/", foodRouter);
 };
 
 const routeHieuPhan = (app) => {

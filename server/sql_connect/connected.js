@@ -12,5 +12,5 @@ export const connecting = mysql.createConnection({
   database: process.env.DATABASE,
 });
 
-const query = util.promisify(connecting.query).bind(connecting);
-export { query };
+// Chuyển đổi hàm callback-based thành promise-based function để xử lý bất đồng bộ.
+export const query = util.promisify(connecting.query).bind(connecting);
