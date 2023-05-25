@@ -88,6 +88,9 @@ class OrderController {
       return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
     }
   }
+
+  //[POST] /order/create
+  async create(req, res, next) {}
 }
 
 export default new OrderController();

@@ -141,4 +141,25 @@ Order.getTotalOrderRangeDate = async function (key, fromDate, toDate) {
   }
 };
 
+Order.create = async function (
+  totalMoney,
+  createdUser,
+  customerId,
+  promoteId,
+  paymentMethodId
+) {
+  try {
+    const results = await query(
+      "INSERT INTO hethonggaran.order(totalMoney, createdUser, customerId,promoteId, paymentMethodId)" +
+        " VALUES (?,?,?,?,?);",
+      [totalMoney, createdUser, customerId, promoteId, paymentMethodId]
+    );
+
+    return results;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw error;
+  }
+};
+
 export default Order;
