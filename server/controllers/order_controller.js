@@ -1,6 +1,10 @@
 import Customer from "../models/Customer.js";
+import Food from "../models/Food.js";
+import FoodstockHistory from "../models/Foodstockhistory.js";
 import Order from "../models/Order.js";
 import OrderDetail from "../models/OrderDetail.js";
+import PaymentMethod from "../models/PaymentMethod.js";
+import Promote from "../models/Promote.js";
 import { calculateTotal } from "../utils/calculateStart.js";
 import message from "../utils/message.js";
 
@@ -85,6 +89,86 @@ class OrderController {
 
       getDetailOrder(res, order, page, totalPage);
     } catch (error) {
+      return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
+    }
+  }
+
+  //[POST] /order/create
+  async create(req, res, next) {
+    const { id, customerId, details, promoteId, paymentMethodId } = req.body;
+    try {
+      const customer = await Customer.getById(customerId);
+      if (customer.length == 0) {
+        return res.send(message(false, "Khách hàng không tồn tại!", ""));
+      }
+
+      //check promotion exist, ative and customer can use or not
+      if (promoteId || null) {
+        const promote = await Promote.getById(promoteId);
+        if (promote.length == 0) {
+          return res.send(message(false, "Khuyến mãi không hợp lệ!", ""));
+        }
+
+        if (promote[0]["available"] == 0) {
+          return res.send(message(false, "Khuyến mãi hết hạn!", ""));
+        }
+
+        if (customer[0]["point"] < promote[0]["available"]) {
+          return res.send(
+            message(
+              false,
+              "Khách hàng không đủ điểm để áp dụng khuyến mãi!",
+              ""
+            )
+          );
+        }
+      }
+
+      //check method paymentmothod
+      const paymentMethod = await PaymentMethod.getById(paymentMethodId);
+      if (paymentMethod.length == 0) {
+        return res.send(
+          message(false, "Phương thức thanh toán không hợp lệ!", "")
+        );
+      }
+
+      //check food
+      const foodId = details[0]["foodId"];
+      const food = await Food.getById(foodId);
+
+      // food exist ?
+      if (food.length == 0) {
+        return res.send(message(false, "Món ăn không hợp lệ!", ""));
+      }
+      // food available ?
+      if (food[0]["available"] == 0) {
+        return res.send(message(false, "Món ăn không còn kinh doanh!", ""));
+      }
+
+      //check food in stock
+      const foodstockHistory = await FoodstockHistory.getById(foodId);
+      if (foodstockHistory.length == 0) {
+        return res.send(message(false, "Món ăn không tồn tại trong kho!", ""));
+      }
+
+      if (foodstockHistory[0]["quantity"] == 0) {
+        return res.send(message(false, "Món ăn hết trong kho!", ""));
+      }
+
+      console.log(foodstockHistory);
+
+      //food on ready
+
+      if (food[0]["unit"] == 0) {
+        //check ingredient
+        const ingredientFood = await Food.getIngredientOfFood(foodId);
+        console.log("ingredientFood: ", ingredientFood);
+        return res.send(message(false, "Món ăn không có sẵn!", ""));
+      }
+      console.log(food);
+      return res.send(message(false, "Lấy dữ liệu thành công!", ""));
+    } catch (error) {
+      console.log(error);
       return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
     }
   }
