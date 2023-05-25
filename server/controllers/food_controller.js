@@ -60,7 +60,7 @@ export const getFoodList = async (req, res, next) => {
             });
 
             // Output: Nếu là truy vấn theo foodId thì không trả về page
-            if (foodId) {
+            if (foodId || foodName && foods.length == 1) {
                 res.status(200).json({
                     state: true,
                     message: "Lấy dữ liệu thành công!",
