@@ -3,17 +3,18 @@ import { createError } from "../utils/createError.js"
 
 export const getFoodList = async (req, res, next) => {
 
-    const foodId = req.body.foodId || null;
-    const foodName = req.body.foodName || null;
-    const categoryName = req.body.categoryName || null;
-    const categoryId = req.body.categoryId || null;
-    const page = req.body.page || 10;
+    const foodId = req.query.foodId || null;
+    const foodName = req.query.foodName || null;
+    const categoryName = req.query.categoryName || null;
+    const categoryId = req.query.categoryId || null;
+    const page_offset = req.query.page || 0;
+    const page_limit = req.query.page_limit || 10;
 
-    console.log(foodId, foodName, categoryName, categoryId, page);
+    console.log(foodId, foodName, categoryName, categoryId, page_offset, page_limit);
 
     try {
         // Truy vấn lấy thức ăn theo Id
-        const getFood = await Food.getFoodList(foodId, foodName, categoryName, categoryId, page);
+        const getFood = await Food.getFoodList(foodId, foodName, categoryName, categoryId, page_offset, page_limit);
         // Vì kết quả là một mảng chứa 2 giá trị là mảng đối tượng cần tìm và các thông tin liên quan đến truy vấn SQL
         // nên cần lọc lại mảng getFood và chỉ lấy mảng đối tượng food.        
         const filterFoodArray = Array.isArray(getFood[0]) ? getFood[0] : [getFood[0]];

@@ -15,10 +15,10 @@ class Food {
     }
 
     // Truy vấn tìm kiếm list food theo foodId, foodName, categoryName, categoryId hoặc page.
-    static async getFoodList(foodId, foodName, categoryName, categoryId, page) {
+    static async getFoodList(foodId, foodName, categoryName, categoryId, page_offset, page_limit) {
         try {
-            const sp = "CALL sp_get_food_list(?, ?, ?, ?, ?)"
-            const food = await query(sp, [foodId, foodName, categoryName, categoryId, page]);
+            const sp = "CALL sp_get_food_list(?, ?, ?, ?, ?, ?)"
+            const food = await query(sp, [foodId, foodName, categoryName, categoryId, page_offset, page_limit]);
             return food;
         } catch (err) {
             throw err;
