@@ -68,7 +68,7 @@ export const getFoodList = async (req, res, next) => {
                 message: "Lấy dữ liệu thành công!",
                 data: {
                     list_food: foods,
-                    current_page: page,
+                    current_page: Number(page),
                     total_page: total_page,
                 },
 
