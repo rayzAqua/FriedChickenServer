@@ -58,13 +58,13 @@ CREATE TABLE `customer` (
   `customerId` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `phone` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `email` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `email` varchar(50) DEFAULT NULL,
   `address` varchar(50) DEFAULT NULL,
   `createdTime` datetime DEFAULT CURRENT_TIMESTAMP,
   `point` int DEFAULT '0',
   PRIMARY KEY (`customerId`),
   UNIQUE KEY `email_UNIQUE` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,7 +73,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES (1,'khach hang 1','0111222333','kh1@gmail.com','quan 9','2023-05-22 00:18:18',0),(2,'khach hang 2','0123434221','kh2@gmail.com','quan tan binh','2023-05-25 00:18:18',5),(3,'khach hang 3','0123213823','kh3@gmail.com',NULL,'2023-05-17 00:18:18',21);
+INSERT INTO `customer` VALUES (1,'khach hang 1','0111222333','kh1@gmail.com','quan 9','2023-05-22 00:18:18',0),(2,'khach hang 2','0123434221','kh2@gmail.com','quan tan binh','2023-05-25 00:18:18',5),(3,'khach hang 3','0123213823','kh3@gmail.com',NULL,'2023-05-17 00:18:18',21),(4,'Hieu','0949496060','canhgacay@gmail.com',NULL,'2023-05-25 17:58:04',0),(5,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:03:56',0),(6,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:04:36',0),(7,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:07:15',0),(8,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:07:35',0),(9,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:08:12',0),(10,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:12:00',0),(11,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:14:07',0);
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -559,6 +559,47 @@ UNLOCK TABLES;
 --
 -- Dumping routines for database 'hethonggaran'
 --
+/*!50003 DROP PROCEDURE IF EXISTS `sp_create_customer` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_create_customer`(
+	IN name NVARCHAR(50),
+    IN phone NVARCHAR(50),
+    IN email NVARCHAR(50),
+    IN address NVARCHAR(50)
+)
+BEGIN
+	
+    DECLARE lastId INT;
+    
+    -- Tìm id cuối cùng trong bảng customer
+    SELECT MAX(customerId) INTO lastId FROM customer;
+    
+    -- Nếu bảng rỗng, gán lastID = 0
+    IF lastID IS NULL THEN
+        SET lastId = 0;
+    END IF;
+    
+    -- Tăng giá trị lastID lên 1
+    SET lastId = lastId + 1;
+	
+	INSERT INTO customer (customerId, name, phone, email, address)
+    VALUES (lastId, name, phone, email, address);
+    
+    SELECT * FROM customer WHERE customerId = lastId;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_create_order` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -643,26 +684,6 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_get_food` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_food`(IN page INT)
-SELECT f.foodId, f.name, f.categoryId
-    FROM food f
-    ORDER BY f.categoryId
-    LIMIT page, 10 ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_get_food_list` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -678,7 +699,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_food_list`(
     IN foodName NVARCHAR(100),
     IN categoryName NVARCHAR(100),
     IN categoryId INT,
-    IN page INT
+    IN page_offset INT,
+    IN page_limit INT
 )
 BEGIN
     SELECT f.*, c.categoryId, c.name AS categoryName, p.price
@@ -692,7 +714,7 @@ BEGIN
         AND (c.categoryId = categoryId OR categoryId IS NULL)
     ORDER BY
         (SELECT COUNT(*) FROM orderdetail AS o WHERE o.foodId = f.foodId) DESC
-    LIMIT 0, page;
+    LIMIT page_offset, page_limit;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -764,4 +786,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-25  5:49:16
+-- Dump completed on 2023-05-25 19:24:27
