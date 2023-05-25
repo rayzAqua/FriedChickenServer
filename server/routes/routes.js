@@ -4,7 +4,7 @@ import foodRouter from "./food.js";
 
 const routeHieuLe = (app) => {
   // Route của Hiếu Lê
-  app.use("/api/foods/", foodRouter);
+  app.use("/foods", foodRouter);
 };
 
 const routeHieuPhan = (app) => {

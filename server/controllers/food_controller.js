@@ -33,13 +33,21 @@ export const getFoodList = async (req, res, next) => {
                 }
             });
             // Output
-            res.status(200).json(foods);
+            res.status(200).json({
+                state: true,
+                message: "Lấy dữ liệu thành công!",
+                data: foods,
+            });
         }
         else {
-            next(createError(404, "Không tìm thấy dữ liệu!"));
+            res.status(404).json({
+                state: false,
+                message: "Không tìm thấy dữ liệu!",
+                data: filterFoodArray,
+            });
         }
     } catch (err) {
-        next(err);
+        next(createError(err));
     }
 
 }
