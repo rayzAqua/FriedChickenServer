@@ -28,11 +28,26 @@ Customer.getById = async function (customerId) {
 Customer.createCustomer = async function (name, phone, email, address) {
   try {
     // Câu truy vấn gọi sp_create_customer với 4 tham số truyền vào.
-    const sp = "CALL sp_create_customer(?, ?, ?, ?)";
+    const sp = "CALL sp_create_customer(?, ?, ?, ?);";
     // Gọi đến sp_create_customer và truyền 4 tham số name, phone, email, address vào để tiến hành tạo mới khách hàng.
     const newCustomer = await query(sp, [name, phone, email, address]);
-    console.log(newCustomer);
     return newCustomer;
+  } catch (err) {
+    console.log("Error executing query: ", err);
+    throw err;
+  }
+}
+
+// Lấy danh sách khách hàng
+Customer.getCustomerList = async function (customerId, name, phone, email, page_limit, off_set) {
+  try {
+    // Câu truy vấn gọi sp_get_customer_list với 6 tham số truyền vào.
+    const sp = "CALL sp_get_customer_list(?, ?, ?, ?, ?, ?);"
+    // Thực thi sp_get_cusotmer_list với 6 tham số customerId, name, phone, email, page_limit, off_set để tiến hành lấy về danh sách
+    // các khách hàng.
+    const customers = await query(sp, [customerId, name, phone, email, page_limit, off_set]);
+    console.log(customers);
+    return customers;
   } catch (err) {
     console.log("Error executing query: ", err);
     throw err;

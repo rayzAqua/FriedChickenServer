@@ -63,6 +63,7 @@ CREATE TABLE `customer` (
   `createdTime` datetime DEFAULT CURRENT_TIMESTAMP,
   `point` int DEFAULT '0',
   PRIMARY KEY (`customerId`),
+  UNIQUE KEY `phone_UNIQUE` (`phone`),
   UNIQUE KEY `email_UNIQUE` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -73,7 +74,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES (1,'khach hang 1','0111222333','kh1@gmail.com','quan 9','2023-05-22 00:18:18',0),(2,'khach hang 2','0123434221','kh2@gmail.com','quan tan binh','2023-05-25 00:18:18',5),(3,'khach hang 3','0123213823','kh3@gmail.com',NULL,'2023-05-17 00:18:18',21),(4,'Hieu','0949496060','canhgacay@gmail.com',NULL,'2023-05-25 17:58:04',0),(5,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:03:56',0),(6,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:04:36',0),(7,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:07:15',0),(8,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:07:35',0),(9,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:08:12',0),(10,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:12:00',0),(11,'Hieu','0949496060',NULL,NULL,'2023-05-25 18:14:07',0);
+INSERT INTO `customer` VALUES (1,'khach hang 1','0111222333','kh1@gmail.com','quan 9','2023-05-22 00:18:18',0),(2,'khach hang 2','0123434221','kh2@gmail.com','quan tan binh','2023-05-25 00:18:18',5),(3,'khach hang 3','0123213823','kh3@gmail.com',NULL,'2023-05-17 00:18:18',21);
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -490,7 +491,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'kiet','tuankiet@gmail.com','0777411676',NULL,'123456',NULL,'2023-05-22 00:09:47',1),(2,'kiet2','tuankiet2@gmail.com','0123456789',NULL,'123456',NULL,'2023-05-22 00:11:18',1),(3,'kiet3','tuankiet3@gmail.com','0123132332',NULL,'123456',NULL,'2023-05-22 00:11:18',2);
+INSERT INTO `user` VALUES (1,'kiet','tuankiet@gmail.com','0777411676',NULL,'$2b$10$MQVluybtImsi00.Ez8rW4OpYDkVsgNq7nhvAGriWad4oiPFmQPnoG',NULL,'2023-05-22 00:09:47',1),(2,'kiet2','tuankiet2@gmail.com','0123456789',NULL,'$2b$10$MQVluybtImsi00.Ez8rW4OpYDkVsgNq7nhvAGriWad4oiPFmQPnoG',NULL,'2023-05-22 00:11:18',1),(3,'kiet3','tuankiet3@gmail.com','0123132332',NULL,'123456$2b$2b$10$MQVluybtImsi00.Ez8rW4OpYDkVsgNq7nhvAGriWad4oiPFmQPnoG',NULL,'2023-05-22 00:11:18',2);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -684,6 +685,45 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_customer_list` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_customer_list`(
+	IN customerId INT,
+    IN name NVARCHAR(100),
+    IN phone NVARCHAR(100),
+    IN email NVARCHAR(100),
+    IN page_limit INT,
+    IN off_set INT
+)
+BEGIN
+
+	DECLARE total_count INT;
+    SELECT COUNT(*) INTO total_count FROM customer;
+    
+    SELECT c.* 
+    FROM customer AS c 
+    WHERE
+		(c.customerId = customerId OR customerId IS NULL)
+        AND (c.name LIKE CONCAT('%', name, '%') OR name IS NULL)
+        AND (c.phone LIKE CONCAT('%', phone, '%') OR phone IS NULL)
+        AND (c.email LIKE CONCAT('%', email, '%') OR email IS NULL)
+	LIMIT page_limit OFFSET off_set;
+    
+    SELECT total_count AS total_customers;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_get_food_list` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -700,7 +740,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_food_list`(
     IN categoryName NVARCHAR(100),
     IN categoryId INT,
     IN page_limit INT,
-    IN page INT
+    IN off_set INT
 )
 BEGIN
 	
@@ -718,7 +758,7 @@ BEGIN
         AND (c.categoryId = categoryId OR categoryId IS NULL)
     ORDER BY
         (SELECT COUNT(*) FROM orderdetail AS o WHERE o.foodId = f.foodId) DESC
-    LIMIT page_limit OFFSET page;
+    LIMIT page_limit OFFSET off_set;
     
     SELECT total_count AS total_foods;
 END ;;
@@ -792,4 +832,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-25 19:24:27
+-- Dump completed on 2023-05-26  4:07:29

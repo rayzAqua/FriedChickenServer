@@ -7,7 +7,7 @@ const router = express.Router();
 // CREATE
 router.post("/add", authenticateToken, createCustomer);
 
-// GET FOOD LIST
+// GET LIST CUSTOMERS
 router.get("/list", getCustomerList);
 
 

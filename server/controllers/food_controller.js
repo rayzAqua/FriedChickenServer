@@ -10,7 +10,7 @@ export const getFoodList = async (req, res, next) => {
     // Giới hạn số lượng mẫu dữ liệu trả về cho một trang. Ở đây page_limit = 10 nghĩa là một trang chỉ có 10 mẫu dữ liệu.
     const page_limit = 10;
     // Số trang được truyền từ endpoint, mặc định là 1.
-    const page = req.query.page || 1;
+    const page = Number(req.query.page) || 1;
 
     // 1 trang sẽ có 10 mẫu dữ liệu.
     // 10 trang sẽ có 100 mãu dữ liệu.
@@ -29,13 +29,13 @@ export const getFoodList = async (req, res, next) => {
     // Vậy offset = (1-1)*10 = 0;
     // page = 2, page_limit = 10. Lấy từ vị trí 10-19. Lúc này offset có chỉ số bắt đầu là từ 10.
     // Vậy offset = (2-1)*10 = 10;
-    // Kiểm tra có phải đang truy vấn theo foodId không, nếu đúng thì offset mặc định luôn là 0
-    const offset = foodId ? 0 : (page - 1) * 10;
+    // Kiểm tra có phải đang truy vấn theo foodId không, nếu đúng thì offset mặc định luôn là 0.
+    const off_set = (page - 1) * 10;
 
     try {
 
         // Truy vấn lấy thức ăn theo Id
-        const getFood = await Food.getFoodList(foodId, foodName, categoryName, categoryId, page_limit, offset);
+        const getFood = await Food.getFoodList(foodId, foodName, categoryName, categoryId, page_limit, off_set);
         // Vì kết quả là một mảng chứa 2 giá trị là mảng đối tượng cần tìm và các thông tin liên quan đến truy vấn SQL
         // nên cần lọc lại mảng getFood và chỉ lấy mảng đối tượng food.        
         const filterFoodArray = Array.isArray(getFood[0]) ? getFood[0] : [getFood[0]];
@@ -44,6 +44,12 @@ export const getFoodList = async (req, res, next) => {
         const totalFoods = Array.isArray(getFood[1]) ? getFood[1] : [getFood[1]];
         // Tính toán tổng số trang dựa trên tổng số mẫu dữ liệu có trong bảng food.
         const total_page = foodId ? 0 : Math.ceil(totalFoods[0].total_foods / page_limit);
+
+        // Tạo ra đối tượng response để gửi phản hồi.
+        const response = {
+            state: true,
+            message: "Lấy dữ liệu thành công!",
+        }
 
         // Kiểm tra xem mảng đối tượng cần tìm có phần tử nào không. Nếu có thì trả về Output. Nếu không thì báo lỗi.
         if (filterFoodArray.length > 0) {
@@ -59,35 +65,27 @@ export const getFoodList = async (req, res, next) => {
                 }
             });
 
-            // Output: Nếu là truy vấn theo foodId thì không trả về page
-            if (foodId || foodName && foods.length == 1) {
-                res.status(200).json({
-                    state: true,
-                    message: "Lấy dữ liệu thành công!",
-                    data: foods
-                });
+            // Output: Nếu là truy vấn theo foodId hoặc foodName chỉ đích danh cụ thể thì không trả về page.
+            if (foodId || (foodName && foods.length === 1)) {
+                response.data = foods;
+                res.status(200);
+            } else {
+                response.data = {
+                    list_food: foods,
+                    current_page: page,
+                    total_page: total_page,
+                };
+                res.status(200);
             }
-            else {
-                res.status(200).json({
-                    state: true,
-                    message: "Lấy dữ liệu thành công!",
-                    data: {
-                        list_food: foods,
-                        current_page: Number(page),
-                        total_page: total_page,
-                    },
-                });
-            }
+        } else {
+            response.state = false;
+            response.message = "Không tìm thấy dữ liệu!";
+            response.data = filterFoodArray;
+            res.status(404);
         }
-        else {
-            res.status(404).json({
-                state: false,
-                message: "Không tìm thấy dữ liệu!",
-                data: filterFoodArray,
-            });
-        }
+        // Trả về phản hổi đến client.
+        res.json(response);
     } catch (err) {
         next(createError(err));
     }
-
 }
