@@ -1,29 +1,75 @@
-import { query } from "../sql_connect/connected.js"
+import { query } from "../sql_connect/connected.js";
 
 class Food {
-    // Hàm khởi tạo
-    constructor(food) {
-        this.foodId = food.Id;
-        this.name = food.name;
-        this.available = food.available;
-        this.unit = food.unit;
-        this.createdTime = food.createdTime;
-        this.updatedTime = food.updatedTime;
-        this.createdUser = food.createdUser;
-        this.updatedUser = food.updatedUser;
-        this.categoryId = food.categoryId;
-    }
+  // Hàm khởi tạo
+  constructor(food) {
+    this.foodId = food.Id;
+    this.name = food.name;
+    this.available = food.available;
+    this.unit = food.unit;
+    this.createdTime = food.createdTime;
+    this.updatedTime = food.updatedTime;
+    this.createdUser = food.createdUser;
+    this.updatedUser = food.updatedUser;
+    this.categoryId = food.categoryId;
+  }
 
-    // Truy vấn tìm kiếm list food theo foodId, foodName, categoryName, categoryId hoặc page.
-    static async getFoodList(foodId, foodName, categoryName, categoryId, page_offset, page_limit) {
-        try {
-            const sp = "CALL sp_get_food_list(?, ?, ?, ?, ?, ?)"
-            const food = await query(sp, [foodId, foodName, categoryName, categoryId, page_offset, page_limit]);
-            return food;
-        } catch (err) {
-            throw err;
-        }
+  // Truy vấn tìm kiếm list food theo foodId, foodName, categoryName, categoryId hoặc page.
+  static async getFoodList(
+    foodId,
+    foodName,
+    categoryName,
+    categoryId,
+    page_offset,
+    page_limit
+  ) {
+    try {
+      const sp = "CALL sp_get_food_list(?, ?, ?, ?, ?, ?)";
+      const food = await query(sp, [
+        foodId,
+        foodName,
+        categoryName,
+        categoryId,
+        page_offset,
+        page_limit,
+      ]);
+      return food;
+    } catch (err) {
+      throw err;
     }
+  }
+
+  static async getById(foodId) {
+    try {
+      const results = await query(
+        "SELECT * FROM hethonggaran.food WHERE foodId =?;",
+        [foodId]
+      );
+
+      return results;
+    } catch (error) {
+      console.error("Error executing query:", error);
+      throw error;
+    }
+  }
+
+  static async getIngredientOfFood(foodId) {
+    try {
+      const results = await query(
+        "select hethonggaran.fooddetail.quantity, hethonggaran.ingredient.ingredientId, hethonggaran.ingredient.unit,hethonggaran.ingredient.available" +
+          " from hethonggaran.food" +
+          " join hethonggaran.fooddetail on hethonggaran.fooddetail.foodId = hethonggaran.food.foodId" +
+          " join hethonggaran.ingredient on hethonggaran.ingredient.ingredientId = hethonggaran.fooddetail.ingredientId" +
+          " where hethonggaran.food.foodId =?",
+        [foodId]
+      );
+
+      return results;
+    } catch (error) {
+      console.error("Error executing query:", error);
+      throw error;
+    }
+  }
 }
 
 export default Food;
