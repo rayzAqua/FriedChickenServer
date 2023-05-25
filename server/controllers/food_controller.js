@@ -24,29 +24,26 @@ export const getFoodList = async (req, res, next) => {
     // Để tính toán được tổng số trang cần phải biết được có tổng cộng bao nhiêu mẫu dữ liệu food có trong mảng.
     // ví dụ có 30 mẫu thì chia cho giới hạn mỗi trang là 10 là sẽ được totalPage = 3.
 
-    console.log(foodId, foodName, categoryName, categoryId, page_limit, page);
+    // Tính toán lại giá trị bắt đầu của offset dựa vào page.
+    // page = 1, page_limit = 10. Điều này nghĩa là lấy từ vị trí 0-9. Như vậy offset có chỉ số bắt đầu là 0. 
+    // Vậy offset = (1-1)*10 = 0;
+    // page = 2, page_limit = 10. Lấy từ vị trí 10-19. Lúc này offset có chỉ số bắt đầu là từ 10.
+    // Vậy offset = (2-1)*10 = 10;
+    // Kiểm tra có phải đang truy vấn theo foodId không, nếu đúng thì offset mặc định luôn là 0
+    const offset = foodId ? 0 : (page - 1) * 10;
 
     try {
-        // Tính toán lại giá trị bắt đầu của offset dựa vào page.
-        // page = 1, page_limit = 10. Điều này nghĩa là lấy từ vị trí 0-9. Như vậy offset có chỉ số bắt đầu là 0. 
-        // Vậy offset = (1-1)*10 = 0;
-        // page = 2, page_limit = 10. Lấy từ vị trí 10-19. Lúc này offset có chỉ số bắt đầu là từ 10.
-        // Vậy offset = (2-1)*10 = 10;
-        const offset = (page - 1) * 10;
+
         // Truy vấn lấy thức ăn theo Id
         const getFood = await Food.getFoodList(foodId, foodName, categoryName, categoryId, page_limit, offset);
         // Vì kết quả là một mảng chứa 2 giá trị là mảng đối tượng cần tìm và các thông tin liên quan đến truy vấn SQL
         // nên cần lọc lại mảng getFood và chỉ lấy mảng đối tượng food.        
         const filterFoodArray = Array.isArray(getFood[0]) ? getFood[0] : [getFood[0]];
-        console.log(filterFoodArray);
 
         // Lấy tổng số mẫu dữ liệu có trong bảng food, từ tổng số mẫu dữ liệu suy ra được tổng số trang.
         const totalFoods = Array.isArray(getFood[1]) ? getFood[1] : [getFood[1]];
-        console.log(totalFoods[0]);
-
         // Tính toán tổng số trang dựa trên tổng số mẫu dữ liệu có trong bảng food.
-        const total_page = Math.ceil(totalFoods[0].total_foods / page_limit);
-        console.log(total_page);
+        const total_page = foodId ? 0 : Math.ceil(totalFoods[0].total_foods / page_limit);
 
         // Kiểm tra xem mảng đối tượng cần tìm có phần tử nào không. Nếu có thì trả về Output. Nếu không thì báo lỗi.
         if (filterFoodArray.length > 0) {
@@ -62,17 +59,25 @@ export const getFoodList = async (req, res, next) => {
                 }
             });
 
-            // Output
-            res.status(200).json({
-                state: true,
-                message: "Lấy dữ liệu thành công!",
-                data: {
-                    list_food: foods,
-                    current_page: Number(page),
-                    total_page: total_page,
-                },
-
-            });
+            // Output: Nếu là truy vấn theo foodId thì không trả về page
+            if (foodId) {
+                res.status(200).json({
+                    state: true,
+                    message: "Lấy dữ liệu thành công!",
+                    data: foods
+                });
+            }
+            else {
+                res.status(200).json({
+                    state: true,
+                    message: "Lấy dữ liệu thành công!",
+                    data: {
+                        list_food: foods,
+                        current_page: Number(page),
+                        total_page: total_page,
+                    },
+                });
+            }
         }
         else {
             res.status(404).json({
