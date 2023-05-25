@@ -24,4 +24,19 @@ Customer.getById = async function (customerId) {
   }
 };
 
+// Thực thi sp tạo mới khách hàng.
+Customer.createCustomer = async function (name, phone, email, address) {
+  try {
+    // Câu truy vấn gọi sp_create_customer với 4 tham số truyền vào.
+    const sp = "CALL sp_create_customer(?, ?, ?, ?)";
+    // Gọi đến sp_create_customer và truyền 4 tham số name, phone, email, address vào để tiến hành tạo mới khách hàng.
+    const newCustomer = await query(sp, [name, phone, email, address]);
+    console.log(newCustomer);
+    return newCustomer;
+  } catch (err) {
+    console.log("Error executing query: ", err);
+    throw err;
+  }
+}
+
 export default Customer;

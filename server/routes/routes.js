@@ -1,10 +1,12 @@
 import authRouter from "./auth.js";
 import orderRouter from "./order.js";
 import foodRouter from "./food.js";
+import customerRouter from "./customer.js";
 
 const routeHieuLe = (app) => {
   // Route của Hiếu Lê
-  app.use("/foods", foodRouter);
+  app.use("/food", foodRouter);
+  app.use("/customer", customerRouter);
 };
 
 const routeHieuPhan = (app) => {
