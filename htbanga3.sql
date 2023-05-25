@@ -154,13 +154,13 @@ DROP TABLE IF EXISTS `foodstockhistory`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `foodstockhistory` (
-  `foodStockHistory` int NOT NULL AUTO_INCREMENT,
+  `foodStockHistoryId` int NOT NULL AUTO_INCREMENT,
   `quantity` int NOT NULL,
   `createdTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `createdUser` int NOT NULL,
   `foodId` int NOT NULL,
   `wareHouseId` int NOT NULL,
-  PRIMARY KEY (`foodStockHistory`),
+  PRIMARY KEY (`foodStockHistoryId`),
   KEY `createdUser` (`createdUser`),
   KEY `foodId` (`foodId`),
   KEY `wareHouseId` (`wareHouseId`),
@@ -832,4 +832,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-26  4:07:29
+-- Dump completed on 2023-05-26  4:13:57
