@@ -699,10 +699,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_food_list`(
     IN foodName NVARCHAR(100),
     IN categoryName NVARCHAR(100),
     IN categoryId INT,
-    IN page_offset INT,
-    IN page_limit INT
+    IN page_limit INT,
+    IN page INT
 )
 BEGIN
+	
+    DECLARE total_count INT;
+    SELECT COUNT(*) INTO total_count FROM food;
+
     SELECT f.*, c.categoryId, c.name AS categoryName, p.price
     FROM food AS f
     INNER JOIN category AS c ON c.categoryId = f.categoryId
@@ -714,7 +718,9 @@ BEGIN
         AND (c.categoryId = categoryId OR categoryId IS NULL)
     ORDER BY
         (SELECT COUNT(*) FROM orderdetail AS o WHERE o.foodId = f.foodId) DESC
-    LIMIT page_offset, page_limit;
+    LIMIT page_limit OFFSET page;
+    
+    SELECT total_count AS total_foods;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
