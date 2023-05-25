@@ -12,18 +12,19 @@ class Food {
     this.createdUser = food.createdUser;
     this.updatedUser = food.updatedUser;
     this.categoryId = food.categoryId;
-  }
+  };
 
-    // Truy vấn tìm kiếm list food theo foodId, foodName, categoryName, categoryId hoặc page.
-    static async getFoodList(foodId, foodName, categoryName, categoryId, page_limit, off_set) {
-        try {
-            const sp = "CALL sp_get_food_list(?, ?, ?, ?, ?, ?)"
-            const foods = await query(sp, [foodId, foodName, categoryName, categoryId, page_limit, off_set]);
-            return foods;
-        } catch (err) {
-            throw err;
-        }
+  // Truy vấn tìm kiếm list food theo foodId, foodName, categoryName, categoryId hoặc page.
+  static async getFoodList(foodId, foodName, categoryName, categoryId, page_limit, off_set) {
+    try {
+      const sp = "CALL sp_get_food_list(?, ?, ?, ?, ?, ?)"
+      const foods = await query(sp, [foodId, foodName, categoryName, categoryId, page_limit, off_set]);
+      return foods;
+    } catch (err) {
+      console.log("Error executing query: ", err);
+      throw err;
     }
+  };
 }
 
 export default Food;
