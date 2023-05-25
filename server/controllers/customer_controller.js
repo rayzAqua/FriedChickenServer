@@ -54,10 +54,61 @@ export const createCustomer = async (req, res, next) => {
 // GET CUSTOMER LIST
 export const getCustomerList = async (req, res, next) => {
 
-    try {
+    // Lấy các giá trị truy vấn.
+    const customerId = req.query.customerId || null;
+    const name = req.query.name || null;
+    const phone = req.query.phone || null;
+    const email = req.query.email || null;
+    // Giới hạn mẫu dữ liệu hiển thị cho một trang.
+    const page_limit = 10;
+    // Số trang hiện tại được truyền vào từ req, mặc định là 1.
+    const page = Number(req.query.page) || 1;
+    // Gía trị off_set là vị trí bắt đầu lấy mẫu dữ liệu trong truy vấn bằng sp_get_customer_list.
+    const off_set = customerId ? 0 : ((page - 1) * 10);
 
+    try {
+        // Truy vấn lấy danh sách các khách hàng theo dữ liệu được truyền vào.
+        const getCustomers = await Customer.getCustomerList(customerId, name, phone, email, page_limit, off_set);
+        // Sau khi truy vấn thì mảng dữ liệu trả có chứa cả thông tin truy vấn nên cần lọc lại.
+        // Mảng filterCustomerArray có nhiệm vụ chứa dữ liệu khách hàng sau khi truy vấn.
+        const filterCustomerArray = Array.isArray(getCustomers[0]) ? getCustomers[0] : [getCustomers[0]];
+        // Mảng totaCustomers có nhiệm vụ lưu lại tổng số mẫu dữ liệu có trong bảng customer. Dữ liệu này dùng để
+        // tính tổng số trang.
+        const totaCustomers = Array.isArray(getCustomers[1]) ? getCustomers[1] : [getCustomers[1]];
+        // Tính tổng số trang dựa vào tổng số mẫu dữ liệu và giới hạn hiển thị của mẫu dữ liệu trong 1 trang.
+        const total_page = customerId ? 0 : (Math.ceil(totaCustomers[0].total_customers / page_limit));
+
+        // Tạo ra một đối tượng response để phản hồi kết quả truy vấn.
+        const response = {
+            state: true,
+            message: "Lấy dữ liệu thành công!",
+        }
+
+        // Nếu sau khi truy vấn mà mảng filterCustomerArray có dữ liệu thì tiến hành gửi dữ liệu cho client.
+        // Nếu không thì thông báo lỗi không tìm thấy tài nguyên.
+        if (filterCustomerArray.length > 0) {
+            // Nếu truy vấn bằng customerId, chỉ địch danh họ tên, số điện thoại hoặc email thì không phân trang.
+            // Nếu không phải các trường hợp đặc biệt nêu trên thì phân trang.
+            if (customerId || (name && filterCustomerArray.length === 1) || (phone && filterCustomerArray.length === 1) || (email && filterCustomerArray.length === 1)) {
+                response.data = filterCustomerArray;
+                res.status(200);
+            } else {
+                response.data = {
+                    customerLists: filterCustomerArray,
+                    current_page: page,
+                    total_page: total_page,
+                };
+                res.status(200);
+            }
+        } else {
+            response.state = false;
+            response.message = "Không tìm thấy dữ liệu!";
+            response.data = filterCustomerArray;
+            res.status(404);
+        }
+        // OUTPUT
+        res.json(response);
     } catch (err) {
         next(err);
     }
-
 };
