@@ -31,10 +31,16 @@ async function getDetailOrder(res, result, page, totalPage) {
       resultObj["details"] = detailResponses[index];
       results.push(resultObj);
     });
-    results.push({ currentPage: page });
-    results.push({ totalPage: totalPage });
+    // results.push({ currentPage: page });
+    // results.push({ totalPage: totalPage });
 
-    res.send(message(true, "Lấy dữ liệu thành công!", results));
+    res.send(
+      message(true, "Lấy dữ liệu thành công!", [
+        { listOrder: results },
+        { currentPage: page },
+        { totalPage: totalPage },
+      ])
+    );
   } catch (error) {
     console.log(error);
     return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
