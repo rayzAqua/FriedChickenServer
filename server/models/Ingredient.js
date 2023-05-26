@@ -14,6 +14,7 @@ class Ingredient {
         this.updatedUser = ingredient.updatedUser;
     };
 
+    // Lấy nguyên liệu theo Id
     static async getIngredientById(ingredientId) {
         try {
             const q = "SELECT * FROM ingredient AS i WHERE i.ingredientId = ?;";
@@ -24,4 +25,18 @@ class Ingredient {
             throw err;
         }
     };
+
+    // SP lấy danh sách nguyên liệu dựa trên các tham số truyền vào
+    static async getIngredientList(ingredientId, ingredientName, wareHouseId, page_limit, off_set) {
+        try {
+            const sp = "CALL sp_get_ingredient_list(?, ?, ?, ?, ?);"
+            const ingredientList = await query(sp, [ingredientId, ingredientName, wareHouseId, page_limit, off_set]);
+            return ingredientList;
+        } catch (err) {
+            console.log("Error executing query: ", err);
+            throw err;
+        }
+    }
 }
+
+export default Ingredient;

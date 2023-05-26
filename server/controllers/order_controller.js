@@ -178,6 +178,53 @@ class OrderController {
       return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
     }
   }
+
+  async calculatePoint(req, res, next) {
+
+    const customerId = req.query.customerId;
+    const orderId = req.query.orderId;
+
+    try {
+      // Tạo một đối tượng response để phản hồi.
+      const response = {
+        state: true,
+        message: "Tính điểm tích luỹ thành công!",
+      }
+
+      // Kiểm tra xem customerId và orderId có bị bỏ trống không.
+      if (customerId && orderId) {
+        // Kết quả sau khi thực thi truy vấn luôn trả về kèm theo thông tin truy vấn nên cần phải lọc lại.
+        const points = await Order.calculatePoint(customerId, orderId);
+        // Lọc lại kết quả sau khi thực thi truy vấn để lấy về dữ liệu.
+        const filterPointArray = Array.isArray(points[0]) ? points[0] : [points[0]];
+
+        // Kiểm tra xem có lấy về được điểm tích luỹ mới nhất không.
+        // Nếu lấy được thì phản hồi điểm tích luỹ về cho client.
+        // Nếu không thì thông báo lỗi.
+        if (filterPointArray.length > 0) {
+          response.data = {
+            point: filterPointArray[0].customer_point,
+          };
+          res.status(200); 
+        } else {
+          response.state = false;
+          response.message = "Không tính được điểm tích luỹ!";
+          response.data = filterPointArray;
+          res.status(404);
+        } 
+      } else {
+        response.state = false;
+        response.message = "Không được bỏ trống customerId và orderId!";
+        response.data = [];
+        res.status(400);
+      }
+      // OUTPUT
+      res.json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default new OrderController();
+

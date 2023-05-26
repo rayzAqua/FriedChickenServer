@@ -30,13 +30,13 @@ Order.getListOrder = async function (key, page) {
   try {
     const results = await query(
       "SELECT hethonggaran.order.*" +
-        " FROM hethonggaran.order" +
-        " join hethonggaran.customer on hethonggaran.customer.customerId = hethonggaran.order.customerId " +
-        " where hethonggaran.order.orderId  = ? or hethonggaran.order.customerId = ?" +
-        " or hethonggaran.customer.name like ? or hethonggaran.customer.phone like ?" +
-        " or hethonggaran.customer.email like ?" +
-        " order by orderTime DESC" +
-        " limit 10 OFFSET ?",
+      " FROM hethonggaran.order" +
+      " join hethonggaran.customer on hethonggaran.customer.customerId = hethonggaran.order.customerId " +
+      " where hethonggaran.order.orderId  = ? or hethonggaran.order.customerId = ?" +
+      " or hethonggaran.customer.name like ? or hethonggaran.customer.phone like ?" +
+      " or hethonggaran.customer.email like ?" +
+      " order by orderTime DESC" +
+      " limit 10 OFFSET ?",
       [
         key,
         key,
@@ -58,15 +58,15 @@ Order.getListOrderRangeDate = async function (key, page, fromDate, toDate) {
   try {
     const results = await query(
       "SELECT hethonggaran.order.* " +
-        " FROM hethonggaran.order " +
-        " join hethonggaran.customer on hethonggaran.customer.customerId = hethonggaran.order.customerId  " +
-        " where (hethonggaran.order.orderId  = ? " +
-        " or hethonggaran.order.customerId = ? " +
-        " or hethonggaran.customer.name like ? " +
-        " or hethonggaran.customer.phone like ? " +
-        " or hethonggaran.customer.email like ? )" +
-        " and hethonggaran.order.orderTime >= ? and hethonggaran.order.orderTime <= ?" +
-        " order by hethonggaran.order.orderTime DESC limit 10 OFFSET ?",
+      " FROM hethonggaran.order " +
+      " join hethonggaran.customer on hethonggaran.customer.customerId = hethonggaran.order.customerId  " +
+      " where (hethonggaran.order.orderId  = ? " +
+      " or hethonggaran.order.customerId = ? " +
+      " or hethonggaran.customer.name like ? " +
+      " or hethonggaran.customer.phone like ? " +
+      " or hethonggaran.customer.email like ? )" +
+      " and hethonggaran.order.orderTime >= ? and hethonggaran.order.orderTime <= ?" +
+      " order by hethonggaran.order.orderTime DESC limit 10 OFFSET ?",
       [
         key,
         key,
@@ -90,15 +90,15 @@ Order.getTotalOrder = async function (key) {
   try {
     const results = await query(
       "SELECT COUNT(*) AS total from (" +
-        "  SELECT hethonggaran.order.*" +
-        "  FROM hethonggaran.order" +
-        "  JOIN hethonggaran.customer ON hethonggaran.customer.customerId = hethonggaran.order.customerId" +
-        "  WHERE hethonggaran.order.orderId = ?" +
-        "     OR hethonggaran.order.customerId = ?" +
-        "     OR hethonggaran.customer.name LIKE ?" +
-        "     OR hethonggaran.customer.phone LIKE ?" +
-        "     OR hethonggaran.customer.email LIKE ?" +
-        "  ORDER BY orderTime DESC ) as listOrder;",
+      "  SELECT hethonggaran.order.*" +
+      "  FROM hethonggaran.order" +
+      "  JOIN hethonggaran.customer ON hethonggaran.customer.customerId = hethonggaran.order.customerId" +
+      "  WHERE hethonggaran.order.orderId = ?" +
+      "     OR hethonggaran.order.customerId = ?" +
+      "     OR hethonggaran.customer.name LIKE ?" +
+      "     OR hethonggaran.customer.phone LIKE ?" +
+      "     OR hethonggaran.customer.email LIKE ?" +
+      "  ORDER BY orderTime DESC ) as listOrder;",
       [key, key, "%" + key + "%", "%" + key + "%", "%" + key + "%"]
     );
 
@@ -113,16 +113,16 @@ Order.getTotalOrderRangeDate = async function (key, fromDate, toDate) {
   try {
     const results = await query(
       "SELECT COUNT(*) AS total from (" +
-        " SELECT hethonggaran.order.*" +
-        " FROM hethonggaran.order" +
-        " JOIN hethonggaran.customer ON hethonggaran.customer.customerId = hethonggaran.order.customerId" +
-        " WHERE (hethonggaran.order.orderId = ?" +
-        "   OR hethonggaran.order.customerId = ?" +
-        "   OR hethonggaran.customer.name LIKE ?" +
-        "   OR hethonggaran.customer.phone LIKE ?" +
-        "   OR hethonggaran.customer.email LIKE ? )" +
-        " and hethonggaran.order.orderTime >= ? and hethonggaran.order.orderTime <= ?" +
-        " ORDER BY orderTime DESC ) as listOrder;",
+      " SELECT hethonggaran.order.*" +
+      " FROM hethonggaran.order" +
+      " JOIN hethonggaran.customer ON hethonggaran.customer.customerId = hethonggaran.order.customerId" +
+      " WHERE (hethonggaran.order.orderId = ?" +
+      "   OR hethonggaran.order.customerId = ?" +
+      "   OR hethonggaran.customer.name LIKE ?" +
+      "   OR hethonggaran.customer.phone LIKE ?" +
+      "   OR hethonggaran.customer.email LIKE ? )" +
+      " and hethonggaran.order.orderTime >= ? and hethonggaran.order.orderTime <= ?" +
+      " ORDER BY orderTime DESC ) as listOrder;",
       [
         key,
         key,
@@ -151,7 +151,7 @@ Order.create = async function (
   try {
     const results = await query(
       "INSERT INTO hethonggaran.order(totalMoney, createdUser, customerId,promoteId, paymentMethodId)" +
-        " VALUES (?,?,?,?,?);",
+      " VALUES (?,?,?,?,?);",
       [totalMoney, createdUser, customerId, promoteId, paymentMethodId]
     );
 
@@ -161,5 +161,17 @@ Order.create = async function (
     throw error;
   }
 };
+
+// Tính điểm tích luỹ
+Order.calculatePoint = async function (customerId, orderId) {
+  try {
+    const sp = "CALL sp_caculate_point(?, ?);";
+    const point = await query(sp, [customerId, orderId]);
+    return point;
+  } catch (err) {
+    console.error("Error executing query:", err);
+    throw err;
+  }
+}
 
 export default Order;
