@@ -7,7 +7,7 @@
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -558,10 +558,6 @@ INSERT INTO `warehouse` VALUES (1,'Thương hiệu 1','Kho 1','Quân 9',NULL,1,N
 UNLOCK TABLES;
 
 --
--- Dumping events for database 'hethonggaran'
---
-
---
 -- Dumping routines for database 'hethonggaran'
 --
 /*!50003 DROP PROCEDURE IF EXISTS `getListOrder` */;
@@ -684,6 +680,57 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_by_email`(in email varchar(50))
 select * from hethonggaran.user where user.email = email ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_caculate_point` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_caculate_point`(
+    IN customerId INT,
+    IN orderId INT
+)
+BEGIN
+	-- Khai báo các biến:
+    -- Biến này để chứa giá trị hoá đơn.
+    DECLARE totalMoneys DECIMAL(10, 2);
+    -- Biến này để chứa điểm tích luỹ hiện tại.
+    DECLARE currentPoint INT;
+    -- Biến này để tính toán lại điểm tích luỹ.
+    DECLARE newPoint INT;
+    
+    -- Lấy giá trị point hiện tại của khách hàng
+    SELECT point INTO currentPoint
+    FROM `customer` AS c
+    WHERE c.customerId = customerId;
+    
+    -- Lấy giá trị totalMoney từ bảng orders kết hợp với bảng customer (Một hoá đơn của một khách hàng cụ thể)
+    SELECT totalMoney INTO totalMoneys 
+    FROM `order` AS o
+    INNER JOIN `customer` AS c ON c.customerId = o.customerId
+    WHERE c.customerId = customerId AND o.orderId = orderId;
+    
+    -- Tính toán giá trị mới của point
+    SET newPoint = currentPoint + FLOOR(totalMoneys / 30000);
+    
+    -- Cập nhật giá trị point trong bảng customers
+    UPDATE `customer` AS c
+    SET point = newPoint
+    WHERE c.customerId = customerId;
+    
+    -- Trả về giá trị mới của point
+    SELECT newPoint AS customer_point;
+    
+END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -970,6 +1017,77 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_ingredient_list` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_ingredient_list`(
+	IN ingredientId INT,
+    IN ingredientName NVARCHAR(100),
+    IN wareHouseId INT,
+    IN page_limit INT,
+    IN off_set INT
+)
+BEGIN
+    
+    DECLARE total_count INT;
+    
+    -- Tính tổng số lượng ingredient
+    SELECT COUNT(*) INTO total_count FROM ingredient;
+    
+    -- Lấy thông tin ingredient và số lượng tồn trên warehouse cụ thể
+    IF ingredientId IS NOT NULL THEN
+        IF wareHouseId IS NOT NULL THEN
+            SELECT i.*, w.warehouseName, s.quantity
+            FROM ingredient AS i
+            LEFT JOIN ingredientstockhistory AS s ON s.ingredientId = i.ingredientId
+            LEFT JOIN warehouse AS w ON w.wareHouseId = s.wareHouseId
+            WHERE i.ingredientId = ingredientId AND w.wareHouseId = wareHouseId
+                AND (i.name LIKE CONCAT('%', ingredientName, '%') OR ingredientName IS NULL)
+            LIMIT page_limit OFFSET off_set;
+        ELSE
+            SELECT i.*, w.warehouseName, s.quantity
+            FROM ingredient AS i
+            LEFT JOIN ingredientstockhistory AS s ON s.ingredientId = i.ingredientId
+            LEFT JOIN warehouse AS w ON w.wareHouseId = s.wareHouseId
+            WHERE i.ingredientId = ingredientId
+                AND (i.name LIKE CONCAT('%', ingredientName, '%') OR ingredientName IS NULL)
+            LIMIT page_limit OFFSET off_set;
+        END IF;
+    ELSE
+        -- Lấy thông tin tất cả các ingredient và số lượng tồn trên tất cả các warehouse
+        IF wareHouseId IS NOT NULL THEN
+            SELECT i.*, w.warehouseName, s.quantity
+            FROM ingredient AS i
+            LEFT JOIN ingredientstockhistory AS s ON s.ingredientId = i.ingredientId
+            LEFT JOIN warehouse AS w ON w.wareHouseId = s.wareHouseId
+            WHERE w.wareHouseId = wareHouseId
+                AND (i.name LIKE CONCAT('%', ingredientName, '%') OR ingredientName IS NULL)
+            LIMIT page_limit OFFSET off_set;
+        ELSE
+            SELECT i.*, w.warehouseName, s.quantity
+            FROM ingredient AS i
+            LEFT JOIN ingredientstockhistory AS s ON s.ingredientId = i.ingredientId
+            LEFT JOIN warehouse AS w ON w.wareHouseId = s.wareHouseId
+            WHERE i.name LIKE CONCAT('%', ingredientName, '%') OR ingredientName IS NULL
+            LIMIT page_limit OFFSET off_set;
+        END IF;
+    END IF;
+    
+    SELECT total_count AS total_ingredients;
+    
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_get_list_order` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -1107,4 +1225,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-27  1:44:01
+-- Dump completed on 2023-05-27  2:30:14
