@@ -10,7 +10,13 @@ async function authenticateToken(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.getByEmail(decoded.email);
-    req.body = { ...decoded, ...req.body, ...user.userId };
+
+    if (user.length == 0) {
+      return res.send(message(false, "Token không hợp lệ", ""));
+    }
+    const userId = user.userId;
+    req.body = { ...decoded, ...req.body, userId };
+
     next();
   } catch (error) {
     if (error.message == "jwt expired") {

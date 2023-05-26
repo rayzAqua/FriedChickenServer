@@ -1,6 +1,8 @@
+import { response } from "express";
 import Customer from "../models/Customer.js";
 import Food from "../models/Food.js";
 import FoodstockHistory from "../models/Foodstockhistory.js";
+import IngredientStockHistory from "../models/IngredientStockHistory.js";
 import Order from "../models/Order.js";
 import OrderDetail from "../models/OrderDetail.js";
 import PaymentMethod from "../models/PaymentMethod.js";
@@ -101,7 +103,8 @@ class OrderController {
 
   //[POST] /order/create
   async create(req, res, next) {
-    const { id, customerId, details, promoteId, paymentMethodId } = req.body;
+    const { userId, customerId, details, promoteId, paymentMethodId } =
+      req.body;
     try {
       const customer = await Customer.getById(customerId);
       if (customer.length == 0) {
@@ -109,8 +112,9 @@ class OrderController {
       }
 
       //check promotion exist, ative and customer can use or not
+      let promote = null;
       if (promoteId || null) {
-        const promote = await Promote.getById(promoteId);
+        promote = await Promote.getById(promoteId);
         if (promote.length == 0) {
           return res.send(message(false, "Khuyến mãi không hợp lệ!", ""));
         }
@@ -138,41 +142,101 @@ class OrderController {
         );
       }
 
-      //check food
-      const foodId = details[0]["foodId"];
-      const food = await Food.getById(foodId);
+      //check list food
+      for (var i = 0; i < details.length; i++) {
+        //check food
+        const foodId = details[i]["foodId"];
+        const food = await Food.getById(foodId);
 
-      // food exist ?
-      if (food.length == 0) {
-        return res.send(message(false, "Món ăn không hợp lệ!", ""));
-      }
-      // food available ?
-      if (food[0]["available"] == 0) {
-        return res.send(message(false, "Món ăn không còn kinh doanh!", ""));
-      }
+        // food exist ?
+        if (food.length == 0) {
+          return res.send(message(false, "Món ăn không hợp lệ!", ""));
+        }
+        // food available ?
+        if (food[0]["available"] == 0) {
+          return res.send(message(false, "Món ăn không còn kinh doanh!", ""));
+        }
 
-      //check food in stock
-      const foodstockHistory = await FoodstockHistory.getById(foodId);
-      if (foodstockHistory.length == 0) {
-        return res.send(message(false, "Món ăn không tồn tại trong kho!", ""));
-      }
+        //check food in stock
+        const foodstockHistory = await FoodstockHistory.getById(foodId);
+        if (foodstockHistory.length == 0) {
+          return res.send(
+            message(false, "Món ăn không tồn tại trong kho!", "")
+          );
+        }
 
-      if (foodstockHistory[0]["quantity"] == 0) {
-        return res.send(message(false, "Món ăn hết trong kho!", ""));
-      }
+        if (Number(foodstockHistory[0]["quantity"]) == 0) {
+          return res.send(message(false, "Món ăn hết trong kho!", ""));
+        }
 
-      console.log(foodstockHistory);
-
-      //food on ready
-
-      if (food[0]["unit"] == 0) {
         //check ingredient
         const ingredientFood = await Food.getIngredientOfFood(foodId);
-        console.log("ingredientFood: ", ingredientFood);
-        return res.send(message(false, "Món ăn không có sẵn!", ""));
+        ingredientFood.map((ingredient, index) => {
+          //check ingredient available?
+          if (ingredient["available"] == 0) {
+            return res.send(
+              message(false, "Nguyên liệu hiện không khả dụng!", "")
+            );
+          }
+        });
+
+        // caculate number of food needs compare with stock
+        let quantityFood = Number(details[i]["quantity"]);
+        quantityFood = quantityFood - Number(foodstockHistory[0]["quantity"]);
+
+        // still lack of food but can have ingredient to cook
+        if (quantityFood != 0) {
+          //check ingredient enough
+          for (var i = 0; i < ingredientFood.length; i++) {
+            const ingredient = ingredientFood[0];
+            const ingredientId = ingredient["ingredientId"];
+            const ingredientstockhistory =
+              await IngredientStockHistory.getByIngredientId(ingredientId);
+
+            if (
+              Number(ingredient["quantity"]) * quantityFood >
+              Number(ingredientstockhistory[0]["quantity"])
+            ) {
+              return res.send(message(false, "Nguyên liệu không đủ!", ""));
+            }
+          }
+        }
       }
-      console.log(food);
-      return res.send(message(false, "Lấy dữ liệu thành công!", ""));
+
+      //caculate total money
+      let totalMoney = 0;
+      details.map((food, index) => {
+        totalMoney += Number(food["price"]) * Number(food["quantity"]);
+      });
+
+      //subtract price promote
+      if (promote || null) {
+        totalMoney -= (totalMoney * Number(promote[0]["discount"])) / 100;
+      }
+
+      //create order
+      let order = await Order.create(
+        totalMoney,
+        userId,
+        customerId,
+        promoteId,
+        paymentMethodId
+      );
+
+      //get order by id insert
+      order = await Order.getOrderById(order["insertId"]);
+
+      //caculate point = point current of customer + point extra from order - point subtract by promote
+      const point =
+        Number(customer[0]["point"]) +
+        Math.round(totalMoney / 3000) -
+        Number(promote[0]["requirePoint"]);
+      console.log(point);
+
+      //update point for customer
+      await Customer.updatePoint(point, customer[0]["customerId"]);
+
+      return res.send(message(false, "Đặt thành công!", order));
     } catch (error) {
       console.log(error);
       return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
