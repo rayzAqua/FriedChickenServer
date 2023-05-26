@@ -24,4 +24,15 @@ Promote.getById = async function (promoteId) {
   }
 };
 
+Promote.getAll = async function () {
+  try {
+    const results = await query("SELECT * FROM hethonggaran.promotion ");
+
+    return results;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw error;
+  }
+};
+
 export default Promote;

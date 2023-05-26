@@ -2,6 +2,7 @@ import authRouter from "./auth.js";
 import orderRouter from "./order.js";
 import foodRouter from "./food.js";
 import customerRouter from "./customer.js";
+import promotionRouter from "./promotion.js";
 import ingredientRouter from "./ingredient.js";
 
 const routeHieuLe = (app) => {
@@ -16,6 +17,8 @@ const routeHieuPhan = (app) => {
   // Route của Hiểu
   app.use("/account", authRouter);
   app.use("/order", orderRouter);
+  app.use("/promotion", promotionRouter);
+  app.use("/payment-method", promotionRouter);
 };
 
 const routeTuanKiet = (app) => {

@@ -28,25 +28,27 @@ Order.getOrderById = async function (orderId) {
 
 Order.getListOrder = async function (key, page) {
   try {
-    const results = await query(
-      "SELECT hethonggaran.order.*" +
-      " FROM hethonggaran.order" +
-      " join hethonggaran.customer on hethonggaran.customer.customerId = hethonggaran.order.customerId " +
-      " where hethonggaran.order.orderId  = ? or hethonggaran.order.customerId = ?" +
-      " or hethonggaran.customer.name like ? or hethonggaran.customer.phone like ?" +
-      " or hethonggaran.customer.email like ?" +
-      " order by orderTime DESC" +
-      " limit 10 OFFSET ?",
-      [
-        key,
-        key,
-        "%" + key + "%",
-        "%" + key + "%",
-        "%" + key + "%",
-        calculateStart(page),
-      ]
-    );
+    // const results = await query(
+    //   "SELECT hethonggaran.order.*" +
+  //     " FROM hethonggaran.order" +
+  //     " join hethonggaran.customer on hethonggaran.customer.customerId = hethonggaran.order.customerId " +
+  //     " where hethonggaran.order.orderId  = ? or hethonggaran.order.customerId = ?" +
+  //     " or hethonggaran.customer.name like ? or hethonggaran.customer.phone like ?" +
+  //     " or hethonggaran.customer.email like ?" +
+  //     " order by orderTime DESC" +
+  //     " limit 10 OFFSET ?",
+    //   [
+    //     key,
+    //     key,
+    //     "%" + key + "%",
+    //     "%" + key + "%",
+    //     "%" + key + "%",
+    //     calculateStart(page),
+    //   ]
+    // );
 
+    const sp = "CALL getListOrder(?, ?)";
+    const results = await query(sp, [key, calculateStart(page)]);
     return results;
   } catch (error) {
     console.error("Error executing query:", error);
@@ -56,29 +58,36 @@ Order.getListOrder = async function (key, page) {
 
 Order.getListOrderRangeDate = async function (key, page, fromDate, toDate) {
   try {
-    const results = await query(
-      "SELECT hethonggaran.order.* " +
-      " FROM hethonggaran.order " +
-      " join hethonggaran.customer on hethonggaran.customer.customerId = hethonggaran.order.customerId  " +
-      " where (hethonggaran.order.orderId  = ? " +
-      " or hethonggaran.order.customerId = ? " +
-      " or hethonggaran.customer.name like ? " +
-      " or hethonggaran.customer.phone like ? " +
-      " or hethonggaran.customer.email like ? )" +
-      " and hethonggaran.order.orderTime >= ? and hethonggaran.order.orderTime <= ?" +
-      " order by hethonggaran.order.orderTime DESC limit 10 OFFSET ?",
-      [
-        key,
-        key,
-        "%" + key + "%",
-        "%" + key + "%",
-        "%" + key + "%",
-        fromDate,
-        toDate,
-        calculateStart(page),
-      ]
-    );
+    // const results = await query(
+    //   "SELECT hethonggaran.order.* " +
+  //     " FROM hethonggaran.order " +
+  //     " join hethonggaran.customer on hethonggaran.customer.customerId = hethonggaran.order.customerId  " +
+  //     " where (hethonggaran.order.orderId  = ? " +
+  //     " or hethonggaran.order.customerId = ? " +
+  //     " or hethonggaran.customer.name like ? " +
+  //     " or hethonggaran.customer.phone like ? " +
+  //     " or hethonggaran.customer.email like ? )" +
+  //     " and hethonggaran.order.orderTime >= ? and hethonggaran.order.orderTime <= ?" +
+  //     " order by hethonggaran.order.orderTime DESC limit 10 OFFSET ?",
+    //   [
+    //     key,
+    //     key,
+    //     "%" + key + "%",
+    //     "%" + key + "%",
+    //     "%" + key + "%",
+    //     fromDate,
+    //     toDate,
+    //     calculateStart(page),
+    //   ]
+    // );
 
+    const sp = "CALL getListOrderRangeDate(?, ?, ?, ?)";
+    const results = await query(sp, [
+      key,
+      calculateStart(page),
+      fromDate,
+      toDate,
+    ]);
     return results;
   } catch (error) {
     console.error("Error executing query:", error);
@@ -88,20 +97,22 @@ Order.getListOrderRangeDate = async function (key, page, fromDate, toDate) {
 
 Order.getTotalOrder = async function (key) {
   try {
-    const results = await query(
-      "SELECT COUNT(*) AS total from (" +
-      "  SELECT hethonggaran.order.*" +
-      "  FROM hethonggaran.order" +
-      "  JOIN hethonggaran.customer ON hethonggaran.customer.customerId = hethonggaran.order.customerId" +
-      "  WHERE hethonggaran.order.orderId = ?" +
-      "     OR hethonggaran.order.customerId = ?" +
-      "     OR hethonggaran.customer.name LIKE ?" +
-      "     OR hethonggaran.customer.phone LIKE ?" +
-      "     OR hethonggaran.customer.email LIKE ?" +
-      "  ORDER BY orderTime DESC ) as listOrder;",
-      [key, key, "%" + key + "%", "%" + key + "%", "%" + key + "%"]
-    );
+    // const results = await query(
+    //   "SELECT COUNT(*) AS total from (" +
+  //     "  SELECT hethonggaran.order.*" +
+  //     "  FROM hethonggaran.order" +
+  //     "  JOIN hethonggaran.customer ON hethonggaran.customer.customerId = hethonggaran.order.customerId" +
+  //     "  WHERE hethonggaran.order.orderId = ?" +
+  //     "     OR hethonggaran.order.customerId = ?" +
+  //     "     OR hethonggaran.customer.name LIKE ?" +
+  //     "     OR hethonggaran.customer.phone LIKE ?" +
+  //     "     OR hethonggaran.customer.email LIKE ?" +
+  //     "  ORDER BY orderTime DESC ) as listOrder;",
+    //   [key, key, "%" + key + "%", "%" + key + "%", "%" + key + "%"]
+    // );
 
+    const sp = "CALL getTotalOrder(?)";
+    const results = await query(sp, key);
     return results;
   } catch (error) {
     console.error("Error executing query:", error);
@@ -111,29 +122,31 @@ Order.getTotalOrder = async function (key) {
 
 Order.getTotalOrderRangeDate = async function (key, fromDate, toDate) {
   try {
-    const results = await query(
-      "SELECT COUNT(*) AS total from (" +
-      " SELECT hethonggaran.order.*" +
-      " FROM hethonggaran.order" +
-      " JOIN hethonggaran.customer ON hethonggaran.customer.customerId = hethonggaran.order.customerId" +
-      " WHERE (hethonggaran.order.orderId = ?" +
-      "   OR hethonggaran.order.customerId = ?" +
-      "   OR hethonggaran.customer.name LIKE ?" +
-      "   OR hethonggaran.customer.phone LIKE ?" +
-      "   OR hethonggaran.customer.email LIKE ? )" +
-      " and hethonggaran.order.orderTime >= ? and hethonggaran.order.orderTime <= ?" +
-      " ORDER BY orderTime DESC ) as listOrder;",
-      [
-        key,
-        key,
-        "%" + key + "%",
-        "%" + key + "%",
-        "%" + key + "%",
-        fromDate,
-        toDate,
-      ]
-    );
+    // const results = await query(
+    //   "SELECT COUNT(*) AS total from (" +
+  //     " SELECT hethonggaran.order.*" +
+  //     " FROM hethonggaran.order" +
+  //     " JOIN hethonggaran.customer ON hethonggaran.customer.customerId = hethonggaran.order.customerId" +
+  //     " WHERE (hethonggaran.order.orderId = ?" +
+  //     "   OR hethonggaran.order.customerId = ?" +
+  //     "   OR hethonggaran.customer.name LIKE ?" +
+  //     "   OR hethonggaran.customer.phone LIKE ?" +
+  //     "   OR hethonggaran.customer.email LIKE ? )" +
+  //     " and hethonggaran.order.orderTime >= ? and hethonggaran.order.orderTime <= ?" +
+  //     " ORDER BY orderTime DESC ) as listOrder;",
+    //   [
+    //     key,
+    //     key,
+    //     "%" + key + "%",
+    //     "%" + key + "%",
+    //     "%" + key + "%",
+    //     fromDate,
+    //     toDate,
+    //   ]
+    // );
 
+    const sp = "CALL getTotalOrderRangeDate(?, ?, ?)";
+    const results = await query(sp, [key, fromDate, toDate]);
     return results;
   } catch (error) {
     console.error("Error executing query:", error);
