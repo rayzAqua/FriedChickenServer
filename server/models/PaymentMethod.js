@@ -20,4 +20,14 @@ PaymentMethod.getById = async function (paymentMethodId) {
   }
 };
 
+PaymentMethod.getAll = async function () {
+  try {
+    const results = await query("SELECT * FROM hethonggaran.paymentmethod ");
+    return results;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw error;
+  }
+};
+
 export default PaymentMethod;
