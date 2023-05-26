@@ -10,14 +10,16 @@ const OrderDetail = function (orderDetail) {
 
 OrderDetail.getByOrderId = async function (orderId) {
   try {
-    const results = await query(
-      "SELECT orderdetail.*, food.*" +
-        " FROM orderdetail" +
-        " JOIN food ON orderdetail.foodId = food.foodId" +
-        " WHERE orderdetail.orderId = ?",
-      [orderId]
-    );
+    // const results = await query(
+    //   "SELECT orderdetail.*, food.*" +
+    //     " FROM orderdetail" +
+    //     " JOIN food ON orderdetail.foodId = food.foodId" +
+    //     " WHERE orderdetail.orderId = ?",
+    //   [orderId]
+    // );
 
+    const sp = "CALL sp_get_order_by_id(?)";
+    const results = await query(sp, orderId);
     return results;
   } catch (error) {
     console.error("Error executing query:", error);
