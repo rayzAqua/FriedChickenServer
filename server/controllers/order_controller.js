@@ -1,7 +1,7 @@
 import { response } from "express";
 import Customer from "../models/Customer.js";
 import Food from "../models/Food.js";
-import FoodstockHistory from "../models/Foodstockhistory.js";
+import FoodstockHistory from "../models/FoodstockHistory.js";
 import IngredientStockHistory from "../models/IngredientStockHistory.js";
 import Order from "../models/Order.js";
 import OrderDetail from "../models/OrderDetail.js";
