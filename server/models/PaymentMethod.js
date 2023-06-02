@@ -8,11 +8,13 @@ const PaymentMethod = function (paymentMethod) {
 
 PaymentMethod.getById = async function (paymentMethodId) {
   try {
-    const results = await query(
-      "SELECT * FROM hethonggaran.paymentmethod WHERE paymentMethodId =?;",
-      [paymentMethodId]
-    );
+    // const results = await query(
+    //   "SELECT * FROM hethonggaran.paymentmethod WHERE paymentMethodId =?;",
+    //   [paymentMethodId]
+    // );
 
+    const sp = "CALL sp_get_paymentMethod_by_id(?);";
+    const point = await query(sp, [paymentMethodId]);
     return results;
   } catch (error) {
     console.error("Error executing query:", error);
@@ -22,7 +24,10 @@ PaymentMethod.getById = async function (paymentMethodId) {
 
 PaymentMethod.getAll = async function () {
   try {
-    const results = await query("SELECT * FROM hethonggaran.paymentmethod ");
+    // const results = await query("SELECT * FROM hethonggaran.paymentmethod ");
+
+    const sp = "CALL sp_get_all_paymentMethod();";
+    const point = await query(sp);
     return results;
   } catch (error) {
     console.error("Error executing query:", error);

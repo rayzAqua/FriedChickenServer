@@ -11,11 +11,13 @@ const FoodstockHistory = function (foodstockhistory) {
 
 FoodstockHistory.getById = async function (foodId) {
   try {
-    const results = await query(
-      "SELECT * FROM hethonggaran.foodstockhistory WHERE foodId =?;",
-      [foodId]
-    );
+    // const results = await query(
+    //   "SELECT * FROM hethonggaran.foodstockhistory WHERE foodId =?;",
+    //   [foodId]
+    // );
 
+    const sp = "call sp_get_foodStockHistory_by_foodId(?)";
+    const results = await query(sp, [foodId]);
     return results;
   } catch (error) {
     console.error("Error executing query:", error);

@@ -42,10 +42,9 @@ class Food {
 
   static async getById(foodId) {
     try {
-      const results = await query(
-        "SELECT * FROM hethonggaran.food WHERE foodId =?;",
-        [foodId]
-      );
+      const results = await query("SELECT * FROM food WHERE foodId =?;", [
+        foodId,
+      ]);
 
       return results;
     } catch (error) {
@@ -66,7 +65,7 @@ class Food {
       // );
 
       const sp = "call getIngredientOfFood(?)";
-      const results = await query(sp, foodId);
+      const results = await query(sp, [foodId]);
       return results;
     } catch (error) {
       console.error("Error executing query:", error);
