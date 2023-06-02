@@ -14,7 +14,7 @@ const User = function (user) {
 
 User.getByEmail = async function (email) {
   try {
-    const results = await query("SELECT * FROM USER WHERE email = ?", [email]);
+    const results = await query("SELECT * FROM user WHERE email = ?", [email]);
     console.log(results[0]);
     return results[0];
   } catch (error) {
