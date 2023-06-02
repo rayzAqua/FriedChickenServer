@@ -6,11 +6,11 @@ dotenv.config();
 
 // Kết nối đến MySQL.
 export const connecting = mysql.createConnection({
-  host: process.env.MYSQLHOST,
-  user: process.env.MYSQLUSER,
-  password: process.env.MYSQLPASSWORD,
-  database: process.env.MYSQLDATABASE,
-  port: process.env.MYSQLPORT,
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
+  port: process.env.PORT,
 });
 
 // Chuyển đổi hàm callback-based thành promise-based function để xử lý bất đồng bộ.
