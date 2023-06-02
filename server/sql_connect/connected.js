@@ -6,7 +6,7 @@ dotenv.config();
 
 // Kết nối đến MySQL.
 export const connecting = mysql.createConnection({
-  host: process.env.HOST,
+  host: process.env.MYSQL_URL,
   user: process.env.USER,
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
