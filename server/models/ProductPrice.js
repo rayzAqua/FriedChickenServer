@@ -67,7 +67,7 @@ ProductPrice.getListByProductId = async function (productId, page) {
         " FROM railway.pricelist " +
         " join railway.productprice on pricelist.priceId = productprice.priceListId" +
         " where productprice.productId = ?" +
-        " order by productprice.createdDate" +
+        " order by productprice.createdDate DESC" +
         " limit 10 offset ?;",
       [productId, page]
     );
