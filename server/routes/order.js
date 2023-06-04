@@ -7,6 +7,6 @@ orderRouter.get("/list", authenticateToken, OrderController.getList);
 orderRouter.post("/create", authenticateToken, OrderController.create);
 
 // CACULATE POINT
-orderRouter.get("/calculate-point", OrderController.calculatePoint);
+orderRouter.get("/calculate-point", authenticateToken, OrderController.calculatePoint);
 
 export default orderRouter;

@@ -37,7 +37,7 @@ app.use((err, req, res, next) => {
 // Kết nối đến Database!
 connecting.connect((err) => {
     if (err) {
-        console.log("Can't not connect to Database!")
+        console.log("Can't connect to Database!")
         console.log(err.stack)
         return
     }

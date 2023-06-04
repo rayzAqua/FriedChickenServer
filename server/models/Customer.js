@@ -12,11 +12,13 @@ const Customer = function (customer) {
 
 Customer.getById = async function (customerId) {
   try {
-    const results = await query(
-      "SELECT * FROM hethonggaran.customer WHERE customerId =?;",
-      [customerId]
-    );
+    // const results = await query(
+    //   "SELECT * FROM hethonggaran.customer WHERE customerId =?;",
+    //   [customerId]
+    // );
 
+    const sp = "CALL sp_get_customer_by_id(?)";
+    const results = await query(sp, [customerId]);
     return results;
   } catch (error) {
     console.error("Error executing query:", error);
@@ -27,9 +29,7 @@ Customer.getById = async function (customerId) {
 Customer.updatePoint = async function (point, customerId) {
   try {
     const results = await query(
-      "update hethonggaran.customer" +
-        " set point = ?" +
-        " where customerId  =?;",
+      "update customer" + " set point = ?" + " where customerId  =?;",
       [point, customerId]
     );
 

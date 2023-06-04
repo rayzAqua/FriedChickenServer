@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/add", authenticateToken, createCustomer);
 
 // GET LIST CUSTOMERS
-router.get("/list", getCustomerList);
+router.get("/list", authenticateToken, getCustomerList);
 
 
 export default router;

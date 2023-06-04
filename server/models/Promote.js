@@ -12,11 +12,13 @@ const Promote = function (promote) {
 
 Promote.getById = async function (promoteId) {
   try {
-    const results = await query(
-      "SELECT * FROM hethonggaran.promotion WHERE promoteId =?;",
-      [promoteId]
-    );
+    // const results = await query(
+    //   "SELECT * FROM hethonggaran.promotion WHERE promoteId =?;",
+    //   [promoteId]
+    // );
 
+    const sp = "CALL sp_get_promote_by_id();";
+    const point = await query(sp, [promoteId]);
     return results;
   } catch (error) {
     console.error("Error executing query:", error);
@@ -26,8 +28,10 @@ Promote.getById = async function (promoteId) {
 
 Promote.getAll = async function () {
   try {
-    const results = await query("SELECT * FROM hethonggaran.promotion ");
+    // const results = await query("SELECT * FROM hethonggaran.promotion ");
 
+    const sp = "CALL sp_get_all_promote();";
+    const point = await query(sp);
     return results;
   } catch (error) {
     console.error("Error executing query:", error);

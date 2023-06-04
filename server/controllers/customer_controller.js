@@ -1,54 +1,81 @@
 import Customer from "../models/Customer.js";
+import { isAlphabeticString, isNumericString } from "../utils/checkInput.js";
 import { createError } from "../utils/createError.js";
 
 // CREATE CUSTOMER
 export const createCustomer = async (req, res, next) => {
 
-    const name = req.query.name;
-    const phone = req.query.phone;
-    const email = req.query.email || null;
-    const address = req.query.address || null;
+    const name = req.body.name;
+    const phone = req.body.phone;
+    const email = req.body.email || null;
+    const address = req.body.address || null;
 
-    console.log(name, phone, email, address);
+    // console.log(name, phone, email, address);
+
+    const response = {
+        state: true,
+        message: "Tạo mới khách hàng thành công!",
+    }
 
     // Hai trường không được phép null
     if (name && phone) {
-        try {
-            // Tạo mới khách hàng từ thông tin của req
-            const newCustomer = await Customer.createCustomer(name, phone, email, address);
-            // Lọc lại dữ liệu trả về sau khi tạo mới khách hàng.
-            const filterNewCustomer = Array.isArray(newCustomer[0]) ? newCustomer[0] : [newCustomer[0]];
-            console.log(filterNewCustomer);
+        // Kiểm tra name có chứa ký tự a-z hoặc A-Z không. Nếu có thì tiếp tục xử lý. Nếu không thì báo lỗi.
+        if (isAlphabeticString(name)) {
+            // Kiểm tra xem có phone có kí tự khác ngoài ký tự số nguyên từ 0-9 không. Nếu không thì tiếp tục xử lý.
+            // Nếu có thì báo lỗi.
+            if (isNumericString(phone)) {
+                // Kiểm tra xem độ dài chuỗi sđt có đúng là 10 số không. Nếu đúng thì tiếp tục xử lý. Nếu không thì báo lỗi.
+                if (phone.length === 10) {
+                    try {
+                        // Tạo mới khách hàng từ thông tin của req
+                        const newCustomer = await Customer.createCustomer(name, phone, email, address);
+                        // Lọc lại dữ liệu trả về sau khi tạo mới khách hàng.
+                        const filterNewCustomer = Array.isArray(newCustomer[0]) ? newCustomer[0] : [newCustomer[0]];
+                        console.log(filterNewCustomer);
 
-            // Kiểm tra xem filterNewCustomer có rỗng không, nếu nó rỗng thì nghĩa là tạo mới khách hàng thất bại.
-            // Còn nếu không thì trả về thông tin khách hàng vừa tạo cho client
-            if (filterNewCustomer.length > 0) {
-                res.status(200).json({
-                    state: true,
-                    message: "Tạo mới khách hàng thành công!",
-                    data: filterNewCustomer,
-                });
+                        // Kiểm tra xem filterNewCustomer có rỗng không, nếu nó rỗng thì nghĩa là tạo mới khách hàng thất bại.
+                        // Còn nếu không thì trả về thông tin khách hàng vừa tạo cho client
+                        if (filterNewCustomer.length > 0) {
+                            response.data = filterNewCustomer;
+                            res.status(200);
+                        }
+                        // Trả về thông báo lỗi.
+                        else {
+                            response.state = false;
+                            response.message = "Tạo mới khách hàng không thành công!";
+                            response.data = filterNewCustomer;
+                            res.status(500);
+                        }
+                    } catch (err) {
+                        next(err);
+                    }
+                } else {
+                    response.state = false;
+                    response.message = "Số điện thoại chỉ chứa ký tự số từ 0-9!";
+                    response.data = [];
+                    res.status(400);
+                }
+            } else {
+                response.state = false;
+                response.message = "Số điện thoại phải có 10 chữ số!";
+                response.data = [];
+                res.status(400);
             }
-            // Trả về thông báo lỗi.
-            else {
-                res.status(500).json({
-                    state: false,
-                    message: "Tạo mới khách hàng không thành công!",
-                    data: filterNewCustomer,
-                });
-            }
-        } catch (err) {
-            next(err);
+        } else {
+            response.state = false;
+            response.message = "Tên không chứa ký tự số và ký tự đặc biệt!";
+            response.data = [];
+            res.status(400);
         }
     }
     // Trả về thông báo lỗi!
     else {
-        res.status(400).json({
-            state: false,
-            message: "Không được bỏ trống thông tin tên và số điện thoại!",
-            data: [],
-        })
+        response.state = false;
+        response.message = "Không được bỏ trống thông tin tên và số điện thoại!";
+        response.data = [];
+        res.status(400);
     }
+    res.json(response);
 }
 
 // GET CUSTOMER LIST

@@ -10,6 +10,7 @@ export const connecting = mysql.createConnection({
   user: process.env.USER,
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
+  port: process.env.PORT,
 });
 
 // Chuyển đổi hàm callback-based thành promise-based function để xử lý bất đồng bộ.

@@ -13,7 +13,7 @@ const IngredientStockHistory = function (ingredientstockhistory) {
 IngredientStockHistory.getByIngredientId = async function (ingredientId) {
   try {
     const results = await query(
-      "SELECT * FROM hethonggaran.ingredientstockhistory WHERE ingredientId =?;",
+      "SELECT * FROM ingredientstockhistory WHERE ingredientId =?;",
       [ingredientId]
     );
 
