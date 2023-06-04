@@ -47,4 +47,36 @@ ProductPrice.checkDuplicate = async function (productId) {
   }
 };
 
+ProductPrice.getListByProductId = async function (productId, page) {
+  try {
+    const results = await query(
+      "SELECT  productprice.id, " +
+        " productprice.productId, " +
+        " productprice.priceListId, " +
+        " productprice.createdDate as 'productPriceCreatedDate'," +
+        " productprice.createdUser as 'productPriceCreatedUser'," +
+        " productprice.updatedDate as 'productPriceUpdatedDate'," +
+        " productprice.updatedUser as 'productPriceUpdatedUser'," +
+        "    pricelist.type," +
+        "    pricelist.startDate," +
+        "    pricelist.enddate," +
+        "    pricelist.createdDate as 'priceListCreatedDate'," +
+        "    pricelist.createdUser as 'priceListCreatedUser'," +
+        "    pricelist.updatedDate as 'priceListUpdatedDate'," +
+        "     pricelist.updatedUser as 'priceListUpdatedUser'  " +
+        " FROM railway.pricelist " +
+        " join railway.productprice on pricelist.priceId = productprice.priceListId" +
+        " where productprice.productId = ?" +
+        " order by productprice.createdDate" +
+        " limit 10 offset ?;",
+      [productId, page]
+    );
+
+    return results;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw error;
+  }
+};
+
 export default ProductPrice;

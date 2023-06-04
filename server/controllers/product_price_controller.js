@@ -9,7 +9,41 @@ import Promote from "../models/Promote.js";
 import message from "../utils/message.js";
 import Pricelist from "../models/Pricelist.js";
 import ProductPrice from "../models/ProductPrice.js";
+import User from "../models/User.js";
+import calculateStart, { calculateTotal } from "../utils/calculateStart.js";
 
+async function getMoreInfoProductPrice(res, result, page, totalPage) {
+  const userPromises = [];
+
+  // Loop through each tour productPrice and call User.getById for its ID
+  result.forEach((productPrice) => {
+    userPromises.push(User.getById(productPrice.productPriceCreatedUser));
+  });
+
+  try {
+    const [userResponses] = await Promise.all([Promise.all(userPromises)]);
+    const nowDate = new Date();
+    result.map((productPrice, index) => {
+      productPrice["userNameCreated"] = userResponses[index]["name"];
+      const startDate = productPrice["startDate"];
+      const endDate = productPrice["enddate"];
+      if (startDate <= nowDate && endDate <= nowDate) {
+        productPrice["isActive"] = true;
+      } else productPrice["isActive"] = false;
+    });
+
+    res.send(
+      message(true, "Lấy dữ liệu thành công!", [
+        { productPrice: result },
+        { currentPage: page },
+        { totalPage: totalPage },
+      ])
+    );
+  } catch (error) {
+    console.log(error);
+    return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
+  }
+}
 class ProductPriceController {
   //[POST] /product-price/add
   async create(req, res, next) {
@@ -53,6 +87,25 @@ class ProductPriceController {
       await ProductPrice.create(productId, priceListId, price, userId);
 
       return res.send(message(true, "Thêm giá sản phẩm thành công!", ""));
+    } catch (error) {
+      console.log(error);
+      return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
+    }
+  }
+
+  //GET /product-price/list
+  async getList(req, res, next) {
+    const foodId = req.query.foodId;
+    const page = req.query.page | 1;
+    try {
+      const productPrice = await ProductPrice.getListByProductId(
+        foodId,
+        calculateStart(page)
+      );
+
+      const totalPage = calculateTotal(productPrice.length);
+      getMoreInfoProductPrice(res, productPrice, page, totalPage);
+      // return res.send(message(true, "Lấy dữ liệu thành công!", productPrice));
     } catch (error) {
       console.log(error);
       return res.send(message(false, "Lấy dữ liệu thất bại!", ""));

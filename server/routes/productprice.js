@@ -9,4 +9,10 @@ productPriceRouter.post(
   ProductPriceController.create
 );
 
+productPriceRouter.get(
+  "/list",
+  authenticateToken,
+  ProductPriceController.getList
+);
+
 export default productPriceRouter;

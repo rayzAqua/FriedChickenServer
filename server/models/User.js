@@ -15,7 +15,20 @@ const User = function (user) {
 User.getByEmail = async function (email) {
   try {
     const results = await query("SELECT * FROM user WHERE email = ?", [email]);
-    console.log(results[0]);
+
+    return results[0];
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw error;
+  }
+};
+
+User.getById = async function (userId) {
+  try {
+    const results = await query("SELECT * FROM user WHERE userId = ?", [
+      userId,
+    ]);
+
     return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
