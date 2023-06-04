@@ -14,8 +14,10 @@ const User = function (user) {
 
 User.getByEmail = async function (email) {
   try {
-    const results = await query("SELECT * FROM user WHERE email = ?", [email]);
+    // const results = await query("SELECT * FROM user WHERE email = ?", [email]);
 
+    const sp = "CALL get_user_by_email(?);";
+    const results = await query(sp, [email]);
     return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
@@ -25,10 +27,12 @@ User.getByEmail = async function (email) {
 
 User.getById = async function (userId) {
   try {
-    const results = await query("SELECT * FROM user WHERE userId = ?", [
-      userId,
-    ]);
+    // const results = await query("SELECT * FROM user WHERE userId = ?", [
+    //   userId,
+    // ]);
 
+    const sp = "CALL sp_get_user_by_id(?);";
+    const results = await query(sp, [userId]);
     return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
