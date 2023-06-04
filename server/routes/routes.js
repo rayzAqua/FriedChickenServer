@@ -5,6 +5,7 @@ import customerRouter from "./customer.js";
 import promotionRouter from "./promotion.js";
 import ingredientRouter from "./ingredient.js";
 import productPriceRouter from "./productprice.js";
+import priceListRouter from "./pricelist.js";
 
 const routeHieuLe = (app) => {
   // Route của Hiếu Lê
@@ -21,6 +22,7 @@ const routeHieuPhan = (app) => {
   app.use("/promotion", promotionRouter);
   app.use("/payment-method", promotionRouter);
   app.use("/product-price", productPriceRouter);
+  app.use("/price-list", priceListRouter);
 };
 
 const routeTuanKiet = (app) => {
