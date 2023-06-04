@@ -147,7 +147,7 @@ Order.getTotalOrderRangeDate = async function (key, fromDate, toDate) {
     //   ]
     // );
 
-    const sp = "CALL getTotalOrderRangeDate(?, ?, ?)";
+    const sp = "CALL getTotalOrderRangeDate(?, ?, ?);";
     const results = await query(sp, [key, fromDate, toDate]);
     return results;
   } catch (error) {
@@ -170,7 +170,7 @@ Order.create = async function (
     //   [totalMoney, createdUser, customerId, promoteId, paymentMethodId]
     // );
 
-    const sp = "call sp_insert_order(?, ?, ?, ?, ?)";
+    const sp = "call sp_insert_order(?, ?, ?, ?, ?);";
     const results = await query(sp, [
       totalMoney,
       createdUser,

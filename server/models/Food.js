@@ -24,7 +24,7 @@ class Food {
     off_set
   ) {
     try {
-      const sp = "CALL sp_get_food_list(?, ?, ?, ?, ?, ?)";
+      const sp = "CALL sp_get_food_list(?, ?, ?, ?, ?, ?);";
       const foods = await query(sp, [
         foodId,
         foodName,
@@ -42,10 +42,12 @@ class Food {
 
   static async getById(foodId) {
     try {
-      const results = await query("SELECT * FROM food WHERE foodId =?;", [
-        foodId,
-      ]);
+      // const results = await query("SELECT * FROM food WHERE foodId =?;", [
+      //   foodId,
+      // ]);
 
+      const sp = "call sp_get_food_by_foodID(?);";
+      const results = await query(sp, [foodId]);
       return results;
     } catch (error) {
       console.error("Error executing query:", error);
@@ -64,7 +66,7 @@ class Food {
       //   [foodId]
       // );
 
-      const sp = "call getIngredientOfFood(?)";
+      const sp = "call getIngredientOfFood(?);";
       const results = await query(sp, [foodId]);
       return results;
     } catch (error) {

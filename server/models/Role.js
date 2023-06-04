@@ -18,7 +18,7 @@ Role.getListRoleByUserId = async function (userId) {
     //   [userId]
     // );
 
-    const sp = "CALL sp_get_list_role_by_id(?)";
+    const sp = "CALL sp_get_list_role_by_id(?);";
     const results = await query(sp, [userId]);
     return results;
   } catch (error) {
