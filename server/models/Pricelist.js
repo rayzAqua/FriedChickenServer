@@ -38,7 +38,7 @@ Pricelist.getList = async function (page) {
     //   [page]
     // );
 
-    const sp = "sp_get_list_priceList(?);";
+    const sp = "call sp_get_list_priceList(?);";
     const results = await query(sp, [page]);
     return results;
   } catch (error) {
