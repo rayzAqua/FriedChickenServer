@@ -4,25 +4,12 @@ import { createError } from "../utils/createError.js"
 export const getFoodList = async (req, res, next) => {
 
     const foodId = req.query.foodId || null;
-    const foodName = req.query.foodName || null;
-    const categoryName = req.query.categoryName || null;
+    const k3y = req.query.key || null;
     const categoryId = req.query.categoryId || null;
     // Giới hạn số lượng mẫu dữ liệu trả về cho một trang. Ở đây page_limit = 10 nghĩa là một trang chỉ có 10 mẫu dữ liệu.
     const page_limit = 10;
     // Số trang được truyền từ endpoint, mặc định là 1.
     const page = Number(req.query.page) || 1;
-
-    // 1 trang sẽ có 10 mẫu dữ liệu.
-    // 10 trang sẽ có 100 mãu dữ liệu.
-    // trang sẽ được truyền vào từ query
-    // ví dụ: có 30 mẫu dữ liệu. => total_page = 3.
-    // Khi page = 1  thì tính toán offset = 0 để lấy từ 0-9
-    // khi page = 2  thì tính toán offset = 10 để lấy từ 10-19
-    // Tương tư với page = 3 thì tính toán offset = 20 để lấy từ 20-29
-    // Vậy offset = (page - 1)*10
-    // Vậy cứ mỗi lần độ dài của mảng filterFoodArray = 10 thì là một trang.
-    // Để tính toán được tổng số trang cần phải biết được có tổng cộng bao nhiêu mẫu dữ liệu food có trong mảng.
-    // ví dụ có 30 mẫu thì chia cho giới hạn mỗi trang là 10 là sẽ được totalPage = 3.
 
     // Tính toán lại giá trị bắt đầu của offset dựa vào page.
     // page = 1, page_limit = 10. Điều này nghĩa là lấy từ vị trí 0-9. Như vậy offset có chỉ số bắt đầu là 0. 
@@ -35,7 +22,7 @@ export const getFoodList = async (req, res, next) => {
     try {
 
         // Truy vấn lấy thức ăn theo Id
-        const getFood = await Food.getFoodList(foodId, foodName, categoryName, categoryId, page_limit, off_set);
+        const getFood = await Food.getFoodList(foodId, k3y, categoryId, page_limit, off_set);
         // Vì kết quả là một mảng chứa 2 giá trị là mảng đối tượng cần tìm và các thông tin liên quan đến truy vấn SQL
         // nên cần lọc lại mảng getFood và chỉ lấy mảng đối tượng food.        
         const filterFoodArray = Array.isArray(getFood[0]) ? getFood[0] : [getFood[0]];
@@ -43,7 +30,7 @@ export const getFoodList = async (req, res, next) => {
         // Lấy tổng số mẫu dữ liệu có trong bảng food, từ tổng số mẫu dữ liệu suy ra được tổng số trang.
         const totalFoods = Array.isArray(getFood[1]) ? getFood[1] : [getFood[1]];
         // Tính toán tổng số trang dựa trên tổng số mẫu dữ liệu có trong bảng food.
-        const total_page = foodId ? 0 : Math.ceil(totalFoods[0].total_foods / page_limit);
+        const total_page = Math.ceil(totalFoods[0].total_rows / page_limit);
 
         // Tạo ra đối tượng response để gửi phản hồi.
         const response = {
@@ -65,16 +52,30 @@ export const getFoodList = async (req, res, next) => {
                 }
             });
 
-            // Output: Nếu là truy vấn theo foodId hoặc foodName chỉ đích danh cụ thể thì không trả về page.
-            if (foodId || (foodName && foods.length === 1)) {
+            // Output: Nếu là truy vấn theo foodId thì không trả về page.
+            if (foodId) {
                 response.data = foods;
                 res.status(200);
-            } else {
-                response.data = {
-                    list_food: foods,
-                    current_page: page,
-                    total_page: total_page,
-                };
+            }
+            // Nếu chiều dài mảng food bằng 1 thì kiểm tra xem có rơi vào hai trường hợp sau không:
+            // TH1: k3y = tên đích danh của món ăn -> trả về một món ăn duy nhất -> không phân trang.
+            // TH2: k3y = categoryId và category này chỉ có một món ăn duy nhất -> trả về một món ăn -> không phân trang.
+            // TH2: k3y = tên cụ thể của một category và category này chỉ có một món ăn duy nhất -> trả về một món -> không phân trang. 
+            else if (foods.length === 1) {
+                if (
+                    (k3y && foods[0].name.toLowerCase().includes(k3y.toLowerCase())) ||
+                    categoryId ||
+                    (k3y && foods[0].category.categoryName.toLowerCase().includes(k3y.toLowerCase()))
+                ) {
+                    response.data = foods;
+                    res.status(200);
+                }
+            }
+            // Nếu không thuộc các TH trên thì phân trang bình thường.
+            else {
+                response.data = foods;
+                response.current_page = page;
+                response.total_page = total_page;
                 res.status(200);
             }
         } else {
