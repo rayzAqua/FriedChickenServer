@@ -52,7 +52,6 @@ Customer.createCustomer = async function (name, phone, email, address) {
     return newCustomer;
   } catch (err) {
     console.log("Error executing query: ", err);
-    throw err;
   }
 };
 

@@ -16,7 +16,7 @@ export const createCustomer = async (req, res, next) => {
         state: true,
         message: "Tạo mới khách hàng thành công!",
     }
-
+    
     // Hai trường không được phép null
     if (name && phone) {
         // Kiểm tra name có chứa ký tự a-z hoặc A-Z không. Nếu có thì tiếp tục xử lý. Nếu không thì báo lỗi.
@@ -30,7 +30,7 @@ export const createCustomer = async (req, res, next) => {
                         // Tạo mới khách hàng từ thông tin của req
                         const newCustomer = await Customer.createCustomer(name, phone, email, address);
                         // Lọc lại dữ liệu trả về sau khi tạo mới khách hàng.
-                        const filterNewCustomer = Array.isArray(newCustomer[0]) ? newCustomer[0] : [newCustomer[0]];
+                        const filterNewCustomer = newCustomer ? (Array.isArray(newCustomer[0]) ? newCustomer[0] : [newCustomer[0]]) : [];
                         console.log(filterNewCustomer);
 
                         // Kiểm tra xem filterNewCustomer có rỗng không, nếu nó rỗng thì nghĩa là tạo mới khách hàng thất bại.
