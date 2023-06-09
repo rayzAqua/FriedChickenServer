@@ -1,4 +1,5 @@
 import { connecting, query } from "../sql_connect/connected.js";
+import { createError } from "../utils/createError.js";
 
 const Customer = function (customer) {
   this.customerId = customer.customerId;
@@ -42,38 +43,43 @@ Customer.updatePoint = async function (point, customerId) {
   }
 };
 
+// Truy vấn khách hàng theo email hoặc sđt
+Customer.getCustomerByEmailPhone = async function (phone, email) {
+  try {
+    const sp = "CALL sp_get_customer_by_emailphone(?, ?);";
+    const existedCustomer = await query(sp, [phone, email]);
+    return existedCustomer;
+  } catch (err) {
+    console.error("Error executing query: ", err);
+  }
+}
+
 // Thực thi sp tạo mới khách hàng.
 Customer.createCustomer = async function (name, phone, email, address) {
   try {
-    // Câu truy vấn gọi sp_create_customer với 4 tham số truyền vào.
     const sp = "CALL sp_create_customer(?, ?, ?, ?);";
-    // Gọi đến sp_create_customer và truyền 4 tham số name, phone, email, address vào để tiến hành tạo mới khách hàng.
     const newCustomer = await query(sp, [name, phone, email, address]);
     return newCustomer;
   } catch (err) {
-    console.log("Error executing query: ", err);
+    console.error("Error executing query: ", err);
   }
 };
 
 // Lấy danh sách khách hàng
 Customer.getCustomerList = async function (
   customerId,
-  name,
-  phone,
-  email,
+  k3y,
   page_limit,
   off_set
 ) {
   try {
     // Câu truy vấn gọi sp_get_customer_list với 6 tham số truyền vào.
-    const sp = "CALL sp_get_customer_list(?, ?, ?, ?, ?, ?);";
+    const sp = "CALL sp_get_customer_list(?, ?, ?, ?);";
     // Thực thi sp_get_cusotmer_list với 6 tham số customerId, name, phone, email, page_limit, off_set để tiến hành lấy về danh sách
     // các khách hàng.
     const customers = await query(sp, [
       customerId,
-      name,
-      phone,
-      email,
+      k3y,
       page_limit,
       off_set,
     ]);
