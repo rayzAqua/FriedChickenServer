@@ -7,7 +7,7 @@ const router = express.Router();
 // CREATE
 
 // GET INGREDIENT LIST
-router.get("/list", authenticateToken, getIngredientList);
+router.get("/list", getIngredientList);
 
 
 export default router;
