@@ -44,12 +44,16 @@ export const getFoodList = async (req, res, next) => {
         if (filterFoodArray.length > 0) {
             // Định dạng lại dữ liệu của các đối tượng food có trong mảng filterFoodArray để làm output.
             const foods = filterFoodArray.map((food) => {
-                const { categoryId, categoryName, ...otherDetails } = food;
+                const { categoryId, categoryName, foodPrice, type, ...otherDetails } = food;
                 return {
                     ...otherDetails,
                     category: {
                         categoryId: categoryId,
                         categoryName: categoryName,
+                    },
+                    currentPrice: {
+                        price: foodPrice,
+                        type: type,
                     }
                 }
             });

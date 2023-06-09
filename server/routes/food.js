@@ -7,7 +7,7 @@ const router = express.Router();
 // CREATE
 
 // GET FOOD LIST
-router.get("/list", getFoodList);
+router.get("/list", authenticateToken, getFoodList);
 
 
 export default router;
