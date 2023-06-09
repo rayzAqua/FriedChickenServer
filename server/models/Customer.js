@@ -65,6 +65,17 @@ Customer.createCustomer = async function (name, phone, email, address) {
   }
 };
 
+// Cập nhật thông tin khách hàng
+Customer.updateCustomer = async function (customerId, name, phone, email, address) {
+  try {
+    const sp = "CALL sp_update_customer(?, ?, ?, ?, ?);";
+    const updatedCustomer = await query(sp, [customerId, name, phone, email, address]);
+    return updatedCustomer;
+  } catch (err) {
+    console.error("Error executing query: ", err);
+  }
+}
+
 // Lấy danh sách khách hàng
 Customer.getCustomerList = async function (
   customerId,
