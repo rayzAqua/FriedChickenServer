@@ -11,3 +11,10 @@ export const isAlphabeticString = (str) => {
 
     return alphabeticRegex.test(str);
 };
+
+export const isValidateEmail = (email) => {
+    // Sử dụng biểu thức chính quy để kiểm tra chuỗi chỉ chứa ký tự alphabet a-z, A-Z, 0-9, @, .
+    const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z]+\.[a-zA-Z]+$/;
+    return emailRegex.test(email);
+};
+

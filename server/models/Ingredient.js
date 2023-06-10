@@ -27,10 +27,10 @@ class Ingredient {
     };
 
     // SP lấy danh sách nguyên liệu dựa trên các tham số truyền vào
-    static async getIngredientList(ingredientId, ingredientName, wareHouseId, page_limit, off_set) {
+    static async getIngredientList(ingredientId, k3y, wareHouseId, page_limit, off_set) {
         try {
             const sp = "CALL sp_get_ingredient_list(?, ?, ?, ?, ?);"
-            const ingredientList = await query(sp, [ingredientId, ingredientName, wareHouseId, page_limit, off_set]);
+            const ingredientList = await query(sp, [ingredientId, k3y, wareHouseId, page_limit, off_set]);
             return ingredientList;
         } catch (err) {
             console.log("Error executing query: ", err);

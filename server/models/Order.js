@@ -19,7 +19,7 @@ Order.getOrderById = async function (orderId) {
     //   [orderId]
     // );
 
-    const sp = "call sp_get_order(?)";
+    const sp = "call sp_get_order(?);";
     const results = await query(sp, [orderId]);
     return results;
   } catch (error) {
@@ -49,7 +49,7 @@ Order.getListOrder = async function (key, page) {
     //   ]
     // );
 
-    const sp = "CALL getListOrder(?, ?)";
+    const sp = "CALL getListOrder(?, ?);";
     const results = await query(sp, [key, calculateStart(page)]);
     return results;
   } catch (error) {
@@ -83,7 +83,7 @@ Order.getListOrderRangeDate = async function (key, page, fromDate, toDate) {
     //   ]
     // );
 
-    const sp = "CALL getListOrderRangeDate(?, ?, ?, ?)";
+    const sp = "CALL getListOrderRangeDate(?, ?, ?, ?);";
     const results = await query(sp, [
       key,
       calculateStart(page),
@@ -113,7 +113,7 @@ Order.getTotalOrder = async function (key) {
     //   [key, key, "%" + key + "%", "%" + key + "%", "%" + key + "%"]
     // );
 
-    const sp = "CALL getTotalOrder(?)";
+    const sp = "CALL getTotalOrder(?);";
     const results = await query(sp, [key]);
     return results;
   } catch (error) {
@@ -147,7 +147,7 @@ Order.getTotalOrderRangeDate = async function (key, fromDate, toDate) {
     //   ]
     // );
 
-    const sp = "CALL getTotalOrderRangeDate(?, ?, ?)";
+    const sp = "CALL getTotalOrderRangeDate(?, ?, ?);";
     const results = await query(sp, [key, fromDate, toDate]);
     return results;
   } catch (error) {
@@ -170,7 +170,7 @@ Order.create = async function (
     //   [totalMoney, createdUser, customerId, promoteId, paymentMethodId]
     // );
 
-    const sp = "call sp_insert_order(?, ?, ?, ?, ?)";
+    const sp = "call sp_insert_order(?, ?, ?, ?, ?);";
     const results = await query(sp, [
       totalMoney,
       createdUser,

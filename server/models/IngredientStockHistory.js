@@ -12,11 +12,13 @@ const IngredientStockHistory = function (ingredientstockhistory) {
 
 IngredientStockHistory.getByIngredientId = async function (ingredientId) {
   try {
-    const results = await query(
-      "SELECT * FROM ingredientstockhistory WHERE ingredientId =?;",
-      [ingredientId]
-    );
+    // const results = await query(
+    //   "SELECT * FROM ingredientstockhistory WHERE ingredientId =?;",
+    //   [ingredientId]
+    // );
 
+    const sp = "call sp_get_ingredientStockHistory_by_ingredientId(?);";
+    const results = await query(sp, [ingredientId]);
     return results;
   } catch (error) {
     console.error("Error executing query:", error);
