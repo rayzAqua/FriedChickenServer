@@ -19,7 +19,7 @@ Customer.getById = async function (customerId) {
 
     const sp = "CALL sp_get_customer_by_id(?)";
     const results = await query(sp, [customerId]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;

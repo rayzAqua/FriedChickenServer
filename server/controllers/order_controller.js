@@ -211,6 +211,7 @@ class OrderController {
       });
 
       //subtract price promote
+
       if (promote || null) {
         totalMoney -= (totalMoney * Number(promote[0]["discount"])) / 100;
       }
@@ -228,10 +229,14 @@ class OrderController {
       order = await Order.getOrderById(order["insertId"]);
 
       //caculate point = point current of customer + point extra from order - point subtract by promote
-      const point =
-        Number(customer[0]["point"]) +
-        Math.round(totalMoney / 3000) -
-        Number(promote[0]["requirePoint"]);
+
+      let point = Number(customer[0]["point"]) + Math.round(totalMoney / 3000);
+      console.log("customer: ", customer);
+      if (promote || null) {
+        console.log("promote");
+        point = point - Number(promote[0]["requirePoint"]);
+      }
+
       console.log(point);
 
       //update point for customer
