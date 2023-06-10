@@ -15,16 +15,16 @@ class Food {
   }
 
   // Truy vấn tìm kiếm list food theo foodId, foodName, categoryName, categoryId hoặc page.
-  static async getFoodList(
-    foodId,
-    k3y,
-    categoryId,
-    page_limit,
-    off_set
-  ) {
+  static async getFoodList(foodId, k3y, categoryId, page_limit, off_set) {
     try {
       const sp = "CALL sp_get_food_list(?, ?, ?, ?, ?);";
-      const foods = await query(sp, [foodId, k3y, categoryId, page_limit, off_set,]);
+      const foods = await query(sp, [
+        foodId,
+        k3y,
+        categoryId,
+        page_limit,
+        off_set,
+      ]);
       return foods;
     } catch (err) {
       console.log("Error executing query: ", err);
@@ -40,7 +40,7 @@ class Food {
 
       const sp = "call sp_get_food_by_foodID(?);";
       const results = await query(sp, [foodId]);
-      return results;
+      return results[0];
     } catch (error) {
       console.error("Error executing query:", error);
       throw error;

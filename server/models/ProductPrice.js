@@ -30,7 +30,7 @@ ProductPrice.create = async function (
       price,
       createdUser,
     ]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
@@ -49,7 +49,7 @@ ProductPrice.checkDuplicate = async function (productId) {
 
     const sp = "Call sp_checkDuplicate_ProductPrice(?);";
     const results = await query(sp, [productId]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
@@ -82,8 +82,8 @@ ProductPrice.getListByProductId = async function (productId, page) {
     // );
 
     const sp = "call sp_get_list_productPrice_by_productId(?, ?);";
-    const query = await query(sp, [productId, page]);
-    return results;
+    const results = await query(sp, [productId, page]);
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;

@@ -15,9 +15,6 @@ const User = function (user) {
 User.getByEmail = async function (email) {
   try {
     const results = await query("SELECT * FROM user WHERE email = ?", [email]);
-
-    // const sp = "CALL get_user_by_email(?);";
-    // const results = await query(sp, [email]);
     return results[0];
   } catch (error) {
     console.error("Error executing query:", error);

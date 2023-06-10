@@ -18,7 +18,7 @@ FoodstockHistory.getById = async function (foodId) {
 
     const sp = "call sp_get_foodStockHistory_by_foodId(?)";
     const results = await query(sp, [foodId]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
