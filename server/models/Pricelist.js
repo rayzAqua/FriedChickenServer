@@ -57,7 +57,7 @@ Pricelist.create = async function (type, startDate, endDate, userId) {
 
     const sp = "call sp_create_priceList(?,?,?,?);";
     const results = await query(sp, [type, startDate, endDate, userId]);
-    return results[0];
+    return results;
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;

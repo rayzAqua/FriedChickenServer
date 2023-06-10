@@ -178,7 +178,7 @@ Order.create = async function (
       promoteId,
       paymentMethodId,
     ]);
-    return results[0];
+    return results;
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
