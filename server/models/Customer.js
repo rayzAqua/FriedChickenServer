@@ -52,7 +52,7 @@ Customer.getCustomerByEmailPhone = async function (phone, email) {
   } catch (err) {
     console.error("Error executing query: ", err);
   }
-}
+};
 
 // Thực thi sp tạo mới khách hàng.
 Customer.createCustomer = async function (name, phone, email, address, createdTime, createdUser) {
@@ -74,7 +74,7 @@ Customer.updateCustomer = async function (customerId, name, phone, email, addres
   } catch (err) {
     console.error("Error executing query: ", err);
   }
-}
+};
 
 // Lấy danh sách khách hàng
 Customer.getCustomerList = async function (
@@ -88,12 +88,7 @@ Customer.getCustomerList = async function (
     const sp = "CALL sp_get_customer_list(?, ?, ?, ?);";
     // Thực thi sp_get_cusotmer_list với 6 tham số customerId, name, phone, email, page_limit, off_set để tiến hành lấy về danh sách
     // các khách hàng.
-    const customers = await query(sp, [
-      customerId,
-      k3y,
-      page_limit,
-      off_set,
-    ]);
+    const customers = await query(sp, [customerId, k3y, page_limit, off_set]);
     console.log(customers);
     return customers;
   } catch (err) {

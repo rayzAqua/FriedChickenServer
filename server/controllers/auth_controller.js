@@ -27,7 +27,12 @@ class AuthController {
       res.setHeader("Access-Control-Expose-Headers", "*");
       return res.send(
         message(true, "Đăng nhập thành công!", [
-          { role: listRole, name: user.name, image: user.image },
+          {
+            role: listRole,
+            name: user.name,
+            image: user.image,
+            userId: user.userId,
+          },
         ])
       );
     } catch (error) {

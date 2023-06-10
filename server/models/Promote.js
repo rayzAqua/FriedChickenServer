@@ -19,7 +19,7 @@ Promote.getById = async function (promoteId) {
 
     const sp = "CALL sp_get_promote_by_id();";
     const results = await query(sp, [promoteId]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
@@ -32,7 +32,7 @@ Promote.getAll = async function () {
 
     const sp = "CALL sp_get_all_promote();";
     const results = await query(sp);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;

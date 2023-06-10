@@ -32,13 +32,7 @@ async function getMoreInfoProductPrice(res, result, page, totalPage) {
       } else productPrice["isActive"] = false;
     });
 
-    res.send(
-      message(true, "Lấy dữ liệu thành công!", [
-        { productPrice: result },
-        { currentPage: page },
-        { totalPage: totalPage },
-      ])
-    );
+    res.send(message(true, "Lấy dữ liệu thành công!", result, page, totalPage));
   } catch (error) {
     console.log(error);
     return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
@@ -57,7 +51,7 @@ class ProductPriceController {
       }
 
       //check exist pricelist
-      const pricelist = await Pricelist.getOrderById(priceListId);
+      const pricelist = await Pricelist.getById(priceListId);
       if (pricelist.length == 0) {
         return res.send(message(false, "Giá không tồn tại!", ""));
       }

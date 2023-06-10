@@ -21,7 +21,8 @@ Order.getOrderById = async function (orderId) {
 
     const sp = "call sp_get_order(?);";
     const results = await query(sp, [orderId]);
-    return results;
+
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
@@ -51,7 +52,7 @@ Order.getListOrder = async function (key, page) {
 
     const sp = "CALL getListOrder(?, ?);";
     const results = await query(sp, [key, calculateStart(page)]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
@@ -90,7 +91,7 @@ Order.getListOrderRangeDate = async function (key, page, fromDate, toDate) {
       fromDate,
       toDate,
     ]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
@@ -115,7 +116,7 @@ Order.getTotalOrder = async function (key) {
 
     const sp = "CALL getTotalOrder(?);";
     const results = await query(sp, [key]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
@@ -149,7 +150,7 @@ Order.getTotalOrderRangeDate = async function (key, fromDate, toDate) {
 
     const sp = "CALL getTotalOrderRangeDate(?, ?, ?);";
     const results = await query(sp, [key, fromDate, toDate]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
