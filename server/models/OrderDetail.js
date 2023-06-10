@@ -20,7 +20,7 @@ OrderDetail.getByOrderId = async function (orderId) {
 
     const sp = "CALL sp_get_order_by_id(?);";
     const results = await query(sp, [orderId]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;

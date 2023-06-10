@@ -15,7 +15,7 @@ PaymentMethod.getById = async function (paymentMethodId) {
 
     const sp = "CALL sp_get_paymentMethod_by_id(?);";
     const results = await query(sp, [paymentMethodId]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
@@ -28,7 +28,7 @@ PaymentMethod.getAll = async function () {
 
     const sp = "CALL sp_get_all_paymentMethod();";
     const results = await query(sp);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;

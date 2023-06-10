@@ -19,7 +19,7 @@ IngredientStockHistory.getByIngredientId = async function (ingredientId) {
 
     const sp = "call sp_get_ingredientStockHistory_by_ingredientId(?);";
     const results = await query(sp, [ingredientId]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;

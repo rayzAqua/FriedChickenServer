@@ -57,7 +57,7 @@ class ProductPriceController {
       }
 
       //check exist pricelist
-      const pricelist = await Pricelist.getOrderById(priceListId);
+      const pricelist = await Pricelist.getById(priceListId);
       if (pricelist.length == 0) {
         return res.send(message(false, "Giá không tồn tại!", ""));
       }

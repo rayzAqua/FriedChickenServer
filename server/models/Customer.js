@@ -36,7 +36,7 @@ Customer.updatePoint = async function (point, customerId) {
 
     const sp = "call sp_updatePoint_customer(?, ?);";
     const results = await query(sp, [point, customerId]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
@@ -52,7 +52,7 @@ Customer.getCustomerByEmailPhone = async function (phone, email) {
   } catch (err) {
     console.error("Error executing query: ", err);
   }
-}
+};
 
 // Thực thi sp tạo mới khách hàng.
 Customer.createCustomer = async function (name, phone, email, address) {
@@ -66,15 +66,27 @@ Customer.createCustomer = async function (name, phone, email, address) {
 };
 
 // Cập nhật thông tin khách hàng
-Customer.updateCustomer = async function (customerId, name, phone, email, address) {
+Customer.updateCustomer = async function (
+  customerId,
+  name,
+  phone,
+  email,
+  address
+) {
   try {
     const sp = "CALL sp_update_customer(?, ?, ?, ?, ?);";
-    const updatedCustomer = await query(sp, [customerId, name, phone, email, address]);
+    const updatedCustomer = await query(sp, [
+      customerId,
+      name,
+      phone,
+      email,
+      address,
+    ]);
     return updatedCustomer;
   } catch (err) {
     console.error("Error executing query: ", err);
   }
-}
+};
 
 // Lấy danh sách khách hàng
 Customer.getCustomerList = async function (
@@ -88,12 +100,7 @@ Customer.getCustomerList = async function (
     const sp = "CALL sp_get_customer_list(?, ?, ?, ?);";
     // Thực thi sp_get_cusotmer_list với 6 tham số customerId, name, phone, email, page_limit, off_set để tiến hành lấy về danh sách
     // các khách hàng.
-    const customers = await query(sp, [
-      customerId,
-      k3y,
-      page_limit,
-      off_set,
-    ]);
+    const customers = await query(sp, [customerId, k3y, page_limit, off_set]);
     console.log(customers);
     return customers;
   } catch (err) {

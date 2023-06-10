@@ -20,7 +20,7 @@ Pricelist.getById = async function (priceId) {
 
     const sp = "call sp_get_priceList_by_id(?);";
     const results = await query(sp, [priceId]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
@@ -40,7 +40,7 @@ Pricelist.getList = async function (page) {
 
     const sp = "call sp_get_list_priceList(?);";
     const results = await query(sp, [page]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
@@ -57,7 +57,7 @@ Pricelist.create = async function (type, startDate, endDate, userId) {
 
     const sp = "call sp_create_priceList(?,?,?,?);";
     const results = await query(sp, [type, startDate, endDate, userId]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
