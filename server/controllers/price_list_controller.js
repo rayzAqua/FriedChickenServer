@@ -55,11 +55,7 @@ class PriceListController {
       const totalPage = calculateTotal(priceList.length);
 
       return res.send(
-        message(true, "Lấy dữ liệu thành công!", [
-          { priceList: priceList },
-          { currentPage: page },
-          { totalPage: totalPage },
-        ])
+        message(true, "Lấy dữ liệu thành công!", priceList, page, totalPage)
       );
     } catch (error) {
       console.log(error);

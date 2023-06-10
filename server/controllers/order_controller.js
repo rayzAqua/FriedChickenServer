@@ -12,37 +12,56 @@ import message from "../utils/message.js";
 
 async function getDetailOrder(res, result, page, totalPage) {
   const detailPromises = [];
+  const promotionPromises = [];
   const customerPromises = [];
 
   // Loop through each tour order and call Tour.getById() for its ID
   result.forEach((order) => {
-    detailPromises.push(OrderDetail.getByOrderId(order.orderId));
     customerPromises.push(Customer.getById(order.customerId));
+    promotionPromises.push(Promote.getAll(order.promoteId));
+    detailPromises.push(OrderDetail.getByOrderId(order.orderId));
   });
 
   try {
-    const [detailResponses, customerResponses] = await Promise.all([
-      Promise.all(detailPromises),
-      Promise.all(customerPromises),
-    ]);
-    let results = [];
+    const [detailResponses, customerResponses, promotionResponses] =
+      await Promise.all([
+        Promise.all(detailPromises),
+        Promise.all(customerPromises),
+        Promise.all(promotionPromises),
+      ]);
+
     result.map((order, index) => {
-      let resultObj = {};
-      resultObj["order"] = order;
-      resultObj["customer"] = customerResponses[index][0];
-      resultObj["details"] = detailResponses[index];
-      results.push(resultObj);
+      const customer = customerResponses[index][0];
+      const promotion = promotionResponses[index][0];
+      const details = detailResponses[index];
+
+      order["customerId"] = customer["customerId"];
+      order["customerName"] = customer["name"];
+      order["phone"] = customer["phone"];
+      order["email"] = customer["email"];
+      order["address"] = customer["address"];
+      order["point"] = customer["point"];
+
+      order["promotionName"] = promotion["name"];
+      order["available"] = promotion["available"];
+      order["discount"] = promotion["discount"];
+      order["requirePoint"] = promotion["requirePoint"];
+
+      let list = [];
+      details.map((detail, index) => {
+        let object = {};
+        object["foodId"] = detail["foodId"];
+        object["price"] = detail["price"];
+        object["quantity"] = detail["quantity"];
+        list.push(object);
+      });
+
+      order["details"] = list;
     });
     // results.push({ currentPage: page });
     // results.push({ totalPage: totalPage });
 
-    res.send(
-      message(true, "Lấy dữ liệu thành công!", [
-        { listOrder: results },
-        { currentPage: page },
-        { totalPage: totalPage },
-      ])
-    );
+    res.send(message(true, "Lấy dữ liệu thành công!", result, page, totalPage));
   } catch (error) {
     console.log(error);
     return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
@@ -104,8 +123,7 @@ class OrderController {
 
   //[POST] /order/create
   async create(req, res, next) {
-    const { userId, customerId, details, promoteId, paymentMethodId } =
-      req.body;
+    let { userId, customerId, details, promoteId, paymentMethodId } = req.body;
     try {
       const customer = await Customer.getById(customerId);
       if (customer.length == 0) {
@@ -114,6 +132,7 @@ class OrderController {
 
       //check promotion exist, ative and customer can use or not
       let promote = null;
+      if (promoteId == undefined) promoteId = null;
       if (promoteId || null) {
         promote = await Promote.getById(promoteId);
         if (promote.length == 0) {
@@ -225,19 +244,29 @@ class OrderController {
         paymentMethodId
       );
 
+      const orderId = order[0][0]["last_insert_id()"];
+
       //get order by id insert
-      order = await Order.getOrderById(order["insertId"]);
+      order = await Order.getOrderById(orderId);
+
+      //add order detail
+      for (var i = 0; i < details.length; i++) {
+        //check food
+        const foodId = details[i]["foodId"];
+        const quantity = details[i]["quantity"];
+        const price = details[i]["price"];
+
+        await OrderDetail.create(orderId, foodId, price, quantity);
+      }
 
       //caculate point = point current of customer + point extra from order - point subtract by promote
 
       let point = Number(customer[0]["point"]) + Math.round(totalMoney / 3000);
-      console.log("customer: ", customer);
+
       if (promote || null) {
         console.log("promote");
         point = point - Number(promote[0]["requirePoint"]);
       }
-
-      console.log(point);
 
       //update point for customer
       await Customer.updatePoint(point, customer[0]["customerId"]);
