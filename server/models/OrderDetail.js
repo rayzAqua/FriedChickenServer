@@ -27,4 +27,23 @@ OrderDetail.getByOrderId = async function (orderId) {
   }
 };
 
+OrderDetail.create = async function (orderId, foodId, price, quantity) {
+  try {
+    // const results = await query(
+    //   "SELECT orderdetail.*, food.*" +
+    //     " FROM orderdetail" +
+    //     " JOIN food ON orderdetail.foodId = food.foodId" +
+    //     " WHERE orderdetail.orderId = ?",
+    //   [orderId]
+    // );
+
+    const sp = "CALL sp_create_orderDetail(?,?,?,?);";
+    const results = await query(sp, [orderId, foodId, price, quantity]);
+    return results[0];
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw error;
+  }
+};
+
 export default OrderDetail;
