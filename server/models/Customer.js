@@ -20,7 +20,7 @@ Customer.getById = async function (customerId) {
 
     const sp = "CALL sp_get_customer_by_id(?);";
     const results = await query(sp, [customerId]);
-    return results;
+    return results[0];
   } catch (error) {
     console.error("Error executing query:", error);
     throw error;
@@ -55,10 +55,10 @@ Customer.getCustomerByEmailPhone = async function (phone, email) {
 }
 
 // Thực thi sp tạo mới khách hàng.
-Customer.createCustomer = async function (name, phone, email, address) {
+Customer.createCustomer = async function (name, phone, email, address, createdTime, createdUser) {
   try {
-    const sp = "CALL sp_create_customer(?, ?, ?, ?);";
-    const newCustomer = await query(sp, [name, phone, email, address]);
+    const sp = "CALL sp_create_customer(?, ?, ?, ?, ?, ?);";
+    const newCustomer = await query(sp, [name, phone, email, address, createdTime, createdUser]);
     return newCustomer;
   } catch (err) {
     console.error("Error executing query: ", err);
@@ -66,10 +66,10 @@ Customer.createCustomer = async function (name, phone, email, address) {
 };
 
 // Cập nhật thông tin khách hàng
-Customer.updateCustomer = async function (customerId, name, phone, email, address) {
+Customer.updateCustomer = async function (customerId, name, phone, email, address, updatedUser, updatedTime) {
   try {
-    const sp = "CALL sp_update_customer(?, ?, ?, ?, ?);";
-    const updatedCustomer = await query(sp, [customerId, name, phone, email, address]);
+    const sp = "CALL sp_update_customer(?, ?, ?, ?, ?, ?, ?);";
+    const updatedCustomer = await query(sp, [customerId, name, phone, email, address, updatedUser, updatedTime]);
     return updatedCustomer;
   } catch (err) {
     console.error("Error executing query: ", err);

@@ -14,6 +14,17 @@ class Food {
     this.categoryId = food.categoryId;
   }
 
+  // Update
+  static async findByIdAndUpdate(foodId, name, unit, image, available, categoryId, updatedTime, updatedUser) {
+    try {
+      const sp = "CALL sp_update_food(?, ?, ?, ?, ?, ?, ?, ?);"
+      const updatedFood = await query(sp, [foodId, name, unit, image, available, categoryId, updatedTime, updatedUser]);
+      return updatedFood;
+    } catch (err) {
+      console.error("Error executing query: ", err);
+    }
+  }
+
   // Truy vấn tìm kiếm list food theo foodId, foodName, categoryName, categoryId hoặc page.
   static async getFoodList(
     foodId,
@@ -27,8 +38,7 @@ class Food {
       const foods = await query(sp, [foodId, k3y, categoryId, page_limit, off_set,]);
       return foods;
     } catch (err) {
-      console.log("Error executing query: ", err);
-      throw err;
+      console.error("Error executing query: ", err);
     }
   }
 
@@ -40,7 +50,7 @@ class Food {
 
       const sp = "call sp_get_food_by_foodID(?);";
       const results = await query(sp, [foodId]);
-      return results;
+      return results[0];
     } catch (error) {
       console.error("Error executing query:", error);
       throw error;

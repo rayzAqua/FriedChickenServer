@@ -7,9 +7,16 @@ export const isNumericString = (str) => {
 
 export const isAlphabeticString = (str) => {
     // Sử dụng biểu thức chính quy để kiểm tra chuỗi chỉ chứa ký tự alphabet a-z và A-Z
-    const alphabeticRegex = /^[a-zA-Z\s]+$/;
+    const alphabeticRegex = /^[a-zA-Z\sÀ-ỹ]+$/;
 
     return alphabeticRegex.test(str);
+};
+
+export const isAlphaNumbericString = (str) => {
+    // Sử dụng biểu thức chính quy để kiểm tra chuỗi chỉ chứa ký tự alphabet a-z, A-Z, , 0-9
+    const alphanumbericRegex = /^[a-zA-Z0-9\sÀ-ỹ]+$/;
+
+    return alphanumbericRegex.test(str);
 };
 
 export const isValidateEmail = (email) => {

@@ -1,4 +1,5 @@
 import Customer from "../models/Customer.js";
+import User from "../models/User.js";
 import { isAlphabeticString, isNumericString, isValidateEmail } from "../utils/checkInput.js";
 import { createError } from "../utils/createError.js";
 
@@ -9,31 +10,69 @@ export const createCustomer = async (req, res, next) => {
     const phone = req.body.phone;
     const email = req.body.email || null;
     const address = req.body.address || null;
+    const createdUser = req.body.createdUser;
 
     // console.log(name, phone, email, address);
+    try {
+        const existedEmailPhone = await Customer.getCustomerByEmailPhone(phone, email);
+        const filterExistedEmailPhone = Array.isArray(existedEmailPhone[0]) ? existedEmailPhone[0] : [existedEmailPhone[0]];
 
-    const existedEmailPhone = await Customer.getCustomerByEmailPhone(phone, email);
-    const filterExistedEmailPhone = Array.isArray(existedEmailPhone[0]) ? existedEmailPhone[0] : [existedEmailPhone[0]];
+        const existedUser = await User.getById(createdUser);
+        if (createdUser) {
+            if (typeof createdUser !== "number") {
+                res.status(400).json({
+                    state: false,
+                    message: "Phải nhập số cho thông tin ID tên người tạo!",
+                    data: []
+                });
+                return;
+            }
+            if (existedUser.length <= 0) {
+                res.status(404).json({
+                    state: false,
+                    message: "User này không tồn tại!",
+                    data: []
+                });
+                return;
+            }
+        } else {
+            res.status(400).json({
+                state: false,
+                message: "Không được bỏ trống thông tin ID tên người tạo!",
+                data: []
+            });
+            return;
+        }
 
-    const response = {
-        state: true,
-        message: "Tạo mới khách hàng thành công!",
-    }
+        if (!name) {
+            response.state = false;
+            response.message = "Không được bỏ trống thông tin tên!";
+            response.data = [];
+            res.status(400);
+        }
 
-    // Hai trường không được phép null
-    if (name && phone) {
+        if (!phone) {
+            response.state = false;
+            response.message = "Không được bỏ trống thông tin số điện thoại!";
+            response.data = [];
+            res.status(400);
+        }
+
+        const response = {
+            state: true,
+            message: "Tạo mới khách hàng thành công!",
+        }
+
+        // Ba trường không được phép null
         if (filterExistedEmailPhone[0].count === 0) {
-            // Kiểm tra name có chứa ký tự a-z hoặc A-Z không. Nếu có thì tiếp tục xử lý. Nếu không thì báo lỗi.
             if (isAlphabeticString(name)) {
-                // Kiểm tra xem có phone có kí tự khác ngoài ký tự số nguyên từ 0-9 không. Nếu không thì tiếp tục xử lý.
-                // Nếu có thì báo lỗi.
                 if (isNumericString(phone)) {
                     if (isValidateEmail(email)) {
-                        // Kiểm tra xem độ dài chuỗi sđt có đúng là 10 số không. Nếu đúng thì tiếp tục xử lý. Nếu không thì báo lỗi.
                         if (phone.length === 10) {
                             try {
                                 // Tạo mới khách hàng từ thông tin của req
-                                const newCustomer = await Customer.createCustomer(name, phone, email, address);
+                                const createdTime = new Date();
+                                const newCustomer = await Customer.createCustomer(name, phone, email, address, createdTime, createdUser);
                                 // Lọc lại dữ liệu trả về sau khi tạo mới khách hàng.
                                 const filterNewCustomer = Array.isArray(newCustomer[0]) ? newCustomer[0] : [newCustomer[0]];
                                 console.log(filterNewCustomer);
@@ -56,7 +95,7 @@ export const createCustomer = async (req, res, next) => {
                             }
                         } else {
                             response.state = false;
-                            response.message = "Số điện thoại chỉ chứa ký tự số từ 0-9!";
+                            response.message = "Số điện thoại phải có 10 chữ số!";
                             response.data = [];
                             res.status(400);
                         }
@@ -68,7 +107,7 @@ export const createCustomer = async (req, res, next) => {
                     }
                 } else {
                     response.state = false;
-                    response.message = "Số điện thoại phải có 10 chữ số!";
+                    response.message = "Số điện thoại chỉ chứa ký tự số từ 0-9!";
                     response.data = [];
                     res.status(400);
                 }
@@ -89,15 +128,11 @@ export const createCustomer = async (req, res, next) => {
             response.data = [];
             res.status(400);
         }
+
+        res.json(response);
+    } catch (err) {
+        next(err);
     }
-    // Trả về thông báo lỗi!
-    else {
-        response.state = false;
-        response.message = "Không được bỏ trống thông tin tên và số điện thoại!";
-        response.data = [];
-        res.status(400);
-    }
-    res.json(response);
 }
 
 // UPDATE CUSTOMER
@@ -107,68 +142,114 @@ export const updateCustomer = async (req, res, next) => {
     const phone = req.body.phone || null;
     const email = req.body.email || null;
     const address = req.body.address || null;
+    const updatedUser = req.body.updatedUser;
 
+    try {
+        const existedCustomer = await Customer.getById(customerId);
+        if (customerId) {
+            if (typeof customerId !== "number") {
+                res.status(400).json({
+                    state: false,
+                    message: "Phải nhập số cho customerId!",
+                    data: []
+                });
+                return;
+            }
+            if (existedCustomer.length <= 0) {
+                res.status(404).json({
+                    state: false,
+                    message: "Khách hàng này không tồn tại!",
+                    data: []
+                });
+                return;
+            }
+        } else {
+            res.status(400).json({
+                state: false,
+                message: "Không được bỏ trống thông tin về customerId!",
+                data: []
+            });
+            return;
+        }
 
-    if (!customerId) {
-        res.status(400).json({
-            state: false,
-            message: "Không được bỏ trống thông tin về customerId!",
-            data: []
-        });
-        return;
-    }
+        // Thêm điệu kiện id chỉ chấp nhận số.
+        const existedUser = await User.getById(updatedUser);
+        if (updatedUser) {
+            if (typeof updatedUser !== "number") {
+                res.status(400).json({
+                    state: false,
+                    message: "Phải nhập số cho ID của người cập nhật!",
+                    data: []
+                });
+                return;
+            }
+            if (existedUser.length <= 0) {
+                res.status(404).json({
+                    state: false,
+                    message: "User này không tồn tại!",
+                    data: []
+                });
+                return;
+            }
+        } else {
+            res.status(400).json({
+                state: false,
+                message: "Không được phép bỏ trống ID của người cập nhật!",
+                data: []
+            });
+            return;
+        }
 
-    // Kiểm tra nếu trường không null thì mới kiểm tra và xử lý
-    if (name !== null && !isAlphabeticString(name)) {
-        res.status(400).json({
-            state: false,
-            message: "Tên không chứa ký tự số và ký tự đặc biệt!",
-            data: []
-        });
-        return;
-    }
+        // Kiểm tra nếu trường không null thì mới kiểm tra và xử lý
+        if (name !== null && !isAlphabeticString(name)) {
+            res.status(400).json({
+                state: false,
+                message: "Tên không chứa ký tự số và ký tự đặc biệt!",
+                data: []
+            });
+            return;
+        }
 
-    if (phone !== null && !isNumericString(phone)) {
-        res.status(400).json({
-            state: false,
-            message: "Số điện thoại chỉ chứa ký tự số từ 0-9!",
-            data: []
-        });
-        return;
-    }
+        if (phone !== null && !isNumericString(phone)) {
+            res.status(400).json({
+                state: false,
+                message: "Số điện thoại chỉ chứa ký tự số từ 0-9!",
+                data: []
+            });
+            return;
+        }
 
-    if (email !== null && !isValidateEmail(email)) {
-        res.status(400).json({
-            state: false,
-            message: "Email không hợp lệ!",
-            data: []
-        });
-        return;
-    }
+        if (email !== null && !isValidateEmail(email)) {
+            res.status(400).json({
+                state: false,
+                message: "Email không hợp lệ!",
+                data: []
+            });
+            return;
+        }
 
-    if (phone !== null && phone.length !== 10) {
-        res.status(400).json({
-            state: false,
-            message: "Số điện thoại phải có 10 chữ số!",
-            data: []
-        });
-        return;
-    }
+        if (phone !== null && phone.length !== 10) {
+            res.status(400).json({
+                state: false,
+                message: "Số điện thoại phải có 10 chữ số!",
+                data: []
+            });
+            return;
+        }
 
-    // Mail không đc giống với mail đã có trong hệ thống.
-    // Phone không được giống với phone đã có trong hệ thống.
+        // Mail không đc giống với mail đã có trong hệ thống.
+        // Phone không được giống với phone đã có trong hệ thống.
+        const existedEmailPhone = await Customer.getCustomerByEmailPhone(phone, email);
+        const filterExistedEmailPhone = Array.isArray(existedEmailPhone[0]) ? existedEmailPhone[0] : [existedEmailPhone[0]];
 
-    const existedEmailPhone = await Customer.getCustomerByEmailPhone(phone, email);
-    const filterExistedEmailPhone = Array.isArray(existedEmailPhone[0]) ? existedEmailPhone[0] : [existedEmailPhone[0]];
-
-    const response = {
-        state: true,
-        message: "Cập nhật thông tin khách hàng thành công!",
-    }
-    if (filterExistedEmailPhone[0].count === 0) {
-        try {
+        const response = {
+            state: true,
+            message: "Cập nhật thông tin khách hàng thành công!",
+        }
+        if (filterExistedEmailPhone[0].count === 0) {
             // Cập nhật thông tin khách hàng
-            const updatedCustomer = await Customer.updateCustomer(customerId, name, phone, email, address);
+            const updatedTime = new Date();
+            const updatedCustomer = await Customer.updateCustomer(customerId, name, phone, email, address, updatedUser, updatedTime);
             // Lọc lại dữ liệu trả về sau khi cập nhật thông tin khách hàng.
             const filterUpdatedCustomer = Array.isArray(updatedCustomer[0]) ? updatedCustomer[0] : [updatedCustomer[0]];
 
@@ -183,22 +264,23 @@ export const updateCustomer = async (req, res, next) => {
                 response.data = filterUpdatedCustomer;
                 res.status(500);
             }
-        } catch (err) {
-            next(err);
-        }
-    } else if (phone && filterExistedEmailPhone[0].phone.toLowerCase().includes(phone.toLowerCase())) {
-        response.state = false;
-        response.message = "Số điện thoại này đã tồn tại trong hệ thống!";
-        response.data = [];
-        res.status(400);
-    } else if (email && filterExistedEmailPhone[0].email.toLowerCase().includes(email.toLowerCase())) {
-        response.state = false;
-        response.message = "Địa chỉ email này đã tồn tại trong hệ thống!";
-        response.data = [];
-        res.status(400);
-    }
 
-    res.json(response);
+        } else if (phone && filterExistedEmailPhone[0].phone.toLowerCase().includes(phone.toLowerCase())) {
+            response.state = false;
+            response.message = "Số điện thoại này đã tồn tại trong hệ thống!";
+            response.data = [];
+            res.status(400);
+        } else if (email && filterExistedEmailPhone[0].email.toLowerCase().includes(email.toLowerCase())) {
+            response.state = false;
+            response.message = "Địa chỉ email này đã tồn tại trong hệ thống!";
+            response.data = [];
+            res.status(400);
+        }
+
+        res.json(response);
+    } catch (err) {
+        next(err);
+    }
 };
 
 // GET CUSTOMER LIST

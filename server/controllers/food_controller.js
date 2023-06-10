@@ -1,6 +1,153 @@
 import Food from "../models/Food.js";
+import User from "../models/User.js";
+import Category from "../models/Category.js";
 import { createError } from "../utils/createError.js"
+import { isAlphaNumbericString, isAlphabeticString } from "../utils/checkInput.js";
 
+// UPDATE
+export const updateFood = async (req, res, next) => {
+    const foodId = req.body.foodId;
+    const name = req.body.name || null;
+    const unit = req.body.unit || null;
+    const image = req.body.image || null;
+    const available = String(req.body.available) || null;
+    const categoryId = req.body.categoryId || null;
+    const updatedUser = req.body.updatedUser;
+
+    console.log(req.body.available);
+
+    try {
+        // Kiểm tra tồn tại food
+        const existedFood = await Food.getById(foodId);
+        if (foodId) {
+            if (typeof foodId !== 'number') {
+                res.status(400).json({
+                    state: false,
+                    message: "Phải nhập số cho ID của Food!",
+                    data: []
+                });
+                return;
+            }
+            if (existedFood.length <= 0) {
+                res.status(404).json({
+                    state: false,
+                    message: "Food không tồn tại!",
+                    data: []
+                });
+                return;
+            }
+        } else {
+            res.status(400).json({
+                state: false,
+                message: "Không được bỏ trống thông tin ID của Food!",
+                data: []
+            });
+            return;
+        }
+
+        // Kiểm tra tồn tại category
+        const existedCategory = await Category.getById(categoryId);
+        if (categoryId) {
+            if (typeof categoryId !== 'number') {
+                res.status(404).json({
+                    state: false,
+                    message: "Phải nhập một số cho ID của Category!",
+                    data: []
+                });
+                return;
+
+            }
+            if (existedCategory.length <= 0) {
+                res.status(404).json({
+                    state: false,
+                    message: "Category không tồn tại!",
+                    data: []
+                });
+                return;
+            }
+        }
+
+        // Kiểm tra tồn tại user
+        const existedUser = await User.getById(updatedUser);
+        if (updatedUser) {
+            if (typeof updatedUser !== 'number') {
+                res.status(400).json({
+                    state: false,
+                    message: "Phải nhập số cho ID của người cập nhật!",
+                    data: []
+                });
+                return;
+            }
+            if (existedUser.length <= 0) {
+                res.status(404).json({
+                    state: false,
+                    message: "User không tồn tại!",
+                    data: []
+                });
+                return;
+            }
+        } else {
+            res.status(400).json({
+                state: false,
+                message: "Không được bỏ trống ID của người cập nhật!",
+                data: []
+            });
+            return;
+        }
+
+        if (name && !isAlphaNumbericString(name)) {
+            res.status(400).json({
+                state: false,
+                message: "Tên chỉ chấp nhận ký tự chữ, ký tự số và khoảng trắng!",
+                data: []
+            });
+            return;
+        }
+
+        if (unit && !isAlphabeticString(unit)) {
+            res.status(400).json({
+                state: false,
+                message: "Unit chỉ chấp nhận ký tự chữ!",
+                data: []
+            });
+            return;
+        }
+
+        if (available && (Number(available) !== 1 && Number(available) !== 0)) {
+            res.status(400).json({
+                state: false,
+                message: "Available chỉ chấp nhận giá trị 0 hoặc 1!",
+                data: []
+            });
+            return;
+        }
+
+        const updatedTime = new Date();
+        const updatedFood = await Food.findByIdAndUpdate(foodId, name, unit, image, Number(available), categoryId, updatedTime, updatedUser);
+        const filterUpdatedFood = Array.isArray(updatedFood[0]) ? updatedFood[0] : [updatedFood[0]];
+
+        const response = {
+            state: true,
+            message: "Cập nhật thông tin Food thành công!",
+        }
+
+        if (filterUpdatedFood.length > 0) {
+            response.data = filterUpdatedFood;
+            res.status(200);
+        } else {
+            response.state = false;
+            response.message = "Cập nhật thông tin Food không thành công!";
+            response.data = filterUpdatedFood;
+            res.status(500);
+        }
+        res.json(response);
+    } catch (err) {
+        next(err);
+    }
+
+};
+
+// GET LIST
 export const getFoodList = async (req, res, next) => {
 
     const foodId = req.query.foodId || null;

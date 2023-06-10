@@ -5,10 +5,10 @@ import { authenticateToken } from "../middlewares/authentication.js";
 const router = express.Router();
 
 // CREATE
-router.post("/add", authenticateToken, createCustomer);
+router.post("/add", createCustomer);
 
 // UPDATE
-router.post("/update", authenticateToken, updateCustomer);
+router.post("/update", updateCustomer);
 
 // GET LIST CUSTOMERS
 router.get("/list", authenticateToken, getCustomerList);
