@@ -187,10 +187,10 @@ Order.create = async function (
 };
 
 // Tính điểm tích luỹ
-Order.calculatePoint = async function (customerId, orderId) {
+Order.calculatePoint = async function (customerId, orderId, money) {
   try {
-    const sp = "CALL sp_caculate_point(?, ?);";
-    const point = await query(sp, [customerId, orderId]);
+    const sp = "CALL sp_caculate_point(?, ?, ?);";
+    const point = await query(sp, [customerId, orderId, money]);
     return point;
   } catch (err) {
     console.error("Error executing query:", err);

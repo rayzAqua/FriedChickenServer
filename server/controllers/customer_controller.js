@@ -69,30 +69,26 @@ export const createCustomer = async (req, res, next) => {
                 if (isNumericString(phone)) {
                     if (isValidateEmail(email)) {
                         if (phone.length === 10) {
-                            try {
-                                // Tạo mới khách hàng từ thông tin của req
-                                const createdTime = new Date();
-                                const newCustomer = await Customer.createCustomer(name, phone, email, address, createdTime, createdUser);
-                                // Lọc lại dữ liệu trả về sau khi tạo mới khách hàng.
-                                const filterNewCustomer = Array.isArray(newCustomer[0]) ? newCustomer[0] : [newCustomer[0]];
-                                console.log(filterNewCustomer);
+                            // Tạo mới khách hàng từ thông tin của req
+                            const createdTime = new Date();
+                            const newCustomer = await Customer.createCustomer(name, phone, email, address, createdTime, createdUser);
+                            // Lọc lại dữ liệu trả về sau khi tạo mới khách hàng.
+                            const filterNewCustomer = Array.isArray(newCustomer[0]) ? newCustomer[0] : [newCustomer[0]];
 
-                                // Kiểm tra xem filterNewCustomer có rỗng không, nếu nó rỗng thì nghĩa là tạo mới khách hàng thất bại.
-                                // Còn nếu không thì trả về thông tin khách hàng vừa tạo cho client
-                                if (filterNewCustomer.length > 0) {
-                                    response.data = filterNewCustomer;
-                                    res.status(200);
-                                }
-                                // Trả về thông báo lỗi.
-                                else {
-                                    response.state = false;
-                                    response.message = "Tạo mới khách hàng không thành công!";
-                                    response.data = filterNewCustomer;
-                                    res.status(500);
-                                }
-                            } catch (err) {
-                                next(err);
+                            // Kiểm tra xem filterNewCustomer có rỗng không, nếu nó rỗng thì nghĩa là tạo mới khách hàng thất bại.
+                            // Còn nếu không thì trả về thông tin khách hàng vừa tạo cho client
+                            if (filterNewCustomer.length > 0) {
+                                response.data = filterNewCustomer;
+                                res.status(200);
                             }
+                            // Trả về thông báo lỗi.
+                            else {
+                                response.state = false;
+                                response.message = "Tạo mới khách hàng không thành công!";
+                                response.data = filterNewCustomer;
+                                res.status(500);
+                            }
+
                         } else {
                             response.state = false;
                             response.message = "Số điện thoại phải có 10 chữ số!";
@@ -335,7 +331,7 @@ export const getCustomerList = async (req, res, next) => {
                 }
             }
             else {
-                response.data = filterCustomerArray;     
+                response.data = filterCustomerArray;
                 response.current_page = page;
                 response.total_page = total_page;
                 res.status(200);

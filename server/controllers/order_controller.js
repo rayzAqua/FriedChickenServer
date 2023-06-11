@@ -9,6 +9,7 @@ import PaymentMethod from "../models/PaymentMethod.js";
 import Promote from "../models/Promote.js";
 import { calculateTotal } from "../utils/calculateStart.js";
 import message from "../utils/message.js";
+import moneyForPoint from "../utils/moneyForPoint.json"
 
 async function getDetailOrder(res, result, page, totalPage) {
   const detailPromises = [];
@@ -281,6 +282,7 @@ class OrderController {
   async calculatePoint(req, res, next) {
     const customerId = req.query.customerId;
     const orderId = req.query.orderId;
+    const money = moneyForPoint.moneyForCaculatePoints;
 
     try {
       // Tạo một đối tượng response để phản hồi.
@@ -292,7 +294,7 @@ class OrderController {
       // Kiểm tra xem customerId và orderId có bị bỏ trống không.
       if (customerId && orderId) {
         // Kết quả sau khi thực thi truy vấn luôn trả về kèm theo thông tin truy vấn nên cần phải lọc lại.
-        const points = await Order.calculatePoint(customerId, orderId);
+        const points = await Order.calculatePoint(customerId, orderId, money);
         // Lọc lại kết quả sau khi thực thi truy vấn để lấy về dữ liệu.
         const filterPointArray = Array.isArray(points[0])
           ? points[0]
