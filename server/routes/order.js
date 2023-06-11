@@ -5,8 +5,17 @@ const orderRouter = express.Router();
 
 orderRouter.get("/list", authenticateToken, OrderController.getList);
 orderRouter.post("/create", authenticateToken, OrderController.create);
+orderRouter.patch(
+  "/:orderId/:status",
+  authenticateToken,
+  OrderController.changeStatusOrder
+);
 
 // CACULATE POINT
-orderRouter.get("/calculate-point", authenticateToken, OrderController.calculatePoint);
+orderRouter.get(
+  "/calculate-point",
+  authenticateToken,
+  OrderController.calculatePoint
+);
 
 export default orderRouter;
