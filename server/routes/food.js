@@ -7,7 +7,7 @@ const router = express.Router();
 // CREATE
 
 // UPDATE FOOD
-router.post("/update", updateFood);
+router.put("/update", authenticateToken, updateFood);
 
 // GET FOOD LIST
 router.get("/list", authenticateToken, getFoodList);

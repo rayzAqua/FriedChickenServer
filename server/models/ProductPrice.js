@@ -90,4 +90,5 @@ ProductPrice.getListByProductId = async function (productId, page) {
   }
 };
 
+
 export default ProductPrice;

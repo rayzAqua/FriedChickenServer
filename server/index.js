@@ -12,8 +12,6 @@ app.use(
     origin: "*",
   })
 );
-// Port cho server.
-const port = process.env.PORT;
 
 // Middleware cho phép phân tích nội dung được gửi từ request dưới dạng json.
 app.use(express.json());
