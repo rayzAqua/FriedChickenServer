@@ -10,7 +10,7 @@ export const createCustomer = async (req, res, next) => {
     const phone = req.body.phone;
     const email = req.body.email || null;
     const address = req.body.address || null;
-    const createdUser = req.body.createdUser;
+    const createdUser = req.body.userId;
 
     // console.log(name, phone, email, address);
     try {
@@ -18,27 +18,10 @@ export const createCustomer = async (req, res, next) => {
         const filterExistedEmailPhone = Array.isArray(existedEmailPhone[0]) ? existedEmailPhone[0] : [existedEmailPhone[0]];
 
         const existedUser = await User.getById(createdUser);
-        if (createdUser) {
-            if (typeof createdUser !== "number") {
-                res.status(400).json({
-                    state: false,
-                    message: "Phải nhập số cho thông tin ID tên người tạo!",
-                    data: []
-                });
-                return;
-            }
-            if (existedUser.length <= 0) {
-                res.status(404).json({
-                    state: false,
-                    message: "User này không tồn tại!",
-                    data: []
-                });
-                return;
-            }
-        } else {
-            res.status(400).json({
+        if (existedUser.length <= 0) {
+            res.status(404).json({
                 state: false,
-                message: "Không được bỏ trống thông tin ID tên người tạo!",
+                message: "User này không tồn tại!",
                 data: []
             });
             return;
@@ -70,8 +53,7 @@ export const createCustomer = async (req, res, next) => {
                     if (isValidateEmail(email)) {
                         if (phone.length === 10) {
                             // Tạo mới khách hàng từ thông tin của req
-                            const createdTime = new Date();
-                            const newCustomer = await Customer.createCustomer(name, phone, email, address, createdTime, createdUser);
+                            const newCustomer = await Customer.createCustomer(name, phone, email, address, createdUser);
                             // Lọc lại dữ liệu trả về sau khi tạo mới khách hàng.
                             const filterNewCustomer = Array.isArray(newCustomer[0]) ? newCustomer[0] : [newCustomer[0]];
 
@@ -138,7 +120,9 @@ export const updateCustomer = async (req, res, next) => {
     const phone = req.body.phone || null;
     const email = req.body.email || null;
     const address = req.body.address || null;
-    const updatedUser = req.body.updatedUser;
+    const updatedUser = req.body.userId;
+
+    console.log(updatedUser);
 
     try {
         const existedCustomer = await Customer.getById(customerId);
@@ -170,27 +154,10 @@ export const updateCustomer = async (req, res, next) => {
 
         // Thêm điệu kiện id chỉ chấp nhận số.
         const existedUser = await User.getById(updatedUser);
-        if (updatedUser) {
-            if (typeof updatedUser !== "number") {
-                res.status(400).json({
-                    state: false,
-                    message: "Phải nhập số cho ID của người cập nhật!",
-                    data: []
-                });
-                return;
-            }
-            if (existedUser.length <= 0) {
-                res.status(404).json({
-                    state: false,
-                    message: "User này không tồn tại!",
-                    data: []
-                });
-                return;
-            }
-        } else {
-            res.status(400).json({
+        if (existedUser.length <= 0) {
+            res.status(404).json({
                 state: false,
-                message: "Không được phép bỏ trống ID của người cập nhật!",
+                message: "User này không tồn tại!",
                 data: []
             });
             return;
@@ -237,6 +204,8 @@ export const updateCustomer = async (req, res, next) => {
         // Phone không được giống với phone đã có trong hệ thống.
         const existedEmailPhone = await Customer.getCustomerByEmailPhone(phone, email);
         const filterExistedEmailPhone = Array.isArray(existedEmailPhone[0]) ? existedEmailPhone[0] : [existedEmailPhone[0]];
+
+        console.log(existedEmailPhone);
 
         const response = {
             state: true,
@@ -314,21 +283,6 @@ export const getCustomerList = async (req, res, next) => {
             if (customerId) {
                 response.data = filterCustomerArray;
                 res.status(200);
-            }
-            else if (filterCustomerArray.length === 1) {
-                if (k3y && (
-                    filterCustomerArray[0].name.toLowerCase().includes(k3y.toLowerCase()) ||
-                    filterCustomerArray[0].phone.toLowerCase().includes(k3y.toLowerCase()) ||
-                    filterCustomerArray[0].email.toLowerCase().includes(k3y.toLowerCase())
-                )) {
-                    response.data = filterCustomerArray;
-                    res.status(200);
-                } else if (page) {
-                    response.data = filterCustomerArray;
-                    response.current_page = page;
-                    response.total_page = total_page;
-                    res.status(200);
-                }
             }
             else {
                 response.data = filterCustomerArray;

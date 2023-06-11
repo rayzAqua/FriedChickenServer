@@ -29,14 +29,9 @@ const routeHieuPhan = (app) => {
   app.use("/price-list", priceListRouter);
 };
 
-const routeTuanKiet = (app) => {
-  // Route của Kiệt
-};
-
 const routes = (app) => {
   routeHieuLe(app);
   routeHieuPhan(app);
-  routeTuanKiet(app);
 
   // Đường dẫn mặc định của server.
   app.use("/", (req, res) => {

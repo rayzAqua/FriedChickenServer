@@ -12,9 +12,7 @@ export const updateFood = async (req, res, next) => {
     const image = req.body.image || null;
     const available = String(req.body.available) || null;
     const categoryId = req.body.categoryId || null;
-    const updatedUser = req.body.updatedUser;
-
-    console.log(req.body.available);
+    const updatedUser = req.body.userId;
 
     try {
         // Kiểm tra tồn tại food
@@ -65,34 +63,6 @@ export const updateFood = async (req, res, next) => {
                 });
                 return;
             }
-        }
-
-        // Kiểm tra tồn tại user
-        const existedUser = await User.getById(updatedUser);
-        if (updatedUser) {
-            if (typeof updatedUser !== 'number') {
-                res.status(400).json({
-                    state: false,
-                    message: "Phải nhập số cho ID của người cập nhật!",
-                    data: []
-                });
-                return;
-            }
-            if (existedUser.length <= 0) {
-                res.status(404).json({
-                    state: false,
-                    message: "User không tồn tại!",
-                    data: []
-                });
-                return;
-            }
-        } else {
-            res.status(400).json({
-                state: false,
-                message: "Không được bỏ trống ID của người cập nhật!",
-                data: []
-            });
-            return;
         }
 
         if (name && !isAlphaNumbericString(name)) {
@@ -179,7 +149,7 @@ export const getFoodList = async (req, res, next) => {
         // Tính toán tổng số trang dựa trên tổng số mẫu dữ liệu có trong bảng food.
         const total_page = Math.ceil(totalFoods[0].total_rows / page_limit);
 
-        console.log(filterFoodArray);
+        console.log(total_page);
 
         // Tạo ra đối tượng response để gửi phản hồi.
         const response = {
@@ -210,27 +180,6 @@ export const getFoodList = async (req, res, next) => {
                 response.data = foods;
                 res.status(200);
             }
-            // Nếu chiều dài mảng food bằng 1 thì kiểm tra xem có rơi vào các trường hợp sau không:
-            // TH1: k3y = tên đích danh của món ăn -> trả về một món ăn duy nhất -> không phân trang.
-            // TH2: k3y = categoryId và category này chỉ có một món ăn duy nhất -> trả về một món ăn -> không phân trang.
-            // TH3: k3y = tên cụ thể của một category và category này chỉ có một món ăn duy nhất -> trả về một món -> không phân trang. 
-            // TH4: page nhưng chỉ trả về 1 mẫu
-            else if (foods.length === 1) {
-                if (
-                    (k3y && foods[0].name.toLowerCase().includes(k3y.toLowerCase())) ||
-                    categoryId ||
-                    (k3y && foods[0].category.categoryName.toLowerCase().includes(k3y.toLowerCase()))
-                ) {
-                    response.data = foods;
-                    res.status(200);
-                } else if (page) {
-                    response.data = foods;
-                    response.current_page = page;
-                    response.total_page = total_page;
-                    res.status(200);
-                }
-            }
-            // Nếu không thuộc các TH trên thì phân trang bình thường.
             else {
                 response.data = foods;
                 response.current_page = page;

@@ -9,7 +9,6 @@ import PaymentMethod from "../models/PaymentMethod.js";
 import Promote from "../models/Promote.js";
 import { calculateTotal } from "../utils/calculateStart.js";
 import message from "../utils/message.js";
-import moneyForPoint from "../utils/moneyForPoint.json"
 
 async function getDetailOrder(res, result, page, totalPage) {
   const detailPromises = [];
@@ -282,7 +281,7 @@ class OrderController {
   async calculatePoint(req, res, next) {
     const customerId = req.query.customerId;
     const orderId = req.query.orderId;
-    const money = moneyForPoint.moneyForCaculatePoints;
+    // const money = moneyForPointData;
 
     try {
       // Tạo một đối tượng response để phản hồi.

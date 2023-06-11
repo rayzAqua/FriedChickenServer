@@ -55,10 +55,10 @@ Customer.getCustomerByEmailPhone = async function (phone, email) {
 };
 
 // Thực thi sp tạo mới khách hàng.
-Customer.createCustomer = async function (name, phone, email, address, createdTime, createdUser) {
+Customer.createCustomer = async function (name, phone, email, address, createdUser) {
   try {
-    const sp = "CALL sp_create_customer(?, ?, ?, ?, ?, ?);";
-    const newCustomer = await query(sp, [name, phone, email, address, createdTime, createdUser]);
+    const sp = "CALL sp_create_customer(?, ?, ?, ?, ?);";
+    const newCustomer = await query(sp, [name, phone, email, address, createdUser]);
     return newCustomer;
   } catch (err) {
     console.error("Error executing query: ", err);

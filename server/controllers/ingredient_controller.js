@@ -47,21 +47,6 @@ export const getIngredientList = async (req, res, next) => {
                 response.data = ingredients;
                 res.status(200);
             }
-            else if (filterIngredientArray.length === 1) {
-                if (k3y && (
-                    filterIngredientArray[0].name.toLowerCase().includes(k3y.toLowerCase()) ||
-                    filterIngredientArray[0].ingredientId.toLowerCase().includes(k3y.toLowerCase())
-                )) {
-                    response.data = ingredients;
-                } else if (page) {
-                    response.data = ingredients;
-                    response.current_page = page;
-                    response.total_page = total_page;
-                    res.status(200);
-                }
-            }
-            // Không theo ingredientId, ingredientId kết hợp wareHouseId hoặc ingredientName đích danh kết hợp với wareHouseId thì
-            // trả về phân trang. 
             else {
                 response.data = ingredients;
                 response.current_page = page;
