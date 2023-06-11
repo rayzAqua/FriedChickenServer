@@ -29,6 +29,22 @@ Order.getOrderById = async function (orderId) {
   }
 };
 
+Order.changeStatus = async function (
+  orderId,
+  status = "Pending",
+  userCancle = 1
+) {
+  try {
+    const sp = "call sp_update_status_order(?,?,?);";
+    const results = await query(sp, [orderId, status, userCancle]);
+
+    return results;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw error;
+  }
+};
+
 Order.getListOrder = async function (key, page) {
   try {
     // const results = await query(
