@@ -335,11 +335,9 @@ export const getCustomerList = async (req, res, next) => {
                 }
             }
             else {
-                response.data = {
-                    customerLists: filterCustomerArray,
-                    current_page: page,
-                    total_page: total_page,
-                };
+                response.data = filterCustomerArray;     
+                response.current_page = page;
+                response.total_page = total_page;
                 res.status(200);
             }
         } else {

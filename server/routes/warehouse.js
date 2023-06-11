@@ -9,7 +9,7 @@ const router = express.Router();
 // UPDATE
 
 // GET LIST WARE HOUSE BY STATUS
-router.get("/list", getWarehouseListByStatus);
+router.get("/list", authenticateToken, getWarehouseListByStatus);
 
 
 export default router;
