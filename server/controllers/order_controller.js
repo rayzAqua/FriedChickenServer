@@ -264,17 +264,56 @@ class OrderController {
       let point = Number(customer[0]["point"]) + Math.round(totalMoney / 3000);
 
       if (promote || null) {
-        console.log("promote");
         point = point - Number(promote[0]["requirePoint"]);
       }
 
       //update point for customer
       await Customer.updatePoint(point, customer[0]["customerId"]);
 
-      return res.send(message(false, "Đặt thành công!", order));
+      return res.send(message(true, "Đặt thành công!", order));
     } catch (error) {
       console.log(error);
       return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
+    }
+  }
+
+  //[PATCH] /order/:orderId/:status
+  async changeStatusOrder(req, res, next) {
+    const orderId = req.params.orderId ? req.params.orderId : "";
+    const status = req.params.status ? req.params.status : "";
+    const userId = req.body.userId ? req.body.userId : "";
+
+    try {
+      const order = await Order.getOrderById(orderId);
+
+      if (status == "Cancelled" && order[0]["status"] != "Pending") {
+        return res.send(message(false, "Không thể hủy đơn đặt!", ""));
+      }
+
+      const response = await Order.changeStatus(+orderId, status, userId);
+      if (response["affectedRows"] <= 0) {
+        return res.send(message(false, "Cập nhật trạng thái thất bại!", ""));
+      }
+
+      const promoteId = order[0]["promoteId"];
+      if (promoteId != null) {
+        const promotion = await Promote.getById(promoteId);
+        const customerId = order[0]["customerId"];
+        const customer = await Customer.getById(customerId);
+
+        const point =
+          Number(customer[0]["point"]) -
+          Math.round(Number(order[0]["totalMoney"]) / 30000) +
+          Number(promotion[0]["requirePoint"]);
+
+        //update point for customer
+        await Customer.updatePoint(point, customerId);
+      }
+
+      return res.send(message(true, "Cập nhật trạng thái thành công!"));
+    } catch (error) {
+      console.log(error);
+      return res.send(message(false, "Cập nhật trạng thái thất bại!", ""));
     }
   }
 

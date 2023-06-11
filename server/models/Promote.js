@@ -17,7 +17,7 @@ Promote.getById = async function (promoteId) {
     //   [promoteId]
     // );
 
-    const sp = "CALL sp_get_promote_by_id();";
+    const sp = "CALL sp_get_promote_by_id(?);";
     const results = await query(sp, [promoteId]);
     return results[0];
   } catch (error) {
