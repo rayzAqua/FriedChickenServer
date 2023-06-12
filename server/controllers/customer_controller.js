@@ -8,7 +8,7 @@ export const createCustomer = async (req, res, next) => {
 
     const name = req.body.name;
     const phone = req.body.phone;
-    const email = req.body.email || null;
+    const email = req.body.customerEmail || null;
     const address = req.body.address || null;
     const createdUser = req.body.userId;
 
@@ -118,7 +118,7 @@ export const updateCustomer = async (req, res, next) => {
     const customerId = req.body.customerId;
     const name = req.body.name || null;
     const phone = req.body.phone || null;
-    const email = req.body.email || null;
+    const email = req.body.customerEmail || null;
     const address = req.body.address || null;
     const updatedUser = req.body.userId;
 
