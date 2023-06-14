@@ -9,6 +9,7 @@ import PaymentMethod from "../models/PaymentMethod.js";
 import Promote from "../models/Promote.js";
 import { calculateTotal } from "../utils/calculateStart.js";
 import message from "../utils/message.js";
+import { sendMailPromotion } from "../utils/mail.js";
 
 async function getDetailOrder(res, result, page, totalPage) {
   const detailPromises = [];
@@ -269,6 +270,13 @@ class OrderController {
 
       //update point for customer
       await Customer.updatePoint(point, customer[0]["customerId"]);
+
+      //get list promotion follows new point of customer
+      const listPromotion = await Promote.getListCanUse(point);
+      console.log("listPromotion: ", listPromotion);
+      sendMailPromotion("pvh9201@gmail.com");
+
+      //send mail notification promotion can use with new point when order
 
       return res.send(message(true, "Đặt thành công!", order));
     } catch (error) {

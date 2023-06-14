@@ -39,4 +39,17 @@ Promote.getAll = async function () {
   }
 };
 
+Promote.getListCanUse = async function (point) {
+  try {
+    // const results = await query("SELECT * FROM hethonggaran.promotion ");
+
+    const sp = "CALL sp_get_list_promotion_can_use(?);";
+    const results = await query(sp, [point]);
+    return results[0];
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw error;
+  }
+};
+
 export default Promote;

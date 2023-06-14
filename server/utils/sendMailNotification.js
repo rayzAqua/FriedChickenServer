@@ -45,7 +45,6 @@ export function sendMailNotification() {
   const notificationSystem = new MailNotificationSystem();
 
   const observer1 = new PromotionListener();
-  const observer2 = new PromotionListener();
 
   notificationSystem.addObserver(observer1);
   notificationSystem.addObserver(observer2);
