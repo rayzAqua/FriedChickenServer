@@ -15,10 +15,28 @@ class Food {
   }
 
   // Update
-  static async findByIdAndUpdate(foodId, name, unit, image, available, categoryId, updatedTime, updatedUser) {
+  static async findByIdAndUpdate(
+    foodId,
+    name,
+    unit,
+    image,
+    available,
+    categoryId,
+    updatedTime,
+    updatedUser
+  ) {
     try {
-      const sp = "CALL sp_update_food(?, ?, ?, ?, ?, ?, ?, ?);"
-      const updatedFood = await query(sp, [foodId, name, unit, image, available, categoryId, updatedTime, updatedUser]);
+      const sp = "CALL sp_update_food(?, ?, ?, ?, ?, ?, ?, ?);";
+      const updatedFood = await query(sp, [
+        foodId,
+        name,
+        unit,
+        image,
+        available,
+        categoryId,
+        updatedTime,
+        updatedUser,
+      ]);
       return updatedFood;
     } catch (err) {
       console.error("Error executing query: ", err);
