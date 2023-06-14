@@ -7,7 +7,7 @@
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
+/*!50503 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -60,8 +60,11 @@ CREATE TABLE `customer` (
   `phone` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `email` varchar(50) DEFAULT NULL,
   `address` varchar(50) DEFAULT NULL,
+  `createdUser` int DEFAULT NULL,
   `createdTime` datetime DEFAULT CURRENT_TIMESTAMP,
   `point` int DEFAULT '0',
+  `updatedUser` int DEFAULT NULL,
+  `updatedTime` datetime DEFAULT NULL,
   PRIMARY KEY (`customerId`),
   UNIQUE KEY `phone_UNIQUE` (`phone`),
   UNIQUE KEY `email_UNIQUE` (`email`)
@@ -74,7 +77,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES (1,'khach hang 1','0111222333','kh1@gmail.com','quan 9','2023-05-22 00:18:18',0),(2,'khach hang 2','0123434221','kh2@gmail.com','quan tan binh','2023-05-25 00:18:18',5),(3,'khach hang 3','0123213823','kh3@gmail.com',NULL,'2023-05-17 00:18:18',21);
+INSERT INTO `customer` VALUES (1,'kiet123','0123456789','kh1@gmail.com','quan 9',NULL,'2023-05-22 00:18:18',0,1,'2023-06-16 00:18:18'),(2,'khach hang 2','0123434221','kh2@gmail.com','quan tan binh',NULL,'2023-05-25 00:18:18',5,NULL,NULL),(3,'khach hang 3','0123213823','kh3@gmail.com',NULL,NULL,'2023-05-17 00:18:18',21,NULL,NULL);
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -197,6 +200,7 @@ CREATE TABLE `ingredient` (
   `updatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `createdUser` int DEFAULT NULL,
   `updatedUser` int DEFAULT NULL,
+  `status` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`ingredientId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -207,7 +211,7 @@ CREATE TABLE `ingredient` (
 
 LOCK TABLES `ingredient` WRITE;
 /*!40000 ALTER TABLE `ingredient` DISABLE KEYS */;
-INSERT INTO `ingredient` VALUES (1,'Nguyên liệu 1',10,1,NULL,'2023-05-22 22:09:45','2023-05-22 22:09:45',NULL,NULL),(2,'Nguyên liệu 2',100,1,NULL,'2023-05-22 22:09:45','2023-05-22 22:09:45',NULL,NULL),(3,'Nguyên liệu 3',101,0,NULL,'2023-05-22 22:09:45','2023-05-22 22:09:45',NULL,NULL);
+INSERT INTO `ingredient` VALUES (1,'Nguyên liệu 1',10,1,NULL,'2023-05-22 22:09:45','2023-05-22 22:09:45',NULL,NULL,NULL),(2,'Nguyên liệu 2',100,1,NULL,'2023-05-22 22:09:45','2023-05-22 22:09:45',NULL,NULL,NULL),(3,'Nguyên liệu 3',101,0,NULL,'2023-05-22 22:09:45','2023-05-22 22:09:45',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `ingredient` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -261,6 +265,7 @@ CREATE TABLE `order` (
   `canceledUser` int DEFAULT NULL,
   `paymentMethodId` int DEFAULT NULL,
   `canceledTime` datetime DEFAULT NULL,
+  `status` varchar(20) DEFAULT 'Pending',
   PRIMARY KEY (`orderId`),
   KEY `customerId` (`customerId`),
   KEY `createdUser` (`createdUser`),
@@ -271,8 +276,9 @@ CREATE TABLE `order` (
   CONSTRAINT `order_ibfk_2` FOREIGN KEY (`createdUser`) REFERENCES `user` (`userId`),
   CONSTRAINT `order_ibfk_3` FOREIGN KEY (`promoteId`) REFERENCES `promotion` (`promoteId`),
   CONSTRAINT `order_ibfk_4` FOREIGN KEY (`canceledUser`) REFERENCES `user` (`userId`),
-  CONSTRAINT `order_ibfk_5` FOREIGN KEY (`paymentMethodId`) REFERENCES `paymentmethod` (`paymentMethodId`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `order_ibfk_5` FOREIGN KEY (`paymentMethodId`) REFERENCES `paymentmethod` (`paymentMethodId`),
+  CONSTRAINT `order_chk_1` CHECK ((`status` in (_utf8mb4'Pending',_utf8mb4'Processing',_utf8mb4'Completed',_utf8mb4'Cancelled')))
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -281,7 +287,7 @@ CREATE TABLE `order` (
 
 LOCK TABLES `order` WRITE;
 /*!40000 ALTER TABLE `order` DISABLE KEYS */;
-INSERT INTO `order` VALUES (1,'2023-05-22 00:30:13',100000.00,1,1,NULL,NULL,1,NULL),(2,'2023-05-22 00:28:12',200000.00,2,2,1,1,2,'2023-05-22 00:18:18'),(3,'2023-05-22 22:03:19',150000.00,2,3,NULL,NULL,1,NULL),(4,'2023-05-22 22:05:11',150000.00,2,3,NULL,NULL,1,NULL),(5,'2023-05-22 22:06:43',150000.00,2,3,1,NULL,1,NULL);
+INSERT INTO `order` VALUES (1,'2023-05-22 00:30:13',100000.00,1,1,NULL,NULL,1,NULL,NULL),(2,'2023-05-22 00:28:12',200000.00,2,2,1,1,2,'2023-05-22 00:18:18',NULL),(3,'2023-05-22 22:03:19',150000.00,2,3,NULL,NULL,1,NULL,NULL),(4,'2023-05-22 22:05:11',150000.00,2,3,NULL,NULL,1,NULL,NULL),(5,'2023-05-22 22:06:43',150000.00,2,3,1,NULL,1,NULL,NULL),(6,'2023-06-15 04:52:27',1000.00,2,1,NULL,NULL,1,NULL,NULL),(7,'2023-06-15 04:52:56',1000.00,2,1,NULL,NULL,1,NULL,NULL),(8,'2023-06-15 05:58:41',1000.00,2,1,NULL,NULL,1,NULL,'Pending'),(9,'2023-06-15 05:59:56',1000.00,2,1,NULL,NULL,1,NULL,'Pending'),(10,'2023-06-15 06:00:05',1000.00,2,1,NULL,NULL,1,NULL,'Pending');
 /*!40000 ALTER TABLE `order` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -358,7 +364,7 @@ CREATE TABLE `pricelist` (
   `updatedDate` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updatedUser` int DEFAULT NULL,
   PRIMARY KEY (`priceId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -558,8 +564,33 @@ INSERT INTO `warehouse` VALUES (1,'Thương hiệu 1','Kho 1','Quân 9',NULL,1,N
 UNLOCK TABLES;
 
 --
+-- Dumping events for database 'hethonggaran'
+--
+
+--
 -- Dumping routines for database 'hethonggaran'
 --
+/*!50003 DROP PROCEDURE IF EXISTS `getIngredientOfFood` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getIngredientOfFood`(in foodID int)
+select hethonggaran.fooddetail.quantity, hethonggaran.ingredient.ingredientId, hethonggaran.ingredient.available 
+	from hethonggaran.food 
+		join hethonggaran.fooddetail on hethonggaran.fooddetail.foodId = hethonggaran.food.foodId 
+		join hethonggaran.ingredient on hethonggaran.ingredient.ingredientId = hethonggaran.fooddetail.ingredientId 
+			where hethonggaran.food.foodId = foodID ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `getListOrder` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -685,7 +716,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_caculate_point` */;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_checkDuplicate_ProductPrice` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -695,42 +726,11 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_caculate_point`(
-    IN customerId INT,
-    IN orderId INT
-)
-BEGIN
-	-- Khai báo các biến:
-    -- Biến này để chứa giá trị hoá đơn.
-    DECLARE totalMoneys DECIMAL(10, 2);
-    -- Biến này để chứa điểm tích luỹ hiện tại.
-    DECLARE currentPoint INT;
-    -- Biến này để tính toán lại điểm tích luỹ.
-    DECLARE newPoint INT;
-    
-    -- Lấy giá trị point hiện tại của khách hàng
-    SELECT point INTO currentPoint
-    FROM `customer` AS c
-    WHERE c.customerId = customerId;
-    
-    -- Lấy giá trị totalMoney từ bảng orders kết hợp với bảng customer (Một hoá đơn của một khách hàng cụ thể)
-    SELECT totalMoney INTO totalMoneys 
-    FROM `order` AS o
-    INNER JOIN `customer` AS c ON c.customerId = o.customerId
-    WHERE c.customerId = customerId AND o.orderId = orderId;
-    
-    -- Tính toán giá trị mới của point
-    SET newPoint = currentPoint + FLOOR(totalMoneys / 30000);
-    
-    -- Cập nhật giá trị point trong bảng customers
-    UPDATE `customer` AS c
-    SET point = newPoint
-    WHERE c.customerId = customerId;
-    
-    -- Trả về giá trị mới của point
-    SELECT newPoint AS customer_point;
-    
-END ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_checkDuplicate_ProductPrice`(in productId int)
+SELECT pricelist.priceId,  pricelist.startDate, pricelist.enddate, productprice.productId
+    FROM hethonggaran.pricelist
+    join hethonggaran.productprice on pricelist.priceId = productprice.priceListId
+    where startDate<= CURRENT_DATE() and enddate >= CURRENT_DATE()  and productprice.productId = productId ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -813,6 +813,24 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_create_priceList` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_create_priceList`(in type varchar(20), in startDate DateTime, in endDate DateTime, in userId int)
+insert into pricelist(type, startDate, enddate, createdUser)
+    values(type, startDate, enddate, createdUser) ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_filter_order` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -836,6 +854,58 @@ SELECT * FROM hethonggaran.order
             OR paymentMethodId LIKE CONCAT('%', keyword, '%')
             OR canceledTime LIKE CONCAT('%', keyword, '%'))
 		LIMIT 10 OFFSET page_offset ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_all_paymentMethod` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_all_paymentMethod`()
+SELECT * FROM hethonggaran.paymentmethod ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_all_promote` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_all_promote`()
+SELECT * FROM hethonggaran.promotion ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_category_by_id` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_category_by_id`(in categoryId int)
+select * from hethonggaran.category 
+		where category.categoryId = categoryId ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -954,6 +1024,23 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_food_by_foodID` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_food_by_foodID`(in foodID int)
+SELECT * FROM hethonggaran.food WHERE food.foodId = foodID ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_get_food_by_id` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -1017,7 +1104,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_get_ingredient_list` */;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_ingredientStockHistory_by_ingredientId` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -1027,62 +1114,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_ingredient_list`(
-	IN ingredientId INT,
-    IN ingredientName NVARCHAR(100),
-    IN wareHouseId INT,
-    IN page_limit INT,
-    IN off_set INT
-)
-BEGIN
-    
-    DECLARE total_count INT;
-    
-    -- Tính tổng số lượng ingredient
-    SELECT COUNT(*) INTO total_count FROM ingredient;
-    
-    -- Lấy thông tin ingredient và số lượng tồn trên warehouse cụ thể
-    IF ingredientId IS NOT NULL THEN
-        IF wareHouseId IS NOT NULL THEN
-            SELECT i.*, w.warehouseName, s.quantity
-            FROM ingredient AS i
-            LEFT JOIN ingredientstockhistory AS s ON s.ingredientId = i.ingredientId
-            LEFT JOIN warehouse AS w ON w.wareHouseId = s.wareHouseId
-            WHERE i.ingredientId = ingredientId AND w.wareHouseId = wareHouseId
-                AND (i.name LIKE CONCAT('%', ingredientName, '%') OR ingredientName IS NULL)
-            LIMIT page_limit OFFSET off_set;
-        ELSE
-            SELECT i.*, w.warehouseName, s.quantity
-            FROM ingredient AS i
-            LEFT JOIN ingredientstockhistory AS s ON s.ingredientId = i.ingredientId
-            LEFT JOIN warehouse AS w ON w.wareHouseId = s.wareHouseId
-            WHERE i.ingredientId = ingredientId
-                AND (i.name LIKE CONCAT('%', ingredientName, '%') OR ingredientName IS NULL)
-            LIMIT page_limit OFFSET off_set;
-        END IF;
-    ELSE
-        -- Lấy thông tin tất cả các ingredient và số lượng tồn trên tất cả các warehouse
-        IF wareHouseId IS NOT NULL THEN
-            SELECT i.*, w.warehouseName, s.quantity
-            FROM ingredient AS i
-            LEFT JOIN ingredientstockhistory AS s ON s.ingredientId = i.ingredientId
-            LEFT JOIN warehouse AS w ON w.wareHouseId = s.wareHouseId
-            WHERE w.wareHouseId = wareHouseId
-                AND (i.name LIKE CONCAT('%', ingredientName, '%') OR ingredientName IS NULL)
-            LIMIT page_limit OFFSET off_set;
-        ELSE
-            SELECT i.*, w.warehouseName, s.quantity
-            FROM ingredient AS i
-            LEFT JOIN ingredientstockhistory AS s ON s.ingredientId = i.ingredientId
-            LEFT JOIN warehouse AS w ON w.wareHouseId = s.wareHouseId
-            WHERE i.name LIKE CONCAT('%', ingredientName, '%') OR ingredientName IS NULL
-            LIMIT page_limit OFFSET off_set;
-        END IF;
-    END IF;
-    
-    SELECT total_count AS total_ingredients;
-    
-END ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_ingredientStockHistory_by_ingredientId`(in ingredientID int)
+SELECT * FROM hethonggaran.ingredientstockhistory WHERE ingredientstockhistory.ingredientId = ingredientID ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1102,6 +1135,62 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_list_order`(IN page_offset I
 SELECT * FROM hethonggaran.order 
     ORDER BY orderTime ASC 
     LIMIT 10 OFFSET page_offset ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_list_priceList` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_list_priceList`(in page int)
+SELECT hethonggaran.pricelist.*,  hethonggaran.user.name as 'userNameCreated'
+		FROM hethonggaran.pricelist
+        join hethonggaran.user on pricelist.createdUser = user.userId
+        order by pricelist.createdDate DESC
+        limit 10 offset page ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_list_productPrice_by_productId` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_list_productPrice_by_productId`(in productId int, in page int)
+SELECT  productprice.id,  
+         productprice.productId,  
+         productprice.priceListId,  
+         productprice.createdDate as 'productPriceCreatedDate', 
+         productprice.createdUser as 'productPriceCreatedUser', 
+         productprice.updatedDate as 'productPriceUpdatedDate', 
+         productprice.updatedUser as 'productPriceUpdatedUser', 
+            pricelist.type, 
+            pricelist.startDate, 
+            pricelist.enddate, 
+            pricelist.createdDate as 'priceListCreatedDate', 
+            pricelist.createdUser as 'priceListCreatedUser', 
+            pricelist.updatedDate as 'priceListUpdatedDate', 
+             pricelist.updatedUser as 'priceListUpdatedUser'   
+         FROM hethonggaran.pricelist  
+         join hethonggaran.productprice on pricelist.priceId = productprice.priceListId 
+         where productprice.productId = productId 
+         order by productprice.createdDate DESC 
+         limit 10 offset page ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1181,6 +1270,23 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_priceList_by_id` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_priceList_by_id`(in priceID int)
+SELECT * FROM hethonggaran.pricelist where pricelist.priceId = priceID ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_get_promote_by_id` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -1215,6 +1321,77 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_user_by_id` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_user_by_id`(in userId int)
+SELECT * FROM hethonggaran.user WHERE user.userId = userId ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_insert_order` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_order`(in totalMoney decimal(10,2), in createdUser int, in customerId int, in promoteId int, in paymentMethodId int)
+INSERT INTO hethonggaran.order(totalMoney, createdUser, customerId,promoteId, paymentMethodId)
+	VALUES(totalMoney, createdUser, customerId, promoteId, paymentMethodId) ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_insert_productPrice` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_productPrice`(in productId int, in priceListId int, in price int, in createdUser int)
+insert into productprice(productId, priceListId, price, createdUser)
+    values (productId, priceListId, price, createdUser) ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_updatePoint_customer` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_updatePoint_customer`(in point int, in customeID int)
+update hethonggaran.customer set hethonggaran.point = point 
+    where hethonggaran.customerId = customerID ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -1225,4 +1402,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-27  2:30:14
+-- Dump completed on 2023-06-15  6:09:41

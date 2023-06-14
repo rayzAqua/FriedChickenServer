@@ -24,7 +24,7 @@ class Category {
 
   static async getList() {
     try {
-      const results = await query("SELECT * FROM railway.category;");
+      const results = await query("SELECT * FROM hethonggaran.category;");
       return results;
     } catch (error) {
       console.error("Error executing query:", error);
