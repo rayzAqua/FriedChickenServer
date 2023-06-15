@@ -26,7 +26,8 @@ User.getById = async function (userId) {
   try {
     // const results = await query("SELECT * FROM user WHERE userId = ?", [
     //   userId,
-    // ]);
+    //
+    //]);
 
     const sp = "CALL sp_get_user_by_id(?);";
     const results = await query(sp, [userId]);
