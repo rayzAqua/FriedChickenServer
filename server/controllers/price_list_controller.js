@@ -18,9 +18,11 @@ class PriceListController {
     const { userId, startDate, endDate, type } = req.body;
 
     try {
-      const nowDate = new Date();
+      let nowDate = new Date();
+
       const startdate = new Date(startDate);
       const enddate = new Date(endDate);
+
       if (
         !(startdate >= nowDate && enddate >= nowDate && startdate <= enddate)
       ) {
@@ -35,7 +37,9 @@ class PriceListController {
 
       const respone = await Pricelist.create(type, startdate, enddate, userId);
 
-      const priceList = await Pricelist.getById(respone["insertId"]);
+      const priceList = await Pricelist.getById(
+        respone[0][0]["last_insert_id()"]
+      );
 
       return res.send(
         message(true, "Thêm giá sản phẩm thành công!", priceList)
@@ -48,14 +52,22 @@ class PriceListController {
 
   //GET /price-list/list
   async getList(req, res, next) {
-    const page = req.query.page | 1;
+    const page = req.query.page ? req.query.page : 1;
+
     try {
       const priceList = await Pricelist.getList(calculateStart(page));
 
       const totalPage = calculateTotal(priceList.length);
 
       return res.send(
-        message(true, "Lấy dữ liệu thành công!", priceList, page, totalPage)
+        message(
+          true,
+          "Lấy dữ liệu thành công!",
+          priceList,
+          true,
+          +page,
+          totalPage
+        )
       );
     } catch (error) {
       console.log(error);

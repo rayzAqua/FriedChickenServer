@@ -32,7 +32,9 @@ async function getMoreInfoProductPrice(res, result, page, totalPage) {
       } else productPrice["isActive"] = false;
     });
 
-    res.send(message(true, "Lấy dữ liệu thành công!", result, page, totalPage));
+    res.send(
+      message(true, "Lấy dữ liệu thành công!", result, true, page, totalPage)
+    );
   } catch (error) {
     console.log(error);
     return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
