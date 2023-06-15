@@ -67,7 +67,11 @@ CREATE TABLE `customer` (
   `updatedTime` datetime DEFAULT NULL,
   PRIMARY KEY (`customerId`),
   UNIQUE KEY `phone_UNIQUE` (`phone`),
-  UNIQUE KEY `email_UNIQUE` (`email`)
+  UNIQUE KEY `email_UNIQUE` (`email`),
+  KEY `createdUser` (`createdUser`),
+  KEY `updatedUser` (`updatedUser`),
+  CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`createdUser`) REFERENCES `user` (`userId`),
+  CONSTRAINT `customer_ibfk_2` FOREIGN KEY (`updatedUser`) REFERENCES `user` (`userId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -200,8 +204,11 @@ CREATE TABLE `ingredient` (
   `updatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `createdUser` int DEFAULT NULL,
   `updatedUser` int DEFAULT NULL,
-  `status` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`ingredientId`)
+  PRIMARY KEY (`ingredientId`),
+  KEY `createdUser` (`createdUser`),
+  KEY `updatedUser` (`updatedUser`),
+  CONSTRAINT `ingredient_ibfk_1` FOREIGN KEY (`createdUser`) REFERENCES `user` (`userId`),
+  CONSTRAINT `ingredient_ibfk_2` FOREIGN KEY (`updatedUser`) REFERENCES `user` (`userId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -211,7 +218,7 @@ CREATE TABLE `ingredient` (
 
 LOCK TABLES `ingredient` WRITE;
 /*!40000 ALTER TABLE `ingredient` DISABLE KEYS */;
-INSERT INTO `ingredient` VALUES (1,'Nguyên liệu 1',10,1,NULL,'2023-05-22 22:09:45','2023-05-22 22:09:45',NULL,NULL,NULL),(2,'Nguyên liệu 2',100,1,NULL,'2023-05-22 22:09:45','2023-05-22 22:09:45',NULL,NULL,NULL),(3,'Nguyên liệu 3',101,0,NULL,'2023-05-22 22:09:45','2023-05-22 22:09:45',NULL,NULL,NULL);
+INSERT INTO `ingredient` VALUES (1,'Nguyên liệu 1',10,1,NULL,'2023-05-22 22:09:45','2023-05-22 22:09:45',NULL,NULL),(2,'Nguyên liệu 2',100,1,NULL,'2023-05-22 22:09:45','2023-05-22 22:09:45',NULL,NULL),(3,'Nguyên liệu 3',101,0,NULL,'2023-05-22 22:09:45','2023-05-22 22:09:45',NULL,NULL);
 /*!40000 ALTER TABLE `ingredient` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -232,9 +239,10 @@ CREATE TABLE `ingredientstockhistory` (
   PRIMARY KEY (`ingredientStockHistory`),
   KEY `ingredientId` (`ingredientId`),
   KEY `wareHouseId` (`wareHouseId`),
+  KEY `createdUser` (`createdUser`),
   CONSTRAINT `ingredientstockhistory_ibfk_1` FOREIGN KEY (`ingredientId`) REFERENCES `ingredient` (`ingredientId`),
-  CONSTRAINT `ingredientstockhistory_ibfk_2` FOREIGN KEY (`ingredientStockHistory`) REFERENCES `user` (`userId`),
-  CONSTRAINT `ingredientstockhistory_ibfk_3` FOREIGN KEY (`wareHouseId`) REFERENCES `warehouse` (`wareHouseId`)
+  CONSTRAINT `ingredientstockhistory_ibfk_3` FOREIGN KEY (`wareHouseId`) REFERENCES `warehouse` (`wareHouseId`),
+  CONSTRAINT `ingredientstockhistory_ibfk_4` FOREIGN KEY (`createdUser`) REFERENCES `user` (`userId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -333,7 +341,16 @@ CREATE TABLE `paymentmethod` (
   `paymentMethodId` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `detail` text,
-  PRIMARY KEY (`paymentMethodId`)
+  `available` tinyint DEFAULT NULL,
+  `createdUser` int DEFAULT NULL,
+  `updatedUser` int DEFAULT NULL,
+  `updatedTime` datetime DEFAULT NULL,
+  `createdTime` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`paymentMethodId`),
+  KEY `updatedUser` (`updatedUser`),
+  KEY `createdUser` (`createdUser`),
+  CONSTRAINT `paymentmethod_ibfk_1` FOREIGN KEY (`updatedUser`) REFERENCES `user` (`userId`),
+  CONSTRAINT `paymentmethod_ibfk_2` FOREIGN KEY (`createdUser`) REFERENCES `user` (`userId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -343,7 +360,7 @@ CREATE TABLE `paymentmethod` (
 
 LOCK TABLES `paymentmethod` WRITE;
 /*!40000 ALTER TABLE `paymentmethod` DISABLE KEYS */;
-INSERT INTO `paymentmethod` VALUES (1,'Tiền mặt',NULL),(2,'Chuyển khoản',NULL),(3,'Ví điện tử',NULL);
+INSERT INTO `paymentmethod` VALUES (1,'Tiền mặt',NULL,NULL,NULL,NULL,NULL,NULL),(2,'Chuyển khoản',NULL,NULL,NULL,NULL,NULL,NULL),(3,'Ví điện tử',NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `paymentmethod` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -363,7 +380,11 @@ CREATE TABLE `pricelist` (
   `createdUser` int NOT NULL,
   `updatedDate` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updatedUser` int DEFAULT NULL,
-  PRIMARY KEY (`priceId`)
+  PRIMARY KEY (`priceId`),
+  KEY `updatedUser` (`updatedUser`),
+  KEY `createdUser` (`createdUser`),
+  CONSTRAINT `pricelist_ibfk_1` FOREIGN KEY (`updatedUser`) REFERENCES `user` (`userId`),
+  CONSTRAINT `pricelist_ibfk_2` FOREIGN KEY (`createdUser`) REFERENCES `user` (`userId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -396,9 +417,15 @@ CREATE TABLE `productprice` (
   PRIMARY KEY (`id`),
   KEY `productId` (`productId`),
   KEY `priceListId` (`priceListId`),
+  KEY `createdUser` (`createdUser`),
+  KEY `updatedUser` (`updatedUser`),
   CONSTRAINT `productprice_ibfk_1` FOREIGN KEY (`productId`) REFERENCES `food` (`foodId`),
   CONSTRAINT `productprice_ibfk_2` FOREIGN KEY (`productId`) REFERENCES `ingredient` (`ingredientId`),
-  CONSTRAINT `productprice_ibfk_3` FOREIGN KEY (`priceListId`) REFERENCES `pricelist` (`priceId`)
+  CONSTRAINT `productprice_ibfk_3` FOREIGN KEY (`priceListId`) REFERENCES `pricelist` (`priceId`),
+  CONSTRAINT `productprice_ibfk_4` FOREIGN KEY (`priceListId`) REFERENCES `pricelist` (`priceId`),
+  CONSTRAINT `productprice_ibfk_5` FOREIGN KEY (`productId`) REFERENCES `ingredient` (`ingredientId`),
+  CONSTRAINT `productprice_ibfk_6` FOREIGN KEY (`createdUser`) REFERENCES `user` (`userId`),
+  CONSTRAINT `productprice_ibfk_7` FOREIGN KEY (`updatedUser`) REFERENCES `user` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -486,8 +513,11 @@ CREATE TABLE `user` (
   `status` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `createdDate` datetime DEFAULT CURRENT_TIMESTAMP,
   `createdUser` int NOT NULL,
+  `warehouseId` int DEFAULT NULL,
   PRIMARY KEY (`userId`),
-  UNIQUE KEY `email_UNIQUE` (`email`)
+  UNIQUE KEY `email_UNIQUE` (`email`),
+  KEY `warehouseId` (`warehouseId`),
+  CONSTRAINT `user_ibfk_1` FOREIGN KEY (`warehouseId`) REFERENCES `warehouse` (`wareHouseId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -497,7 +527,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'kiet','tuankiet@gmail.com','0777411676',NULL,'$2b$10$MQVluybtImsi00.Ez8rW4OpYDkVsgNq7nhvAGriWad4oiPFmQPnoG',NULL,'2023-05-22 00:09:47',1),(2,'kiet2','tuankiet2@gmail.com','0123456789',NULL,'$2b$10$MQVluybtImsi00.Ez8rW4OpYDkVsgNq7nhvAGriWad4oiPFmQPnoG',NULL,'2023-05-22 00:11:18',1),(3,'kiet3','tuankiet3@gmail.com','0123132332',NULL,'123456$2b$2b$10$MQVluybtImsi00.Ez8rW4OpYDkVsgNq7nhvAGriWad4oiPFmQPnoG',NULL,'2023-05-22 00:11:18',2);
+INSERT INTO `user` VALUES (1,'kiet','tuankiet@gmail.com','0777411676',NULL,'$2b$10$MQVluybtImsi00.Ez8rW4OpYDkVsgNq7nhvAGriWad4oiPFmQPnoG',NULL,'2023-05-22 00:09:47',1,NULL),(2,'kiet2','tuankiet2@gmail.com','0123456789',NULL,'$2b$10$MQVluybtImsi00.Ez8rW4OpYDkVsgNq7nhvAGriWad4oiPFmQPnoG',NULL,'2023-05-22 00:11:18',1,NULL),(3,'kiet3','tuankiet3@gmail.com','0123132332',NULL,'123456$2b$2b$10$MQVluybtImsi00.Ez8rW4OpYDkVsgNq7nhvAGriWad4oiPFmQPnoG',NULL,'2023-05-22 00:11:18',2,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -549,7 +579,11 @@ CREATE TABLE `warehouse` (
   `updatedUser` int DEFAULT NULL,
   `updatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `createdTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`wareHouseId`)
+  PRIMARY KEY (`wareHouseId`),
+  KEY `createdUser` (`createdUser`),
+  KEY `updatedUser` (`updatedUser`),
+  CONSTRAINT `warehouse_ibfk_1` FOREIGN KEY (`createdUser`) REFERENCES `user` (`userId`),
+  CONSTRAINT `warehouse_ibfk_2` FOREIGN KEY (`updatedUser`) REFERENCES `user` (`userId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1402,4 +1436,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-06-15  6:09:41
+-- Dump completed on 2023-06-15  7:09:17
