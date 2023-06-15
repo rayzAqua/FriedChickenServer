@@ -187,7 +187,7 @@ Order.create = async function (
     //   [totalMoney, createdUser, customerId, promoteId, paymentMethodId]
     // );
 
-    const sp = "call sp_insert_order(?, ?, ?, ?, ?);";
+    const sp = "call sp_create_order(?, ?, ?, ?, ?);";
     const results = await query(sp, [
       totalMoney,
       createdUser,
