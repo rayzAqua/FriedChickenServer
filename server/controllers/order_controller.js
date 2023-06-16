@@ -62,7 +62,9 @@ async function getDetailOrder(res, result, page, totalPage) {
     // results.push({ currentPage: page });
     // results.push({ totalPage: totalPage });
 
-    res.send(message(true, "Lấy dữ liệu thành công!", result, page, totalPage));
+    res.send(
+      message(true, "Lấy dữ liệu thành công!", result, true, page, totalPag)
+    );
   } catch (error) {
     console.log(error);
     return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
@@ -245,6 +247,8 @@ class OrderController {
         paymentMethodId
       );
 
+      console.log({ order });
+
       const orderId = order[0][0]["last_insert_id()"];
 
       //get order by id insert
@@ -274,7 +278,7 @@ class OrderController {
       //get list promotion follows new point of customer
       const listPromotion = await Promote.getListCanUse(point);
       console.log("listPromotion: ", listPromotion);
-      sendMailPromotion("pvh9201@gmail.com");
+      // sendMailPromotion("pvh9201@gmail.com");
 
       //send mail notification promotion can use with new point when order
 

@@ -47,6 +47,26 @@ Pricelist.getList = async function (page) {
   }
 };
 
+Pricelist.getListByFoodId = async function (foodId, page) {
+  try {
+    // const results = await query(
+    //   "SELECT railway.pricelist.*,  railway.user.name as 'userNameCreated'" +
+    //     " FROM railway.pricelist" +
+    //     " join railway.user on pricelist.createdUser = user.userId" +
+    //     " order by pricelist.createdDate DESC" +
+    //     " limit 10 offset ?;",
+    //   [page]
+    // );
+
+    const sp = "call sp_get_list_priceListById(?,?);";
+    const results = await query(sp, [foodId, page]);
+    return results[0];
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw error;
+  }
+};
+
 Pricelist.create = async function (type, startDate, endDate, userId) {
   try {
     // const results = await query(
