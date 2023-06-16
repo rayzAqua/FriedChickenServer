@@ -149,8 +149,6 @@ export const getFoodList = async (req, res, next) => {
         // Tính toán tổng số trang dựa trên tổng số mẫu dữ liệu có trong bảng food.
         const total_page = Math.ceil(totalFoods[0].total_rows / page_limit);
 
-        console.log(total_page);
-
         // Tạo ra đối tượng response để gửi phản hồi.
         const response = {
             state: true,
@@ -161,7 +159,7 @@ export const getFoodList = async (req, res, next) => {
         if (filterFoodArray.length > 0) {
             // Định dạng lại dữ liệu của các đối tượng food có trong mảng filterFoodArray để làm output.
             const foods = filterFoodArray.map((food) => {
-                const { categoryId, categoryName, foodPrice, type, ...otherDetails } = food;
+                const { categoryId, categoryName, price, type, ...otherDetails } = food;
                 return {
                     ...otherDetails,
                     category: {
@@ -169,7 +167,7 @@ export const getFoodList = async (req, res, next) => {
                         categoryName: categoryName,
                     },
                     currentPrice: {
-                        price: foodPrice,
+                        price: price,
                         type: type,
                     }
                 }

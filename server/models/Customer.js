@@ -89,7 +89,6 @@ Customer.getCustomerList = async function (
     // Thực thi sp_get_cusotmer_list với 6 tham số customerId, name, phone, email, page_limit, off_set để tiến hành lấy về danh sách
     // các khách hàng.
     const customers = await query(sp, [customerId, k3y, page_limit, off_set]);
-    console.log(customers);
     return customers;
   } catch (err) {
     console.log("Error executing query: ", err);
