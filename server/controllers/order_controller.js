@@ -11,7 +11,7 @@ import { calculateTotal } from "../utils/calculateStart.js";
 import message from "../utils/message.js";
 import { sendMailPromotion } from "../utils/mail.js";
 
-async function getDetailOrder(res, result, page, totalPage) {
+async function getDetailOrder(res, result, isShow, page, totalPage) {
   const detailPromises = [];
   const promotionPromises = [];
   const customerPromises = [];
@@ -49,21 +49,26 @@ async function getDetailOrder(res, result, page, totalPage) {
       order["requirePoint"] = promotion["requirePoint"];
 
       let list = [];
+      let subTotal = 0;
       details.map((detail, index) => {
         let object = {};
         object["foodId"] = detail["foodId"];
         object["price"] = detail["price"];
         object["quantity"] = detail["quantity"];
+        subTotal += +detail["price"] * +detail["quantity"];
         list.push(object);
       });
 
       order["details"] = list;
+      order["discountInmoney"] = (+promotion["discount"] * subTotal) / 100;
+      order["subTotal"] = subTotal;
     });
+
     // results.push({ currentPage: page });
     // results.push({ totalPage: totalPage });
 
     res.send(
-      message(true, "Lấy dữ liệu thành công!", result, true, page, totalPag)
+      message(true, "Lấy dữ liệu thành công!", result, isShow, page, totalPage)
     );
   } catch (error) {
     console.log(error);
@@ -88,15 +93,16 @@ class OrderController {
           return res.send(message(false, "Không tồn tại đơn hàng này!", ""));
         }
 
-        const customer = await Customer.getById(order[0].customerId);
+        // const customer = await Customer.getById(order[0].customerId);
 
-        const orderDetail = await OrderDetail.getByOrderId(order[0].orderId);
+        // const orderDetail = await OrderDetail.getByOrderId(order[0].orderId);
 
-        return res.send(
-          message(true, "Lấy dữ liệu thành công!", [
-            { order: order[0], customer: customer[0], details: orderDetail },
-          ])
-        );
+        // return res.send(
+        //   message(true, "Lấy dữ liệu thành công!", [
+        //     { order: order[0], customer: customer[0], details: orderDetail },
+        //   ])
+        // );
+        getDetailOrder(res, order, false, 0, 0);
       }
 
       let totalPage = 0;
@@ -117,7 +123,7 @@ class OrderController {
         totalPage = calculateTotal(total[0]["total"]);
       }
 
-      getDetailOrder(res, order, page, totalPage);
+      getDetailOrder(res, order, true, page, totalPage);
     } catch (error) {
       console.log(error);
       return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
