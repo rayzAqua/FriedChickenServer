@@ -19,9 +19,12 @@ class PriceListController {
 
     try {
       let nowDate = new Date();
+      nowDate = new Date(nowDate.toLocaleDateString());
 
-      const startdate = new Date(startDate);
-      const enddate = new Date(endDate);
+      let startdate = new Date(startDate);
+      startdate = new Date(startdate.toLocaleDateString());
+      let enddate = new Date(endDate);
+      enddate = new Date(enddate.toLocaleDateString());
 
       if (
         !(startdate >= nowDate && enddate >= nowDate && startdate <= enddate)
