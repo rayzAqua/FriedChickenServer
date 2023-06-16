@@ -2,8 +2,8 @@ import { query } from "../sql_connect/connected.js";
 import Warehouse from "../models/Warehouse.js";
 
 export const report = async (req, res, next) => {
-    const from = req.body.from;
-    const to = req.body.to;
+    const from = req.body.from || null;
+    const to = req.body.to || null;
     const wareHouseId = Number(req.body.wareHouseId);
     const topCustomer = Number(req.body.top);
 
@@ -12,6 +12,15 @@ export const report = async (req, res, next) => {
     const toDate = new Date(to);
 
     try {
+
+        if (fromDate === "" && currentDate === "" || !fromDate && !currentDate) {
+            res.status(400).json({
+                state: false,
+                message: "Không được bỏ trống thời gian!",
+                data: []
+            });
+            return;
+        }
 
         if (fromDate >= currentDate) {
             res.status(400).json({
