@@ -13,6 +13,17 @@ class Warehouse {
     this.updatedTime = warehouse.updatedTime;
     this.createdTime = warehouse.createdTime;
   }
+  // SP lấy warehouse theo id
+  static async findById(warehouseId) {
+    try {
+      const sp = "CALL sp_get_warehouse_by_id(?);";
+      const warehouse = await query(sp, [warehouseId]);
+      return warehouse[0];
+    } catch (err) {
+      console.error("Error executing query: ", err);
+      throw err;
+    }
+  }
 
   // SP lấy danh sách kho dựa vào status
   static async getWarehouseByStatus(status) {
@@ -21,7 +32,7 @@ class Warehouse {
       const warehouseList = await query(sp, [status]);
       return warehouseList;
     } catch (err) {
-      console.log("Error executing query: ", err);
+      console.error("Error executing query: ", err);
       throw err;
     }
   }
