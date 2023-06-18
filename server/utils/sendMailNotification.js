@@ -1,3 +1,5 @@
+import { sendMailPromotion } from "./mail";
+
 // Define the Subject (mail notification system)
 class MailNotificationSystem {
   constructor() {
@@ -18,12 +20,12 @@ class MailNotificationSystem {
     });
   }
 
-  sendPromotion(promotion) {
+  sendPromotion(promotions, mail) {
     // Code to send the promotion via email
     // ...
-
+    sendMailPromotion(mail, promotions);
     // Notify the observers about the promotion
-    this.notifyObservers(promotion);
+    this.notifyObservers(promotions);
   }
 }
 
@@ -40,18 +42,17 @@ class PromotionListener {
   }
 }
 
-export function sendMailNotification() {
+export function sendMailNotification(promotions, email) {
   // Usage example
   const notificationSystem = new MailNotificationSystem();
 
   const observer1 = new PromotionListener();
 
   notificationSystem.addObserver(observer1);
-  notificationSystem.addObserver(observer2);
 
   // Simulate sending a promotion
-  const promotion = "Get 20% off on your next purchase!";
-  notificationSystem.sendPromotion(promotion);
+  // const promotion = "Get 20% off on your next purchase!";
+  notificationSystem.sendPromotion(promotions);
 
   // Output:
   // Received promotion: Get 20% off on your next purchase!

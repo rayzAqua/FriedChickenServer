@@ -67,6 +67,14 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
     // results.push({ currentPage: page });
     // results.push({ totalPage: totalPage });
 
+    if (res.headersSent) {
+      // If the response has been sent, return or handle the error accordingly
+      return;
+    }
+
+    // Set the necessary headers before sending the response
+    res.setHeader("Content-Type", "application/json");
+
     res.send(
       message(true, "Lấy dữ liệu thành công!", result, isShow, page, totalPage)
     );
@@ -81,7 +89,7 @@ class OrderController {
   async getList(req, res, next) {
     const orderId = req.query.orderId ? req.query.orderId : "";
     const key = req.query.key ? req.query.key : "";
-    const page = req.query.page ? req.query.page : 1;
+    const page = req.query.page || 1;
     const fromDate = req.query.fromDate;
     const toDate = req.query.toDate;
     let order;
