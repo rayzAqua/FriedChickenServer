@@ -10,7 +10,6 @@ export const report = async (req, res, next) => {
     const currentDate = new Date();
     const fromDate = from ? new Date(from) : currentDate;
     const toDate = to ? new Date(to) : currentDate;
-    console.log(toDate);
 
     try {
 
@@ -23,7 +22,7 @@ export const report = async (req, res, next) => {
             return;
         }
 
-        if (fromDate >= currentDate) {
+        if (fromDate > currentDate) {
             res.status(400).json({
                 state: false,
                 message: "Thời gian bắt đầu (FROM) không thể lớn hơn thời gian hiện tại",
@@ -52,10 +51,15 @@ export const report = async (req, res, next) => {
         }
 
         const sp = "CALL sp_report(?, ?, ? ,?);"
+        console.log(fromDate);
+        console.log(toDate);
         const report = await query(sp, [fromDate, toDate, wareHouseId, topCustomer]);
         const filterDateRevenueArray = Array.isArray(report[0]) ? report[0] : [report[0]];
+        console.log(filterDateRevenueArray);
         const filterFoodRevenueArray = Array.isArray(report[1]) ? report[1] : [report[1]];
+        console.log(filterFoodRevenueArray);
         const filterCustomerRevenueArray = Array.isArray(report[2]) ? report[1] : [report[1]];
+        console.log(filterCustomerRevenueArray);
 
         if (filterDateRevenueArray.length > 0 && filterFoodRevenueArray.length > 0 && filterCustomerRevenueArray.length > 0) {
             const dateRevenues = filterDateRevenueArray.map((dateRevenue) => {
@@ -86,6 +90,12 @@ export const report = async (req, res, next) => {
                 state: true,
                 message: "Lấy dữ liệu thành công!",
                 data: data
+            });
+        } else {
+            res.status(404).json({
+                state: true,
+                message: "Không tìm thấy dữ liệu!",
+                data: []
             });
         }
     } catch (err) {
