@@ -55,7 +55,7 @@ class PriceListController {
 
   //GET /price-list/list
   async getList(req, res, next) {
-    const page = req.query.page ? req.query.page : 1;
+    const page = req.query.page || 1;
 
     try {
       const priceList = await Pricelist.getList(calculateStart(page));

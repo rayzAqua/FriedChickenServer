@@ -91,8 +91,8 @@ class ProductPriceController {
 
   //GET /product-price/list
   async getList(req, res, next) {
-    const foodId = req.query.foodId;
-    const page = req.query.page | 1;
+    const foodId = req.query.foodId || -1;
+    const page = req.query.page || 1;
     try {
       const productPrice = await ProductPrice.getListByProductId(
         foodId,
