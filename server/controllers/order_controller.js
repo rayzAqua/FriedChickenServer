@@ -350,7 +350,7 @@ class OrderController {
       // Kiểm tra xem customerId và orderId có bị bỏ trống không.
       if (customerId && orderId) {
         // Kết quả sau khi thực thi truy vấn luôn trả về kèm theo thông tin truy vấn nên cần phải lọc lại.
-        const points = await Order.calculatePoint(customerId, orderId, money);
+        const points = await Order.calculatePoint(customerId, orderId);
         // Lọc lại kết quả sau khi thực thi truy vấn để lấy về dữ liệu.
         const filterPointArray = Array.isArray(points[0])
           ? points[0]

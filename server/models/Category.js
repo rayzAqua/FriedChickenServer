@@ -1,4 +1,5 @@
 import { query } from "../sql_connect/connected.js";
+import { Singleton } from "../designPattern/singletonPattern.js";
 
 class Category {
   // Hàm khởi tạo
@@ -32,5 +33,7 @@ class Category {
     }
   }
 }
+
+// const category = Singleton.getModel('category', new Category());
 
 export default Category;

@@ -20,13 +20,12 @@ class Database {
       database: process.env.DATABASE,
       port: process.env.PORT,
     });
-    console.log("Connected to Database!");
     return this.connection;
   }
 }
 
 // Singleton Pattern đảm bảo chỉ có một thể hiện của đối tượng Database.
-const Singleton = (function () {
+const Singleton = (function() {
 
   let instance = null;
 

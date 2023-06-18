@@ -2,22 +2,21 @@
 // BÊN KẾT NỐI DB THÌ HOÀN THIỆN RỒI
 // ĐÂY LÀ ĐỂ ÁP DỤNG CHO CÁC MODEL
 
-const Singleton = (function () {
+export const Singleton = (function() {
 
-    let instance = null;
+    let instance = {};
   
-    function createDBConnecting() {
-        const database = new Database();
-        const connecting = database.connect();
-        return connecting;
+    function createModel(model) {
+        object = new model;
+        return object;
     }
   
     return {
-        getDBConnecting: function() {
-            if (!instance) {
-                instance = createDBConnecting();
+        getModel: function(modelName, model) {
+            if (!instance[modelName]) {
+                instance[modelName] = createModel(model);
             }
-            return instance;
+            return instance[modelName];
         }
     }
   })();
