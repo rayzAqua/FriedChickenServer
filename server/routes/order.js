@@ -6,7 +6,7 @@ const orderRouter = express.Router();
 orderRouter.get("/list", authenticateToken, OrderController.getList);
 orderRouter.post("/create", authenticateToken, OrderController.create);
 orderRouter.patch(
-  "/:orderId/:status",
+  "/update-status",
   authenticateToken,
   OrderController.changeStatusOrder
 );
