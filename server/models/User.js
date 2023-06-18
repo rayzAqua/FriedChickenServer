@@ -1,4 +1,5 @@
 import { connecting, query } from "../sql_connect/connected.js";
+import { Singleton } from "../designPattern/singletonPattern.js";
 
 const User = function (user) {
   this.userId = user.userId;
@@ -38,4 +39,6 @@ User.getById = async function (userId) {
   }
 };
 
-export default User;
+const user = Singleton.getModel('user', User);
+
+export default user;

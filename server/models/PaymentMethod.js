@@ -1,4 +1,5 @@
 import { connecting, query } from "../sql_connect/connected.js";
+import { Singleton } from "../designPattern/singletonPattern.js";
 
 const PaymentMethod = function (paymentMethod) {
   this.paymentMethodId = paymentMethod.paymentMethodId;
@@ -35,4 +36,6 @@ PaymentMethod.getAll = async function () {
   }
 };
 
-export default PaymentMethod;
+const paymentMethod = Singleton.getModel('paymentMethod', PaymentMethod);
+
+export default paymentMethod;

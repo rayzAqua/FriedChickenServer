@@ -3,13 +3,13 @@ import { Singleton } from "../designPattern/singletonPattern.js";
 
 class Category {
   // Hàm khởi tạo
-  constructor(Category) {
-    this.categoryId = Category.categoryId;
-    this.name = Category.name;
-    this.createdTime = Category.createdTime;
-    this.updatedTime = Category.updatedTime;
-    this.createdUser = Category.createdUser;
-    this.updatedUser = Category.updatedUser;
+  constructor(category) {
+    this.categoryId = category.categoryId;
+    this.name = category.name;
+    this.createdTime = category.createdTime;
+    this.updatedTime = category.updatedTime;
+    this.createdUser = category.createdUser;
+    this.updatedUser = category.updatedUser;
   }
 
   static async getById(categoryId) {
@@ -34,6 +34,6 @@ class Category {
   }
 }
 
-// const category = Singleton.getModel('category', new Category());
+const category = Singleton.getModel('category', Category);
 
-export default Category;
+export default category;

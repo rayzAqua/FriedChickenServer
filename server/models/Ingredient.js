@@ -1,4 +1,5 @@
 import { query } from "../sql_connect/connected.js";
+import { Singleton } from "../designPattern/singletonPattern.js";
 
 class Ingredient {
     // Hàm khởi tạo
@@ -39,4 +40,6 @@ class Ingredient {
     }
 }
 
-export default Ingredient;
+const ingredient = Singleton.getModel('ingredient', Ingredient);
+
+export default ingredient;

@@ -1,5 +1,6 @@
 import { connecting, query } from "../sql_connect/connected.js";
 import { createError } from "../utils/createError.js";
+import { Singleton } from "../designPattern/singletonPattern.js";
 
 const Customer = function (customer) {
   this.customerId = customer.customerId;
@@ -96,4 +97,7 @@ Customer.getCustomerList = async function (
   }
 };
 
-export default Customer;
+
+const customer = Singleton.getModel('customer', Customer);
+
+export default customer;

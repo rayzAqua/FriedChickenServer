@@ -1,4 +1,5 @@
 import { query } from "../sql_connect/connected.js";
+import { Singleton } from "../designPattern/singletonPattern.js";
 
 class Warehouse {
   // Hàm khởi tạo
@@ -38,4 +39,6 @@ class Warehouse {
   }
 }
 
-export default Warehouse;
+const warehouse = Singleton.getModel('warehouse', Warehouse);
+
+export default warehouse;

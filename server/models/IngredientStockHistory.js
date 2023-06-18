@@ -1,4 +1,5 @@
 import { connecting, query } from "../sql_connect/connected.js";
+import { Singleton } from "../designPattern/singletonPattern.js";
 
 const IngredientStockHistory = function (ingredientstockhistory) {
   this.ingredientStockHistoryId =
@@ -26,4 +27,6 @@ IngredientStockHistory.getByIngredientId = async function (ingredientId) {
   }
 };
 
-export default IngredientStockHistory;
+const ingredientStockHistory = Singleton.getModel('ingredientStockHistory', IngredientStockHistory)
+
+export default ingredientStockHistory;

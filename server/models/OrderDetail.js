@@ -1,4 +1,5 @@
 import { connecting, query } from "../sql_connect/connected.js";
+import { Singleton } from "../designPattern/singletonPattern.js";
 
 const OrderDetail = function (orderDetail) {
   this.orderDetailId = orderDetail.orderDetailId;
@@ -46,4 +47,6 @@ OrderDetail.create = async function (orderId, foodId, price, quantity) {
   }
 };
 
-export default OrderDetail;
+const orderDetail = Singleton.getModel('orderDetail', OrderDetail);
+
+export default orderDetail;

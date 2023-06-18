@@ -1,4 +1,5 @@
 import { connecting, query } from "../sql_connect/connected.js";
+import { Singleton } from "../designPattern/singletonPattern.js";
 
 const Promote = function (promote) {
   this.promoteId = promote.promoteId;
@@ -52,4 +53,6 @@ Promote.getListCanUse = async function (point) {
   }
 };
 
-export default Promote;
+const promote = Singleton.getModel('promote', Promote);
+
+export default promote;

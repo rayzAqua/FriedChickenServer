@@ -6,16 +6,17 @@ export const Singleton = (function() {
 
     let instance = {};
   
-    function createModel(model) {
-        object = new model;
-        return object;
-    }
+    // function createModel(model) {
+    //     const object = new model();
+    //     return object;
+    // }
   
     return {
         getModel: function(modelName, model) {
             if (!instance[modelName]) {
-                instance[modelName] = createModel(model);
+                instance[modelName] = model;
             }
+            // console.log(instance);
             return instance[modelName];
         }
     }

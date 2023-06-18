@@ -1,4 +1,5 @@
 import { connecting, query } from "../sql_connect/connected.js";
+import { Singleton } from "../designPattern/singletonPattern.js";
 
 const Role = function (role) {
   this.roleId = role.roleId;
@@ -28,4 +29,6 @@ Role.getListRoleByUserId = async function (userId) {
   }
 };
 
-export default Role;
+const role = Singleton.getModel('role', Role);
+
+export default role;

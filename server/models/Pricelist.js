@@ -1,4 +1,5 @@
 import { connecting, query } from "../sql_connect/connected.js";
+import { Singleton } from "../designPattern/singletonPattern.js";
 
 const Pricelist = function (pricelist) {
   this.priceId = pricelist.priceId;
@@ -84,4 +85,6 @@ Pricelist.create = async function (type, startDate, endDate, userId) {
   }
 };
 
-export default Pricelist;
+const priceList = Singleton.getModel('priceList', Pricelist);
+
+export default priceList;

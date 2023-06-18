@@ -1,5 +1,6 @@
 import { connecting, query } from "../sql_connect/connected.js";
 import calculateStart from "../utils/calculateStart.js";
+import { Singleton } from "../designPattern/singletonPattern.js";
 
 const Order = function (order) {
   this.orderId = order.orderId;
@@ -214,4 +215,6 @@ Order.calculatePoint = async function (customerId, orderId) {
   }
 };
 
-export default Order;
+const order = Singleton.getModel('order', Order);
+
+export default order;
