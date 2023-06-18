@@ -305,8 +305,8 @@ class OrderController {
 
   //[PATCH] /order/:orderId/:status
   async changeStatusOrder(req, res, next) {
-    const orderId = req.params.orderId ? req.params.orderId : "";
-    const status = req.params.status ? req.params.status : "";
+    const orderId = req.body.orderId ? req.body.orderId : "";
+    const status = req.body.status ? req.body.status : "";
     const userId = req.body.userId ? req.body.userId : "";
 
     try {
