@@ -8,12 +8,13 @@ export const report = async (req, res, next) => {
     const topCustomer = Number(req.body.top);
 
     const currentDate = new Date();
-    const fromDate = new Date(from);
-    const toDate = new Date(to);
+    const fromDate = from ? new Date(from) : currentDate;
+    const toDate = to ? new Date(to) : currentDate;
+    console.log(toDate);
 
     try {
 
-        if (fromDate === "" && currentDate === "" || !fromDate && !currentDate) {
+        if (fromDate === "" && toDate === "" || !fromDate && !toDate) {
             res.status(400).json({
                 state: false,
                 message: "Không được bỏ trống thời gian!",
