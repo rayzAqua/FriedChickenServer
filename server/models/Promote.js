@@ -11,7 +11,7 @@ class Promote {
     this.requirePoint = null;
     this.createdUser = null;
   }
-  
+
   construct(promote) {
     this.promoteId = promote.promoteId;
     this.name = promote.name;
@@ -21,7 +21,25 @@ class Promote {
     this.requirePoint = promote.requirePoint;
     this.createdUser = promote.createdUser;
   }
-  
+
+  async create(name, discount, requirePoint, createdUser) {
+    try {
+      // const results = await query("SELECT * FROM hethonggaran.promotion ");
+
+      const sp = "CALL sp_add_promotion(?,?,?,?);";
+      const results = await query(sp, [
+        name,
+        discount,
+        requirePoint,
+        createdUser,
+      ]);
+      return results[0][0];
+    } catch (error) {
+      console.error("Error executing query:", error);
+      throw error;
+    }
+  };
+
   async getById(promoteId) {
     try {
       // const results = await query(
@@ -36,7 +54,7 @@ class Promote {
       throw error;
     }
   }
-  
+
   async getAll() {
     try {
       // const results = await query("SELECT * FROM hethonggaran.promotion ");
@@ -48,7 +66,7 @@ class Promote {
       throw error;
     }
   }
-  
+
   async getListCanUse(point) {
     try {
       // const results = await query("SELECT * FROM hethonggaran.promotion ");
@@ -61,24 +79,6 @@ class Promote {
     }
   }
 }
-
-Promote.create = async function (name, discount, requirePoint, createdUser) {
-  try {
-    // const results = await query("SELECT * FROM hethonggaran.promotion ");
-
-    const sp = "CALL sp_add_promotion(?,?,?,?);";
-    const results = await query(sp, [
-      name,
-      discount,
-      requirePoint,
-      createdUser,
-    ]);
-    return results[0][0];
-  } catch (error) {
-    console.error("Error executing query:", error);
-    throw error;
-  }
-};
 
 const promote = Singleton.getModel("promote", Promote);
 

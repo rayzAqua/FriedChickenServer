@@ -98,10 +98,6 @@ class ProductPrice {
   }
 }
 
-
-
-
-
 const productPrice = Singleton.getModel('productPrice', ProductPrice);
 
 export default productPrice;

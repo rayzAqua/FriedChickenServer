@@ -103,29 +103,22 @@ class Customer {
       throw err;
     }
   }
+
+  async getCustomerListForNewPromotion(point) {
+    try {
+      // Câu truy vấn gọi sp_get_customer_list với 6 tham số truyền vào.
+      const sp = "CALL sp_get_list_customer_for_new_promotion(?);";
+      // Thực thi sp_get_cusotmer_list với 6 tham số customerId, name, phone, email, page_limit, off_set để tiến hành lấy về danh sách
+      // các khách hàng.
+      const customers = await query(sp, [point]);
+
+      return customers[0];
+    } catch (err) {
+      console.log("Error executing query: ", err);
+      throw err;
+    }
+  };
 }
-
-
-
-
-
-
-
-
-Customer.getCustomerListForNewPromotion = async function (point) {
-  try {
-    // Câu truy vấn gọi sp_get_customer_list với 6 tham số truyền vào.
-    const sp = "CALL sp_get_list_customer_for_new_promotion(?);";
-    // Thực thi sp_get_cusotmer_list với 6 tham số customerId, name, phone, email, page_limit, off_set để tiến hành lấy về danh sách
-    // các khách hàng.
-    const customers = await query(sp, [point]);
-
-    return customers[0];
-  } catch (err) {
-    console.log("Error executing query: ", err);
-    throw err;
-  }
-};
 
 const customer = Singleton.getModel("customer", Customer);
 
