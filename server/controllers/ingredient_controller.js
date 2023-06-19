@@ -1,5 +1,6 @@
 import { createError } from "../utils/createError.js";
 import Ingredient from "../models/Ingredient.js";
+import User from "../models/User.js";
 import message from "../utils/message.js";
 
 // GET LIST
@@ -45,8 +46,25 @@ export const getIngredientList = async (req, res, next) => {
         // Kiểm tra xem mảng sau khi truy vấn có kết quả không, nếu có thì tiếp tục xử lý, nếu không thì thông báo
         // lỗi 404 - Không tìm thấy dữ liệu.
         if (filterIngredientArray.length > 0) {
+          const newIngredientArray = await Promise.all(filterIngredientArray.map(async (ingredient) => {
+            const { createdUser, createdTime, updatedUser, updatedTime, ...otherDetails } = ingredient;
+
+            const [created, updated] = await Promise.all([
+                User.getById(createdUser),
+                User.getById(updatedUser)
+            ]);
+
+            return {
+                ...otherDetails,
+                createdUser: created.length > 0 ? created[0].name : null,
+                createdTime: createdTime,
+                updatedUser: updated.length > 0 ? updated[0].name : null,
+                updatedTime: updatedTime
+            };
+        }));
+
             // Định dạng lại kết quả trả về từ truy vấn SP để làm Output.
-            const ingredients = filterIngredientArray.map((ingredient) => {
+            const ingredients = newIngredientArray.map((ingredient) => {
                 const { warehouseName, quantity, ...otherDetails } = ingredient;
                 return {
                     ...otherDetails,
