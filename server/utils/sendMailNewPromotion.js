@@ -1,81 +1,69 @@
-// Use at least Nodemailer v4.1.0
 import nodemailer from "nodemailer";
+import Customer from "../models/Customer.js";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "tuanhungtester@gmail.com",
-    pass: "vckkyhvzvelxajsq",
-  },
-});
+// Observer class representing an email subscriber
+class Observer {
+  constructor(email) {
+    this.email = email;
+  }
 
-// Message object
+  notify(promotion) {
+    var contentPromotion = `<td align="center" width="270">
+      <table style="
+          border-collapse: collapse;
+        " border="0" width="95%" cellspacing="0" cellpadding="0" align="center">
+        <tbody>
+          <tr>
+            <td style="
+                line-height: 0px;
+              " align="center">
+              <a href="https://v2dc3pjr.r.us-east-1.awstrack.me/L0/https:%2F%2Fgrab.onelink.me%2F2695613898%3Fpid=EDM%26c=VN_NA_PAX_GRW_CONV_LOC__VN_GR_EDM_2021OCT15_Broad%26is_retargeting=true%26af_dp=grab%253A%252F%252Fopen%253FscreenType%253DREWARD%2526rewardID%253D399260%26af_force_deeplink=true%26af_sub5=edm%26af_ad=%26af_web_dp=https%253A%252F%252Fwww.grab.com%252Fvn%252Frewards%252F%26af_ios_url=https%253A%252F%252Fwww.grab.com%252Fvn%252Frewards%252F/1/0100017c871d49f6-38bcf9f2-6fb0-4cec-8c2c-27a0622d66b0-000000/jWMuPBVQo6ItgKpKtjjWOYUWFXA=240" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://v2dc3pjr.r.us-east-1.awstrack.me/L0/https:%252F%252Fgrab.onelink.me%252F2695613898%253Fpid%3DEDM%2526c%3DVN_NA_PAX_GRW_CONV_LOC__VN_GR_EDM_2021OCT15_Broad%2526is_retargeting%3Dtrue%2526af_dp%3Dgrab%25253A%25252F%25252Fopen%25253FscreenType%25253DREWARD%252526rewardID%25253D399260%2526af_force_deeplink%3Dtrue%2526af_sub5%3Dedm%2526af_ad%3D%2526af_web_dp%3Dhttps%25253A%25252F%25252Fwww.grab.com%25252Fvn%25252Frewards%25252F%2526af_ios_url%3Dhttps%25253A%25252F%25252Fwww.grab.com%25252Fvn%25252Frewards%25252F/1/0100017c871d49f6-38bcf9f2-6fb0-4cec-8c2c-27a0622d66b0-000000/jWMuPBVQo6ItgKpKtjjWOYUWFXA%3D240&amp;source=gmail&amp;ust=1686837697656000&amp;usg=AOvVaw0vLtPo04ocozX7pbw8xH2p"><img style="
+                    display: block;
+                    line-height: 0px;
+                    font-size: 0px;
+                    border: 0px;
+                    height: auto;
+                    outline: none;
+                    text-decoration: none;
+                  " src="https://down-vn.img.susercontent.com/file/f6a2e98fd0cc67a650a833c670a9ec9b_tn" width="260" height="260" class="CToWUd" data-bit="iit"></a>
+            </td>
+          </tr>
+    
+          <tr align="center">
+            <td style="
+                font-family: 'Open sans',
+                  Arial,
+                  sans-serif;
+                color: #666666;
+                font-size: 14px;
+                line-height: 20px;
+              ">
+              Ưu đãi
+              <span style="
+                  font-weight: 600;
+                  color: rgb(
+                    242,
+                    76,
+                    61
+                  );
+                ">${promotion.name}</span>
+              <br>chỉ với
+              <span style="
+                  font-weight: 600;
+                  color: #b70404;
+                ">${promotion.requirePoint} điểm</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </td>`;
 
-export async function sendMailPromotion(mail, promotions) {
-  const listImage = [
-    "https://down-vn.img.susercontent.com/file/f6a2e98fd0cc67a650a833c670a9ec9b_tn",
-  ];
-  var contentPromotion;
-  promotions.map((promotion) => {
-    contentPromotion += `<td align="center" width="270">
-    <table style="
-        border-collapse: collapse;
-      " border="0" width="95%" cellspacing="0" cellpadding="0" align="center">
-      <tbody>
-        <tr>
-          <td style="
-              line-height: 0px;
-            " align="center">
-            <a href="https://v2dc3pjr.r.us-east-1.awstrack.me/L0/https:%2F%2Fgrab.onelink.me%2F2695613898%3Fpid=EDM%26c=VN_NA_PAX_GRW_CONV_LOC__VN_GR_EDM_2021OCT15_Broad%26is_retargeting=true%26af_dp=grab%253A%252F%252Fopen%253FscreenType%253DREWARD%2526rewardID%253D399260%26af_force_deeplink=true%26af_sub5=edm%26af_ad=%26af_web_dp=https%253A%252F%252Fwww.grab.com%252Fvn%252Frewards%252F%26af_ios_url=https%253A%252F%252Fwww.grab.com%252Fvn%252Frewards%252F/1/0100017c871d49f6-38bcf9f2-6fb0-4cec-8c2c-27a0622d66b0-000000/jWMuPBVQo6ItgKpKtjjWOYUWFXA=240" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://v2dc3pjr.r.us-east-1.awstrack.me/L0/https:%252F%252Fgrab.onelink.me%252F2695613898%253Fpid%3DEDM%2526c%3DVN_NA_PAX_GRW_CONV_LOC__VN_GR_EDM_2021OCT15_Broad%2526is_retargeting%3Dtrue%2526af_dp%3Dgrab%25253A%25252F%25252Fopen%25253FscreenType%25253DREWARD%252526rewardID%25253D399260%2526af_force_deeplink%3Dtrue%2526af_sub5%3Dedm%2526af_ad%3D%2526af_web_dp%3Dhttps%25253A%25252F%25252Fwww.grab.com%25252Fvn%25252Frewards%25252F%2526af_ios_url%3Dhttps%25253A%25252F%25252Fwww.grab.com%25252Fvn%25252Frewards%25252F/1/0100017c871d49f6-38bcf9f2-6fb0-4cec-8c2c-27a0622d66b0-000000/jWMuPBVQo6ItgKpKtjjWOYUWFXA%3D240&amp;source=gmail&amp;ust=1686837697656000&amp;usg=AOvVaw0vLtPo04ocozX7pbw8xH2p"><img style="
-                  display: block;
-                  line-height: 0px;
-                  font-size: 0px;
-                  border: 0px;
-                  height: auto;
-                  outline: none;
-                  text-decoration: none;
-                " src="${
-                  listImage[Math.random() * 2]
-                }" width="260" height="260" class="CToWUd" data-bit="iit"></a>
-          </td>
-        </tr>
-  
-        <tr align="center">
-          <td style="
-              font-family: 'Open sans',
-                Arial,
-                sans-serif;
-              color: #666666;
-              font-size: 14px;
-              line-height: 20px;
-            ">
-            Ưu đãi
-            <span style="
-                font-weight: 600;
-                color: rgb(
-                  242,
-                  76,
-                  61
-                );
-              ">${promotion.name}</span>
-            <br>chỉ với
-            <span style="
-                font-weight: 600;
-                color: #b70404;
-              ">${promotion.requirePoint} điểm</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </td>`;
-  });
+    const mailOptions = {
+      from: "Lotte Promotion <lotte.com>",
+      to: this.email,
+      subject: "ƯU ĐÃI KHUYẾN MÃI NGẬP TRÀN DÀNH CHO KHÁCH HÀNG THÂN THIẾT!",
 
-  let message = {
-    from: "Lotte Promotion <lotte.com>",
-    to: mail,
-    subject: "ƯU ĐÃI KHUYẾN MÃI NGẬP TRÀN DÀNH CHO KHÁCH HÀNG",
-
-    htmlContent: `<html class="mdl-js">
+      html: `<html class="mdl-js">
     <head>
       <style>
         @-webkit-keyframes swal2-show {
@@ -1807,7 +1795,7 @@ export async function sendMailPromotion(mail, promotions) {
                 <td bgcolor="#E8E8E8" width="1px"></td>
                 <td bgcolor="#D1D1D1" width="1px"></td>
   
-                <td bgcolor="#FFF">
+                <td bgcolor="#FFF" style="padding: 50px;">
                   <span class="im">
                     <div
                       class="m_4836663727624563565header"
@@ -1858,12 +1846,12 @@ export async function sendMailPromotion(mail, promotions) {
                                           "
                                         ></div>
                                         <a
-                                          href="https://www.lazada.vn"
+                                          href="http://www.lazada.vn"
                                           style="text-decoration: none"
                                           target="_blank"
                                           data-saferedirecturl="https://www.google.com/url?q=https://www.lazada.vn&amp;source=gmail&amp;ust=1686840370820000&amp;usg=AOvVaw30TScvcg4Su3aER_bszs36"
                                           ><img
-                                            src="https://www.lotteria.vn/grs-static/images/lotteria_logo.svg"
+                                            src="https://www.shuttledelivery.co.kr/uploads/logo_e605c9cde1003e95f7a1e5da40ff5b2c1574661560.jpg"
                                             style="
                                               display: block;
                                               max-width: 209px;
@@ -2248,8 +2236,59 @@ export async function sendMailPromotion(mail, promotions) {
     </body>
   </html>
   `,
-  };
-  let rs = await transporter.sendMail(message);
-  console.log(rs);
-  return rs;
+    };
+
+    // Configure nodemailer with your email provider settings
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "tuanhungtester@gmail.com",
+        pass: "vckkyhvzvelxajsq",
+      },
+    });
+
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending email:", error);
+      } else {
+        console.log("Email sent:", info.response);
+      }
+    });
+  }
+}
+
+// Subject class representing the promotion
+class Promotion {
+  constructor() {
+    this.observers = [];
+  }
+
+  addObserver(observer) {
+    this.observers.push(observer);
+  }
+
+  removeObserver(observer) {
+    this.observers = this.observers.filter((obs) => obs !== observer);
+  }
+
+  notifySubscribers(newPromotion) {
+    this.observers.forEach((observer) => observer.notify(newPromotion));
+  }
+
+  addNewPromotion(promotion) {
+    this.notifySubscribers(promotion);
+  }
+}
+
+export async function sendNewPromotion(newPromotion) {
+  // Usage example
+  const promotion = new Promotion();
+  const customers = await Customer.getCustomerListForNewPromotion(1);
+  customers.map((customer) => {
+    promotion.addObserver(new Observer(customer.email));
+  });
+
+  // Simulate adding a new promotion
+  promotion.addNewPromotion(newPromotion);
 }
