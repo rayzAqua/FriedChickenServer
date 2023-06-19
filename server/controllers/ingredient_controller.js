@@ -1,5 +1,6 @@
 import { createError } from "../utils/createError.js";
 import Ingredient from "../models/Ingredient.js";
+import message from "../utils/message.js";
 
 // GET LIST
 export const getIngredientList = async (req, res, next) => {
@@ -94,9 +95,9 @@ export async function add(req, res, next) {
 
     let ingredient = await Ingredient.create(name, unit, image, userId);
     ingredient = await Ingredient.getIngredientById(
-      ingredient["last_insert_id()"]
+      ingredient[0]['last_insert_id()']
     );
-
+    
     return res.send(message(true, "Thêm nguyên liệu thành công!", ingredient));
   } catch (error) {
     console.log(error);

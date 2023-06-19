@@ -15,7 +15,7 @@ class Role {
     this.createdDate = role.createdDate;
     this.createdUser = role.createdUser;
   }
-  
+
   async getListRoleByUserId(userId) {
     try {
       // const results = await query(
@@ -35,18 +35,18 @@ class Role {
       throw error;
     }
   }
+  
+  async getListRole() {
+    try {
+      const results = await query("SELECT * FROM railway.role");
+      console.log(results);
+      return results;
+    } catch (error) {
+      console.error("Error executing query:", error);
+      throw error;
+    }
+  };
 }
-
-Role.getListRole = async function () {
-  try {
-    const results = await query("SELECT * FROM railway.role");
-    console.log(results);
-    return results;
-  } catch (error) {
-    console.error("Error executing query:", error);
-    throw error;
-  }
-};
 
 const role = Singleton.getModel("role", Role);
 
