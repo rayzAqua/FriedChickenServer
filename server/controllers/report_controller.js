@@ -2,25 +2,15 @@ import { query } from "../sql_connect/connected.js";
 import Warehouse from "../models/Warehouse.js";
 
 export const report = async (req, res, next) => {
-    const from = req.body.from || null;
-    const to = req.body.to || null;
-    const wareHouseId = Number(req.body.wareHouseId);
-    const topCustomer = Number(req.body.top);
-
+    const from = req.query.from || null;
+    const to = req.query.to || null;
+    const wareHouseId = Number(req.query.wareHouseId);
+    const topCustomer = Number(req.query.top);
     const currentDate = new Date();
-    const fromDate = from ? new Date(from) : currentDate;
-    const toDate = to ? new Date(to) : currentDate;
+    const fromDate = from ? new Date(from) : null;
+    const toDate = to ? new Date(to) : null;
 
     try {
-
-        if (fromDate === "" && toDate === "" || !fromDate && !toDate) {
-            res.status(400).json({
-                state: false,
-                message: "Không được bỏ trống thời gian!",
-                data: []
-            });
-            return;
-        }
 
         if (fromDate > currentDate) {
             res.status(400).json({
@@ -31,7 +21,7 @@ export const report = async (req, res, next) => {
             return;
         }
 
-        if (fromDate > toDate) {
+        if ((fromDate && toDate) && fromDate > toDate) {
             res.status(400).json({
                 state: false,
                 message: "Thời gian bắt đầu (FROM) không thể lớn hơn thời gian kết thúc (TO)",

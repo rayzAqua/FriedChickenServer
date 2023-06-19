@@ -1,10 +1,11 @@
 import express from "express";
-import { getFoodList, updateFood } from "../controllers/food_controller.js";
+import { createFood, getFoodList, updateFood } from "../controllers/food_controller.js";
 import { authenticateToken } from "../middlewares/authentication.js";
 
 const router = express.Router();
 
 // CREATE
+router.post("/add", authenticateToken, createFood);
 
 // UPDATE FOOD
 router.put("/update", authenticateToken, updateFood);

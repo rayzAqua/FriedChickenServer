@@ -1,8 +1,170 @@
 import Food from "../models/Food.js";
+import Pricelist from "../models/Pricelist.js";
 import User from "../models/User.js";
 import Category from "../models/Category.js";
 import { createError } from "../utils/createError.js"
-import { isAlphaNumbericString, isAlphabeticString } from "../utils/checkInput.js";
+import { isAlphaNumbericString, isAlphabeticString, isNumericString } from "../utils/checkInput.js";
+
+// CREATE FOOD
+export const createFood = async (req, res, next) => {
+    const name = req.body.name;
+    const unit = req.body.unit;
+    const categoryId = req.body.categoryId;
+    const image = req.body.image || null;
+    const price = req.body.price;
+    const priceListId = req.body.priceListId;
+    const createdUser = req.body.userId;
+
+    try {
+        if (name) {
+            if (!isAlphaNumbericString(name)) {
+                res.status(400).json({
+                    state: false,
+                    message: "Tên chỉ chấp nhận ký tự chữ, ký tự số và khoảng trắng!",
+                    data: []
+                });
+                return;
+            }
+        } else {
+            res.status(400).json({
+                state: false,
+                message: "Không được bỏ trống thông tin name!",
+                data: []
+            });
+        }
+
+        if (unit) {
+            if (!isAlphaNumbericString(unit)) {
+                res.status(400).json({
+                    state: false,
+                    message: "Unit chỉ chấp nhận ký tự chữ!",
+                    data: []
+                });
+                return;
+            }
+        } else {
+            res.status(400).json({
+                state: false,
+                message: "Không được bỏ trống thông tin unit!",
+                data: []
+            });
+        }
+
+        // Kiểm tra tồn tại category
+        const existedCategory = await Category.getById(categoryId);
+        if (categoryId) {
+            if (typeof categoryId !== 'number') {
+                res.status(400).json({
+                    state: false,
+                    message: "Phải nhập một số cho ID của Category!",
+                    data: []
+                });
+                return;
+            }
+            if (existedCategory.length <= 0) {
+                res.status(404).json({
+                    state: false,
+                    message: "Category không tồn tại!",
+                    data: []
+                });
+                return;
+            }
+        } else {
+            res.status(400).json({
+                state: false,
+                message: "Không được bỏ trống categoryId!",
+                data: []
+            });
+            return;
+        }
+
+        if (price) {
+            if (!isNumericString(price)) {
+                res.status(400).json({
+                    state: false,
+                    message: "Price chỉ chấp nhận ký tự số!",
+                    data: []
+                });
+                return;
+            }
+        } else {
+            res.status(400).json({
+                state: false,
+                message: "Không được bỏ trống price!",
+                data: []
+            });
+            return;
+        }
+
+        // Kiểm tra tồn tại priceListId
+        const existedPriceListId = await Pricelist.getById(priceListId);
+        if (priceListId) {
+            if (typeof priceListId !== 'number') {
+                res.status(400).json({
+                    state: false,
+                    message: "Phải nhập một số cho priceListId!",
+                    data: []
+                });
+                return;
+            }
+            if (existedPriceListId.length <= 0) {
+                res.status(404).json({
+                    state: false,
+                    message: "priceListId không tồn tại!",
+                    data: []
+                });
+                return;
+            }
+        } else {
+            res.status(400).json({
+                state: false,
+                message: "Không được bỏ trống priceListId!",
+                data: []
+            });
+            return;
+        }
+
+        const createdFood = await Food.newFood(name, unit, categoryId, image, price, priceListId, createdUser);
+        const filterCreatedFood = Array.isArray(createdFood[0]) ? createdFood[0] : [createdFood[0]];
+
+        const response = {
+            state: true,
+            message: "Tạo mới Food thành công!",
+        }
+
+        if (filterCreatedFood.length > 0) {
+            const food = filterCreatedFood.map((food) => {
+                const { categoryId, categoryName, priceId, price, type, ...otherDetails } = food;
+                return {
+                    ...otherDetails,
+                    category: {
+                        categoryId: categoryId,
+                        categoryName: categoryName,
+                    },
+                    currentPrice: {
+                        priceId: priceListId,
+                        price: price,
+                        type: type,
+                    }
+                }
+            });
+
+            response.data = food;
+            res.status(200);
+        } else {
+            response.state = false;
+            response.message = "Tạo mới Food không thành công!";
+            response.data = filterUpdatedFood;
+            res.status(500);
+        }
+        res.json(response);
+
+
+    } catch (err) {
+        next(err);
+    }
+
+};
 
 // UPDATE
 export const updateFood = async (req, res, next) => {
@@ -74,7 +236,7 @@ export const updateFood = async (req, res, next) => {
             return;
         }
 
-        if (unit && !isAlphabeticString(unit)) {
+        if (unit && !isAlphaNumbericString(unit)) {
             res.status(400).json({
                 state: false,
                 message: "Unit chỉ chấp nhận ký tự chữ!",
@@ -93,16 +255,33 @@ export const updateFood = async (req, res, next) => {
         }
 
         const updatedTime = new Date();
-        const updatedFood = await Food.findByIdAndUpdate(foodId, name, unit, image, Number(available), categoryId, updatedTime, updatedUser);
-        const filterUpdatedFood = Array.isArray(updatedFood[0]) ? updatedFood[0] : [updatedFood[0]];
+        const updatedFoods = await Food.findByIdAndUpdate(foodId, name, unit, image, Number(available), categoryId, updatedTime, updatedUser);
+        const filterUpdatedFood = Array.isArray(updatedFoods[0]) ? updatedFoods[0] : [updatedFoods[0]];
 
         const response = {
             state: true,
             message: "Cập nhật thông tin Food thành công!",
         }
 
+
         if (filterUpdatedFood.length > 0) {
-            response.data = filterUpdatedFood;
+            const food = filterUpdatedFood.map((food) => {
+                const { categoryId, categoryName, priceListId, price, type, ...otherDetails } = food;
+                return {
+                    ...otherDetails,
+                    category: {
+                        categoryId: categoryId,
+                        categoryName: categoryName,
+                    },
+                    currentPrice: {
+                        priceId: priceListId,
+                        price: price,
+                        type: type,
+                    }
+                }
+            });
+
+            response.data = food;
             res.status(200);
         } else {
             response.state = false;
@@ -159,7 +338,7 @@ export const getFoodList = async (req, res, next) => {
         if (filterFoodArray.length > 0) {
             // Định dạng lại dữ liệu của các đối tượng food có trong mảng filterFoodArray để làm output.
             const foods = filterFoodArray.map((food) => {
-                const { categoryId, categoryName, price, type, ...otherDetails } = food;
+                const { categoryId, categoryName, priceId, price, type, ...otherDetails } = food;
                 return {
                     ...otherDetails,
                     category: {
@@ -167,6 +346,7 @@ export const getFoodList = async (req, res, next) => {
                         categoryName: categoryName,
                     },
                     currentPrice: {
+                        priceId: priceId,
                         price: price,
                         type: type,
                     }

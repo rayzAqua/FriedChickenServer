@@ -1,6 +1,7 @@
 import mysql from "mysql2";
 import dotenv from "dotenv";
 import util from "util";
+import { Singleton } from "../designPattern/singletonPattern.js";
 
 dotenv.config();
 
@@ -10,7 +11,7 @@ class Database {
     this.connection = null;
   }
 
-  connect() {
+  static connect() {
     dotenv.config();
 
     this.connection = mysql.createConnection({
@@ -24,29 +25,30 @@ class Database {
   }
 }
 
-// Singleton Pattern đảm bảo chỉ có một thể hiện của đối tượng Database.
-const Singleton = (function() {
+// // Singleton Pattern đảm bảo chỉ có một thể hiện của đối tượng Database.
+// const Singleton = (function() {
 
-  let instance = null;
+//   let instance = null;
 
-  function createDBConnecting() {
-      const database = new Database();
-      const connecting = database.connect();
-      return connecting;
-  }
+//   function createDBConnecting() {
+//       const database = new Database();
+//       const connecting = database.connect();
+//       return connecting;
+//   }
 
-  return {
-      getDBConnecting: function() {
-          if (!instance) {
-              instance = createDBConnecting();
-          }
-          return instance;
-      }
-  }
-})();
+//   return {
+//       getDBConnecting: function() {
+//           if (!instance) {
+//               instance = createDBConnecting();
+//           }
+//           return instance;
+//       }
+//   }
+// })();
 
 // Khởi tạo kết nối đến MySQL
-export const connecting = Singleton.getDBConnecting();
+const database = Singleton.getModel('connecting', Database);
+export const connecting = database.connect();
 
 // Chuyển đổi hàm callback-based thành promise-based function để xử lý bất đồng bộ.
 export const query = util.promisify(connecting.query).bind(connecting);

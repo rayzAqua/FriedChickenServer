@@ -15,6 +15,17 @@ class Food {
     this.categoryId = food.categoryId;
   }
 
+  // Createt
+  static async newFood(name, unit, categoryId, image, price, priceListId, createdUser) {
+    try {
+      const sp = "CALL sp_create_food(?, ?, ?, ?, ?, ?, ?);"
+      const newFood = await query(sp, [name, unit, categoryId, image, price, priceListId, createdUser]);
+      return newFood[0];
+    } catch (err) {
+      console.error("Error executing query: ", err);
+    }
+  }
+
   // Update
   static async findByIdAndUpdate(
     foodId,

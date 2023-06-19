@@ -17,16 +17,6 @@ export const createCustomer = async (req, res, next) => {
         const existedEmailPhone = await Customer.getCustomerByEmailPhone(phone, email);
         const filterExistedEmailPhone = Array.isArray(existedEmailPhone[0]) ? existedEmailPhone[0] : [existedEmailPhone[0]];
 
-        const existedUser = await User.getById(createdUser);
-        if (existedUser.length <= 0) {
-            res.status(404).json({
-                state: false,
-                message: "User này không tồn tại!",
-                data: []
-            });
-            return;
-        }
-
         if (!name) {
             response.state = false;
             response.message = "Không được bỏ trống thông tin tên!";
@@ -122,10 +112,9 @@ export const updateCustomer = async (req, res, next) => {
     const address = req.body.address || null;
     const updatedUser = req.body.userId;
 
-    console.log(updatedUser);
-
     try {
         const existedCustomer = await Customer.getById(customerId);
+        console.log(existedCustomer);
         if (customerId) {
             if (typeof customerId !== "number") {
                 res.status(400).json({
@@ -147,17 +136,6 @@ export const updateCustomer = async (req, res, next) => {
             res.status(400).json({
                 state: false,
                 message: "Không được bỏ trống thông tin về customerId!",
-                data: []
-            });
-            return;
-        }
-
-        // Thêm điệu kiện id chỉ chấp nhận số.
-        const existedUser = await User.getById(updatedUser);
-        if (existedUser.length <= 0) {
-            res.status(404).json({
-                state: false,
-                message: "User này không tồn tại!",
                 data: []
             });
             return;
@@ -211,7 +189,11 @@ export const updateCustomer = async (req, res, next) => {
             state: true,
             message: "Cập nhật thông tin khách hàng thành công!",
         }
-        if (filterExistedEmailPhone[0].count === 0) {
+        if (filterExistedEmailPhone[0].count === 0 || (
+            filterExistedEmailPhone[0].count === 1 &&
+            (phone && filterExistedEmailPhone[0].phone.toLowerCase() == existedCustomer[0].phone.toLowerCase()) ||
+            (email && filterExistedEmailPhone[0].email.toLowerCase() == existedCustomer[0].email.toLowerCase())
+        )) {
             // Cập nhật thông tin khách hàng
             const updatedTime = new Date();
             const updatedCustomer = await Customer.updateCustomer(customerId, name, phone, email, address, updatedUser, updatedTime);
@@ -254,12 +236,12 @@ export const getCustomerList = async (req, res, next) => {
     // Lấy các giá trị truy vấn.
     const customerId = req.query.customerId || null;
     const k3y = req.query.key || null;
-    // Giới hạn mẫu dữ liệu hiển thị cho một trang.
-    const page_limit = 10;
     // Số trang hiện tại được truyền vào từ req, mặc định là 1.
     const page = Number(req.query.page) || 1;
+    // Giới hạn mẫu dữ liệu hiển thị cho một trang.
+    const page_limit = page < 0 ? 1000 : 10;
     // Gía trị off_set là vị trí bắt đầu lấy mẫu dữ liệu trong truy vấn bằng sp_get_customer_list.
-    const off_set = (page - 1) * 10;
+    const off_set = page < 0 ? 0 : (page - 1) * 10;
 
     try {
         // Truy vấn lấy danh sách các khách hàng theo dữ liệu được truyền vào.
@@ -281,6 +263,10 @@ export const getCustomerList = async (req, res, next) => {
             // Nếu truy vấn bằng customerId, chỉ địch danh họ tên, số điện thoại hoặc email thì không phân trang.
             // Nếu không phải các trường hợp đặc biệt nêu trên thì phân trang.
             if (customerId) {
+                response.data = filterCustomerArray;
+                res.status(200);
+            }
+            else if (page < 0) {
                 response.data = filterCustomerArray;
                 res.status(200);
             }
