@@ -14,7 +14,7 @@ class User {
     this.createdUser = null;
   }
 
-  construct(user) {
+  setUser(user) {
     this.userId = user.userId;
     this.name = user.name;
     this.email = user.email;

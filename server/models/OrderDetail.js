@@ -10,7 +10,7 @@ class OrderDetail {
     this.quantity = null;
   }
   
-  construct(orderDetail) {
+  setOrderDetail(orderDetail) {
     this.orderDetailId = orderDetail.orderDetailId;
     this.orderId = orderDetail.orderTime;
     this.foodId = orderDetail.foodId;

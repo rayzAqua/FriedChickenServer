@@ -13,7 +13,7 @@ class Pricelist {
     this.updatedUser = null;
   }
   
-  construct(pricelist) {
+  setPricelist(pricelist) {
     this.priceId = pricelist.priceId;
     this.type = pricelist.type;
     this.startDate = pricelist.startDate;

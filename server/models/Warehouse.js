@@ -15,7 +15,7 @@ class Warehouse {
     this.createdTime = null;
   }
 
-  construct(warehouse) {
+  setWarehouse(warehouse) {
     this.wareHouseId = warehouse.wareHouseId;
     this.branchName = warehouse.branchName;
     this.warehouseName = warehouse.warehouseName;

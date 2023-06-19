@@ -15,7 +15,7 @@ class Food {
     this.categoryId = null;
   }
 
-  construct(food) {
+  setFood(food) {
     this.foodId = food.Id;
     this.name = food.name;
     this.available = food.available;
@@ -25,6 +25,8 @@ class Food {
     this.createdUser = food.createdUser;
     this.updatedUser = food.updatedUser;
     this.categoryId = food.categoryId;
+
+    return 
   }
 
   // Create

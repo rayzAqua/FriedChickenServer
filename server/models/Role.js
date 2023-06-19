@@ -9,7 +9,7 @@ class Role {
     this.createdUser = null;
   }
 
-  construct(role) {
+  setRole(role) {
     this.roleId = role.roleId;
     this.name = role.name;
     this.createdDate = role.createdDate;

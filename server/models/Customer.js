@@ -13,7 +13,7 @@ class Customer {
     this.point = null;
   }
 
-  contructor(customer) {
+  setCustomer(customer) {
     this.customerId = customer.customerId;
     this.name = customer.name;
     this.phone = customer.phone;

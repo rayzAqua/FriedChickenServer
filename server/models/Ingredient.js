@@ -15,7 +15,7 @@ class Ingredient {
     this.updatedUser = null;
   };
 
-  construct(ingredient) {
+  setIngredient(ingredient) {
     this.ingredientId = ingredient.ingredientId;
     this.name = ingredient.name;
     this.unit = ingredient.unit;

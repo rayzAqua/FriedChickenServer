@@ -12,7 +12,7 @@ class Promote {
     this.createdUser = null;
   }
 
-  construct(promote) {
+  setPromote(promote) {
     this.promoteId = promote.promoteId;
     this.name = promote.name;
     this.dateCreated = promote.dateCreated;

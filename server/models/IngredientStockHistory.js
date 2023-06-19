@@ -11,7 +11,7 @@ class IngredientStockHistory {
     this.ingredientId = null;
   }
 
-  construct(ingredientstockhistory) {
+  setIngredientStockHistory(ingredientstockhistory) {
     this.ingredientStockHistoryId =
       ingredientstockhistory.ingredientStockHistoryId;
     this.quantity = ingredientstockhistory.quantity;

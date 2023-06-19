@@ -14,7 +14,7 @@ class Order {
     this.canceledTime = null;
   }
   
-  construct(order) {
+  setOrder(order) {
     this.orderId = order.orderId;
     this.orderTime = order.orderTime;
     this.createdUser = order.createdUser;

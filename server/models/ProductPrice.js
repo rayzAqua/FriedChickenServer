@@ -12,7 +12,7 @@ class ProductPrice {
     this.updatedUser = null;
   }
 
-  construct(productPrice) {
+  setProductPrice(productPrice) {
     this.id = productPrice.id;
     this.productId = productPrice.productId;
     this.priceListId = productPrice.priceListId;

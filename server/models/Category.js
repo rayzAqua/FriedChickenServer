@@ -12,7 +12,7 @@ class Category {
     this.updatedUser = null;
   }
 
-  construct(category) {
+  setCategory(category) {
     this.categoryId = category.categoryId;
     this.name = category.name;
     this.createdTime = category.createdTime;

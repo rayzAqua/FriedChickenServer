@@ -8,7 +8,7 @@ class PaymentMethod {
     this.detail = null;
   }
   
-  construct(paymentMethod) {
+  setPaymentMethod(paymentMethod) {
     this.paymentMethodId = paymentMethod.paymentMethodId;
     this.name = paymentMethod.name;
     this.detail = paymentMethod.detail;

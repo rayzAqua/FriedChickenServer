@@ -11,7 +11,7 @@ class FoodstockHistory {
     this.wareHouseId = null;
   }
 
-  construct(foodstockhistory) {
+  setFoodstockHistory(foodstockhistory) {
     this.foodstockhistoryId = foodstockhistory.foodstockhistoryId;
     this.namequantity = foodstockhistory.quantity;
     this.createdTime = foodstockhistory.createdTime;
