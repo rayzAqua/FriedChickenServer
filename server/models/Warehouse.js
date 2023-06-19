@@ -3,7 +3,19 @@ import { Singleton } from "../designPattern/singletonPattern.js";
 
 class Warehouse {
   // Hàm khởi tạo
-  constructor(warehouse) {
+  constructor() {
+    this.wareHouseId = null;
+    this.branchName = null;
+    this.warehouseName = null;
+    this.warehouseAddress = null;
+    this.status = null;
+    this.createdUser = null;
+    this.updatedUser = null;
+    this.updatedTime = null;
+    this.createdTime = null;
+  }
+
+  construct(warehouse) {
     this.wareHouseId = warehouse.wareHouseId;
     this.branchName = warehouse.branchName;
     this.warehouseName = warehouse.warehouseName;
@@ -14,8 +26,9 @@ class Warehouse {
     this.updatedTime = warehouse.updatedTime;
     this.createdTime = warehouse.createdTime;
   }
+
   // SP lấy warehouse theo id
-  static async findById(warehouseId) {
+  async findById(warehouseId) {
     try {
       const sp = "CALL sp_get_warehouse_by_id(?);";
       const warehouse = await query(sp, [warehouseId]);
@@ -27,7 +40,7 @@ class Warehouse {
   }
 
   // SP lấy danh sách kho dựa vào status
-  static async getWarehouseByStatus(status) {
+  async getWarehouseByStatus(status) {
     try {
       const sp = "CALL sp_get_warehouse_by_status(?);";
       const warehouseList = await query(sp, [status]);

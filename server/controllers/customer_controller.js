@@ -260,18 +260,36 @@ export const getCustomerList = async (req, res, next) => {
         // Nếu sau khi truy vấn mà mảng filterCustomerArray có dữ liệu thì tiến hành gửi dữ liệu cho client.
         // Nếu không thì thông báo lỗi không tìm thấy tài nguyên.
         if (filterCustomerArray.length > 0) {
+
+            const newCustomerArray = await Promise.all(filterCustomerArray.map(async (customer) => {
+                const { createdUser, createdTime, updatedUser, updatedTime, ...otherDetails } = customer;
+
+                const [created, updated] = await Promise.all([
+                    User.getById(createdUser),
+                    User.getById(updatedUser)
+                ]);
+
+                return {
+                    ...otherDetails,
+                    createdUser: created.length > 0 ? created[0].name : null,
+                    createdTime: createdTime,
+                    updatedUser: updated.length > 0 ? updated[0].name : null,
+                    updatedTime: updatedTime
+                };
+            }));
+
             // Nếu truy vấn bằng customerId, chỉ địch danh họ tên, số điện thoại hoặc email thì không phân trang.
             // Nếu không phải các trường hợp đặc biệt nêu trên thì phân trang.
             if (customerId) {
-                response.data = filterCustomerArray;
+                response.data = newCustomerArray;
                 res.status(200);
             }
             else if (page < 0) {
-                response.data = filterCustomerArray;
+                response.data = newCustomerArray;
                 res.status(200);
             }
             else {
-                response.data = filterCustomerArray;
+                response.data = newCustomerArray;
                 response.current_page = page;
                 response.total_page = total_page;
                 res.status(200);

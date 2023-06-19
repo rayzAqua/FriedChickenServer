@@ -3,7 +3,16 @@ import { Singleton } from "../designPattern/singletonPattern.js";
 
 class Category {
   // Hàm khởi tạo
-  constructor(category) {
+  constructor() {
+    this.categoryId = null;
+    this.name = null;
+    this.createdTime = null;
+    this.updatedTime = null;
+    this.createdUser = null;
+    this.updatedUser = null;
+  }
+
+  construct(category) {
     this.categoryId = category.categoryId;
     this.name = category.name;
     this.createdTime = category.createdTime;
@@ -12,7 +21,7 @@ class Category {
     this.updatedUser = category.updatedUser;
   }
 
-  static async getById(categoryId) {
+  async getById(categoryId) {
     try {
       const sp = "call sp_get_category_by_id(?);";
       const results = await query(sp, [categoryId]);
@@ -23,7 +32,7 @@ class Category {
     }
   }
 
-  static async getList() {
+  async getList() {
     try {
       const results = await query("SELECT * FROM railway.category;");
       return results;

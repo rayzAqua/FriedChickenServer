@@ -142,7 +142,7 @@ export const createFood = async (req, res, next) => {
                         categoryName: categoryName,
                     },
                     currentPrice: {
-                        priceId: priceListId,
+                        priceListId: priceId,
                         price: price,
                         type: type,
                     }
@@ -181,7 +181,7 @@ export const updateFood = async (req, res, next) => {
         const existedFood = await Food.getById(foodId);
         if (foodId) {
             if (typeof foodId !== 'number') {
-                res.status(400).json({
+                res.status(200).json({
                     state: false,
                     message: "Phải nhập số cho ID của Food!",
                     data: []
@@ -189,7 +189,7 @@ export const updateFood = async (req, res, next) => {
                 return;
             }
             if (existedFood.length <= 0) {
-                res.status(404).json({
+                res.status(200).json({
                     state: false,
                     message: "Food không tồn tại!",
                     data: []
@@ -197,7 +197,7 @@ export const updateFood = async (req, res, next) => {
                 return;
             }
         } else {
-            res.status(400).json({
+            res.status(200).json({
                 state: false,
                 message: "Không được bỏ trống thông tin ID của Food!",
                 data: []
@@ -209,7 +209,7 @@ export const updateFood = async (req, res, next) => {
         const existedCategory = await Category.getById(categoryId);
         if (categoryId) {
             if (typeof categoryId !== 'number') {
-                res.status(404).json({
+                res.status(200).json({
                     state: false,
                     message: "Phải nhập một số cho ID của Category!",
                     data: []
@@ -218,7 +218,7 @@ export const updateFood = async (req, res, next) => {
 
             }
             if (existedCategory.length <= 0) {
-                res.status(404).json({
+                res.status(200).json({
                     state: false,
                     message: "Category không tồn tại!",
                     data: []
@@ -228,7 +228,7 @@ export const updateFood = async (req, res, next) => {
         }
 
         if (name && !isAlphaNumbericString(name)) {
-            res.status(400).json({
+            res.status(200).json({
                 state: false,
                 message: "Tên chỉ chấp nhận ký tự chữ, ký tự số và khoảng trắng!",
                 data: []
@@ -237,7 +237,7 @@ export const updateFood = async (req, res, next) => {
         }
 
         if (unit && !isAlphaNumbericString(unit)) {
-            res.status(400).json({
+            res.status(200).json({
                 state: false,
                 message: "Unit chỉ chấp nhận ký tự chữ!",
                 data: []
@@ -245,17 +245,17 @@ export const updateFood = async (req, res, next) => {
             return;
         }
 
-        if (available && (Number(available) !== 1 && Number(available) !== 0)) {
-            res.status(400).json({
+        if (available && (available !== "true" && available !== "false")) {
+            res.status(200).json({
                 state: false,
-                message: "Available chỉ chấp nhận giá trị 0 hoặc 1!",
+                message: "Available chỉ chấp nhận giá trị true hoặc false!",
                 data: []
             });
             return;
         }
 
         const updatedTime = new Date();
-        const updatedFoods = await Food.findByIdAndUpdate(foodId, name, unit, image, Number(available), categoryId, updatedTime, updatedUser);
+        const updatedFoods = await Food.findByIdAndUpdate(foodId, name, unit, image, JSON.parse(available) ? 1 : 0, categoryId, updatedTime, updatedUser);
         const filterUpdatedFood = Array.isArray(updatedFoods[0]) ? updatedFoods[0] : [updatedFoods[0]];
 
         const response = {
@@ -266,7 +266,7 @@ export const updateFood = async (req, res, next) => {
 
         if (filterUpdatedFood.length > 0) {
             const food = filterUpdatedFood.map((food) => {
-                const { categoryId, categoryName, priceListId, price, type, ...otherDetails } = food;
+                const { categoryId, categoryName, priceId, price, type, ...otherDetails } = food;
                 return {
                     ...otherDetails,
                     category: {
@@ -274,7 +274,7 @@ export const updateFood = async (req, res, next) => {
                         categoryName: categoryName,
                     },
                     currentPrice: {
-                        priceId: priceListId,
+                        priceListId: priceId,
                         price: price,
                         type: type,
                     }
@@ -287,7 +287,7 @@ export const updateFood = async (req, res, next) => {
             response.state = false;
             response.message = "Cập nhật thông tin Food không thành công!";
             response.data = filterUpdatedFood;
-            res.status(500);
+            res.status(200);
         }
         res.json(response);
     } catch (err) {
@@ -336,8 +336,26 @@ export const getFoodList = async (req, res, next) => {
 
         // Kiểm tra xem mảng đối tượng cần tìm có phần tử nào không. Nếu có thì trả về Output. Nếu không thì báo lỗi.
         if (filterFoodArray.length > 0) {
+            const newFoodList = await Promise.all(filterFoodArray.map(async (food) => {
+                const { createdUser, createdTime, updatedUser, updatedTime, ...otherDetails } = food;
+            
+                const [created, updated] = await Promise.all([
+                    User.getById(createdUser),
+                    User.getById(updatedUser)
+                ]);
+            
+                return {
+                    ...otherDetails,
+                    createdUser: created.length > 0 ? created[0].name : null,
+                    createdTime: createdTime,
+                    updatedUser: updated.length > 0 ? updated[0].name : null,
+                    updatedTime: updatedTime
+                };
+            }));
+
             // Định dạng lại dữ liệu của các đối tượng food có trong mảng filterFoodArray để làm output.
-            const foods = filterFoodArray.map((food) => {
+            const foods = newFoodList.map((food) => {
+
                 const { categoryId, categoryName, priceId, price, type, ...otherDetails } = food;
                 return {
                     ...otherDetails,
@@ -346,7 +364,7 @@ export const getFoodList = async (req, res, next) => {
                         categoryName: categoryName,
                     },
                     currentPrice: {
-                        priceId: priceId,
+                        priceListId: priceId,
                         price: price,
                         type: type,
                     }

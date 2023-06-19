@@ -1,31 +1,41 @@
 import { connecting, query } from "../sql_connect/connected.js";
 import { Singleton } from "../designPattern/singletonPattern.js";
 
-const IngredientStockHistory = function (ingredientstockhistory) {
-  this.ingredientStockHistoryId =
-    ingredientstockhistory.ingredientStockHistoryId;
-  this.quantity = ingredientstockhistory.quantity;
-  this.createdTime = ingredientstockhistory.createdTime;
-  this.createdUser = ingredientstockhistory.createdUser;
-  this.wareHouseId = ingredientstockhistory.wareHouseId;
-  this.ingredientId = ingredientstockhistory.ingredientId;
-};
-
-IngredientStockHistory.getByIngredientId = async function (ingredientId) {
-  try {
-    // const results = await query(
-    //   "SELECT * FROM ingredientstockhistory WHERE ingredientId =?;",
-    //   [ingredientId]
-    // );
-
-    const sp = "call sp_get_ingredientStockHistory_by_ingredientId(?);";
-    const results = await query(sp, [ingredientId]);
-    return results[0];
-  } catch (error) {
-    console.error("Error executing query:", error);
-    throw error;
+class IngredientStockHistory {
+  constructor() {
+    this.ingredientStockHistoryId = null;
+    this.quantity = null;
+    this.createdTime = null;
+    this.createdUser = null;
+    this.wareHouseId = null;
+    this.ingredientId = null;
   }
-};
+
+  construct(ingredientstockhistory) {
+    this.ingredientStockHistoryId =
+      ingredientstockhistory.ingredientStockHistoryId;
+    this.quantity = ingredientstockhistory.quantity;
+    this.createdTime = ingredientstockhistory.createdTime;
+    this.createdUser = ingredientstockhistory.createdUser;
+    this.wareHouseId = ingredientstockhistory.wareHouseId;
+    this.ingredientId = ingredientstockhistory.ingredientId;
+  }
+  
+  async getByIngredientId(ingredientId) {
+    try {
+      // const results = await query(
+      //   "SELECT * FROM ingredientstockhistory WHERE ingredientId =?;",
+      //   [ingredientId]
+      // );
+      const sp = "call sp_get_ingredientStockHistory_by_ingredientId(?);";
+      const results = await query(sp, [ingredientId]);
+      return results[0];
+    } catch (error) {
+      console.error("Error executing query:", error);
+      throw error;
+    }
+  }
+}
 
 const ingredientStockHistory = Singleton.getModel('ingredientStockHistory', IngredientStockHistory)
 

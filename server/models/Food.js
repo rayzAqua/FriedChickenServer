@@ -3,7 +3,19 @@ import { Singleton } from "../designPattern/singletonPattern.js";
 
 class Food {
   // Hàm khởi tạo
-  constructor(food) {
+  constructor() {
+    this.foodId = null;
+    this.name = null;
+    this.available = null;
+    this.unit = null;
+    this.createdTime = null;
+    this.updatedTime = null;
+    this.createdUser = null;
+    this.updatedUser = null;
+    this.categoryId = null;
+  }
+
+  construct(food) {
     this.foodId = food.Id;
     this.name = food.name;
     this.available = food.available;
@@ -15,8 +27,8 @@ class Food {
     this.categoryId = food.categoryId;
   }
 
-  // Createt
-  static async newFood(name, unit, categoryId, image, price, priceListId, createdUser) {
+  // Create
+   async newFood(name, unit, categoryId, image, price, priceListId, createdUser) {
     try {
       const sp = "CALL sp_create_food(?, ?, ?, ?, ?, ?, ?);"
       const newFood = await query(sp, [name, unit, categoryId, image, price, priceListId, createdUser]);
@@ -27,7 +39,7 @@ class Food {
   }
 
   // Update
-  static async findByIdAndUpdate(
+  async findByIdAndUpdate(
     foodId,
     name,
     unit,
@@ -56,7 +68,7 @@ class Food {
   }
 
   // Truy vấn tìm kiếm list food theo foodId, foodName, categoryName, categoryId hoặc page.
-  static async getFoodList(foodId, k3y, categoryId, page_limit, off_set) {
+  async getFoodList(foodId, k3y, categoryId, page_limit, off_set) {
     try {
       const sp = "CALL sp_get_food_list(?, ?, ?, ?, ?);";
       const foods = await query(sp, [
@@ -72,7 +84,7 @@ class Food {
     }
   }
 
-  static async getById(foodId) {
+  async getById(foodId) {
     try {
       // const results = await query("SELECT * FROM food WHERE foodId =?;", [
       //   foodId,
@@ -87,7 +99,7 @@ class Food {
     }
   }
 
-  static async getIngredientOfFood(foodId) {
+  async getIngredientOfFood(foodId) {
     try {
       // const results = await query(
       // "select hethonggaran.fooddetail.quantity, hethonggaran.ingredient.ingredientId, hethonggaran.ingredient.available" +

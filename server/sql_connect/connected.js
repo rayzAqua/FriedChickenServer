@@ -11,7 +11,7 @@ class Database {
     this.connection = null;
   }
 
-  static connect() {
+  connect() {
     dotenv.config();
 
     this.connection = mysql.createConnection({
