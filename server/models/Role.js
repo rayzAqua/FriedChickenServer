@@ -37,6 +37,17 @@ class Role {
   }
 }
 
-const role = Singleton.getModel('role', Role);
+Role.getListRole = async function () {
+  try {
+    const results = await query("SELECT * FROM railway.role");
+    console.log(results);
+    return results;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw error;
+  }
+};
+
+const role = Singleton.getModel("role", Role);
 
 export default role;

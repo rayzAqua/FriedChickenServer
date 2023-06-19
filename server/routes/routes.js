@@ -10,6 +10,7 @@ import warehouseRouter from "./warehouse.js";
 import reportRouter from "./report.js";
 import categoryRouter from "./category.js";
 import paymentMethodRouter from "./paymentmethod.js";
+import roleRouter from "./role.js";
 
 const routeHieuLe = (app) => {
   // Route của Hiếu Lê
@@ -30,6 +31,7 @@ const routeHieuPhan = (app) => {
   app.use("/product-price", productPriceRouter);
   app.use("/price-list", priceListRouter);
   app.use("/category", categoryRouter);
+  app.use("/role", roleRouter);
 };
 
 const routes = (app) => {

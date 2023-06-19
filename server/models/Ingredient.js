@@ -3,19 +3,7 @@ import { Singleton } from "../designPattern/singletonPattern.js";
 
 class Ingredient {
     // Hàm khởi tạo
-    constructor() {
-        this.ingredientId = null;
-        this.name = null;
-        this.unit = null;
-        this.available = null;
-        this.image = null;
-        this.createdTime = null;
-        this.updatedTime = null;
-        this.createdUser = null;
-        this.updatedUser = null;
-    };
-
-    construct(ingredient) {
+    constructor(ingredient) {
         this.ingredientId = ingredient.ingredientId;
         this.name = ingredient.name;
         this.unit = ingredient.unit;
@@ -25,7 +13,7 @@ class Ingredient {
         this.updatedTime = ingredient.updatedTime;
         this.createdUser = ingredient.createdUser;
         this.updatedUser = ingredient.updatedUser;
-    }
+    };
 
     // Lấy nguyên liệu theo Id
     async getIngredientById(ingredientId) {
@@ -52,6 +40,6 @@ class Ingredient {
     }
 }
 
-const ingredient = Singleton.getModel('ingredient', Ingredient);
+const ingredient = Singleton.getModel("ingredient", Ingredient);
 
 export default ingredient;
