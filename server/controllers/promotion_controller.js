@@ -39,7 +39,7 @@ class PromotionController {
       );
       const promotion = await Promote.getById(promotions["last_insert_id()"]);
       sendNewPromotion(promotion[0]);
-      return res.send(message(true, "Thêm khuyến mãi thành công!", []));
+      return res.send(message(true, "Thêm khuyến mãi thành công!", promotion));
     } catch (error) {
       console.log(error);
       return res.send(message(false, "Thêm khuyến mãi thất bại!"));
