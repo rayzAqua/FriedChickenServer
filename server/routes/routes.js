@@ -30,6 +30,7 @@ const routeHieuPhan = (app) => {
   app.use("/product-price", productPriceRouter);
   app.use("/price-list", priceListRouter);
   app.use("/category", categoryRouter);
+  
 };
 
 const routes = (app) => {

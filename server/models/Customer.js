@@ -56,10 +56,22 @@ Customer.getCustomerByEmailPhone = async function (phone, email) {
 };
 
 // Thực thi sp tạo mới khách hàng.
-Customer.createCustomer = async function (name, phone, email, address, createdUser) {
+Customer.createCustomer = async function (
+  name,
+  phone,
+  email,
+  address,
+  createdUser
+) {
   try {
     const sp = "CALL sp_create_customer(?, ?, ?, ?, ?);";
-    const newCustomer = await query(sp, [name, phone, email, address, createdUser]);
+    const newCustomer = await query(sp, [
+      name,
+      phone,
+      email,
+      address,
+      createdUser,
+    ]);
     return newCustomer;
   } catch (err) {
     console.error("Error executing query: ", err);
@@ -67,10 +79,26 @@ Customer.createCustomer = async function (name, phone, email, address, createdUs
 };
 
 // Cập nhật thông tin khách hàng
-Customer.updateCustomer = async function (customerId, name, phone, email, address, updatedUser, updatedTime) {
+Customer.updateCustomer = async function (
+  customerId,
+  name,
+  phone,
+  email,
+  address,
+  updatedUser,
+  updatedTime
+) {
   try {
     const sp = "CALL sp_update_customer(?, ?, ?, ?, ?, ?, ?);";
-    const updatedCustomer = await query(sp, [customerId, name, phone, email, address, updatedUser, updatedTime]);
+    const updatedCustomer = await query(sp, [
+      customerId,
+      name,
+      phone,
+      email,
+      address,
+      updatedUser,
+      updatedTime,
+    ]);
     return updatedCustomer;
   } catch (err) {
     console.error("Error executing query: ", err);
@@ -97,7 +125,21 @@ Customer.getCustomerList = async function (
   }
 };
 
+Customer.getCustomerListForNewPromotion = async function (point) {
+  try {
+    // Câu truy vấn gọi sp_get_customer_list với 6 tham số truyền vào.
+    const sp = "CALL sp_get_list_customer_for_new_promotion(?);";
+    // Thực thi sp_get_cusotmer_list với 6 tham số customerId, name, phone, email, page_limit, off_set để tiến hành lấy về danh sách
+    // các khách hàng.
+    const customers = await query(sp, [point]);
 
-const customer = Singleton.getModel('customer', Customer);
+    return customers[0];
+  } catch (err) {
+    console.log("Error executing query: ", err);
+    throw err;
+  }
+};
+
+const customer = Singleton.getModel("customer", Customer);
 
 export default customer;

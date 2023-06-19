@@ -53,6 +53,24 @@ Promote.getListCanUse = async function (point) {
   }
 };
 
-const promote = Singleton.getModel('promote', Promote);
+Promote.create = async function (name, discount, requirePoint, createdUser) {
+  try {
+    // const results = await query("SELECT * FROM hethonggaran.promotion ");
+
+    const sp = "CALL sp_add_promotion(?,?,?,?);";
+    const results = await query(sp, [
+      name,
+      discount,
+      requirePoint,
+      createdUser,
+    ]);
+    return results[0][0];
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw error;
+  }
+};
+
+const promote = Singleton.getModel("promote", Promote);
 
 export default promote;
