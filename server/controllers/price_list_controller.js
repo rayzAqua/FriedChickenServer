@@ -38,7 +38,15 @@ class PriceListController {
         return res.send(message(false, "Không được để trống type!", ""));
       }
 
-      const respone = await Pricelist.create(type, startdate, enddate, userId);
+      let respone = await Pricelist.getListDouble(type, startdate);
+
+      if (respone.length > 0) {
+        return res.send(
+          message(false, "Trùng thời gian với danh sách giá khác!", "")
+        );
+      }
+
+      respone = await Pricelist.create(type, startdate, enddate, userId);
 
       const priceList = await Pricelist.getById(
         respone[0][0]["last_insert_id()"]
