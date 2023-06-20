@@ -15,30 +15,43 @@ import calculateStart, { calculateTotal } from "../utils/calculateStart.js";
 class PriceListController {
   //[POST] /price-list/add
   async create(req, res, next) {
-    const { userId, startDate, endDate, type } = req.body;
+    let startDate = req.body.startDate || "";
+    let endDate = req.body.endDate || "";
+    let type = req.body.type || "";
+    const userId = req.body.userId;
 
     try {
+      if (startDate == "") {
+        return res.send(
+          message(false, "Không được để trống ngày bắt đầu!", "")
+        );
+      }
+      if (endDate == "") {
+        return res.send(
+          message(false, "Không được để trống ngày kết thúc!", "")
+        );
+      }
+      if (type == "") {
+        return res.send(message(false, "Không được để trống loại!", ""));
+      }
+
       let nowDate = new Date();
       nowDate = new Date(nowDate.toLocaleDateString());
 
-      let startdate = new Date(startDate);
-      startdate = new Date(startdate.toLocaleDateString());
-      let enddate = new Date(endDate);
-      enddate = new Date(enddate.toLocaleDateString());
+      startDate = new Date(startDate);
+      startDate = new Date(startDate.toLocaleDateString());
+      endDate = new Date(endDate);
+      endDate = new Date(endDate.toLocaleDateString());
 
       if (
-        !(startdate >= nowDate && enddate >= nowDate && startdate <= enddate)
+        !(startDate >= nowDate && endDate >= nowDate && startDate <= startDate)
       ) {
         return res.send(
           message(false, "Ngày bắt đầu và kết thúc không hợp lệ !", "")
         );
       }
 
-      if (type == null || type == undefined) {
-        return res.send(message(false, "Không được để trống type!", ""));
-      }
-
-      let respone = await Pricelist.getListDouble(type, startdate);
+      let respone = await Pricelist.getListDouble(type, startDate);
 
       if (respone.length > 0) {
         return res.send(
@@ -46,10 +59,12 @@ class PriceListController {
         );
       }
 
-      respone = await Pricelist.create(type, startdate, enddate, userId);
+      respone = await Pricelist.create(type, startDate, endDate, userId);
 
-      respone[0][0].startDate = startDate;
-      respone[0][0].endDate = endDate;
+      startDate = respone[0][0].startDate;
+      respone[0][0].startDate.setDate(startDate.getDate() + 1);
+      endDate = respone[0][0].endDate;
+      respone[0][0].endDate.setDate(endDate.getDate() + 1);
 
       return res.send(
         message(true, "Thêm giá sản phẩm thành công!", respone[0])
@@ -66,6 +81,12 @@ class PriceListController {
 
     try {
       const priceList = await Pricelist.getList(calculateStart(page));
+      priceList.map((p) => {
+        let startDate = p.startDate;
+        p.startDate.setDate(startDate.getDate() + 1);
+        let endDate = p.endDate;
+        p.endDate.setDate(endDate.getDate() + 1);
+      });
 
       const totalPage = calculateTotal(priceList.length);
 
