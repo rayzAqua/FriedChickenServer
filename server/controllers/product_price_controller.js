@@ -23,11 +23,13 @@ async function getMoreInfoProductPrice(res, result, page, totalPage) {
   try {
     const [userResponses] = await Promise.all([Promise.all(userPromises)]);
     const nowDate = new Date();
+
     result.map((productPrice, index) => {
       productPrice["userNameCreated"] = userResponses[index]["name"];
       const startDate = productPrice["startDate"];
       const endDate = productPrice["enddate"];
-      if (startDate <= nowDate && endDate <= nowDate) {
+
+      if (startDate <= endDate && startDate <= nowDate && endDate >= nowDate) {
         productPrice["isActive"] = true;
       } else productPrice["isActive"] = false;
     });
