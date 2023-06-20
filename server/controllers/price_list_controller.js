@@ -48,12 +48,11 @@ class PriceListController {
 
       respone = await Pricelist.create(type, startdate, enddate, userId);
 
-      const priceList = await Pricelist.getById(
-        respone[0][0]["last_insert_id()"]
-      );
+      respone[0][0].startDate = startDate;
+      respone[0][0].endDate = endDate;
 
       return res.send(
-        message(true, "Thêm giá sản phẩm thành công!", priceList)
+        message(true, "Thêm giá sản phẩm thành công!", respone[0])
       );
     } catch (error) {
       console.log(error);
