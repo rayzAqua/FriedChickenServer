@@ -11,6 +11,7 @@ import reportRouter from "./report.js";
 import categoryRouter from "./category.js";
 import paymentMethodRouter from "./paymentmethod.js";
 import roleRouter from "./role.js";
+import userRouter from "./user.js";
 
 const routeHieuLe = (app) => {
   // Route của Hiếu Lê
@@ -20,6 +21,7 @@ const routeHieuLe = (app) => {
   app.use("/ingredient", ingredientRouter);
   app.use("/ware-house", warehouseRouter);
   app.use("/report", reportRouter);
+  app.use("/user", userRouter);
 };
 
 const routeHieuPhan = (app) => {

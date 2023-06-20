@@ -16,6 +16,18 @@ class Role {
     this.createdUser = role.createdUser;
   }
 
+  async findById(roleId) {
+    try {
+      const q = "SELECT * FROM railway.role AS r WHERE r.roleId = ?;";
+      const results = await query(q, [roleId]);
+      console.log(results);
+      return results;
+    } catch (error) {
+      console.error("Error executing query:", error);
+      throw error;
+    }
+  };
+
   async getListRoleByUserId(userId) {
     try {
       // const results = await query(
@@ -35,7 +47,7 @@ class Role {
       throw error;
     }
   }
-  
+
   async getListRole() {
     try {
       const results = await query("SELECT * FROM railway.role");
