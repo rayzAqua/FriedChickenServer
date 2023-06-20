@@ -12,7 +12,7 @@ class Pricelist {
     this.createdUser = null;
     this.updatedUser = null;
   }
-  
+
   setPricelist(pricelist) {
     this.priceId = pricelist.priceId;
     this.type = pricelist.type;
@@ -23,7 +23,7 @@ class Pricelist {
     this.createdUser = pricelist.createdUser;
     this.updatedUser = pricelist.updatedUser;
   }
-  
+
   async getById(priceId) {
     try {
       // const results = await query(
@@ -38,7 +38,7 @@ class Pricelist {
       throw error;
     }
   }
-  
+
   async getList(page) {
     try {
       // const results = await query(
@@ -51,6 +51,17 @@ class Pricelist {
       // );
       const sp = "call sp_get_list_priceList(?);";
       const results = await query(sp, [page]);
+      return results[0];
+    } catch (error) {
+      console.error("Error executing query:", error);
+      throw error;
+    }
+  }
+
+  async getListDouble(type, startDate) {
+    try {
+      const sp = "call sp_get_list_price_duble(?,?);";
+      const results = await query(sp, [type, startDate]);
       return results[0];
     } catch (error) {
       console.error("Error executing query:", error);
@@ -76,7 +87,7 @@ class Pricelist {
       throw error;
     }
   }
-  
+
   async create(type, startDate, endDate, userId) {
     try {
       // const results = await query(
@@ -94,6 +105,6 @@ class Pricelist {
   }
 }
 
-const priceList = Singleton.getModel('priceList', Pricelist);
+const priceList = Singleton.getModel("priceList", Pricelist);
 
 export default priceList;
