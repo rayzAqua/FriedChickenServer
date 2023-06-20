@@ -17,6 +17,11 @@ export const createCustomer = async (req, res, next) => {
         const existedEmailPhone = await Customer.getCustomerByEmailPhone(phone, email);
         const filterExistedEmailPhone = Array.isArray(existedEmailPhone[0]) ? existedEmailPhone[0] : [existedEmailPhone[0]];
 
+        const response = {
+            state: true,
+            message: "Tạo mới khách hàng thành công!",
+        }
+
         if (!name) {
             response.state = false;
             response.message = "Không được bỏ trống thông tin tên!";
@@ -29,11 +34,6 @@ export const createCustomer = async (req, res, next) => {
             response.message = "Không được bỏ trống thông tin số điện thoại!";
             response.data = [];
             res.status(400);
-        }
-
-        const response = {
-            state: true,
-            message: "Tạo mới khách hàng thành công!",
         }
 
         // Ba trường không được phép null

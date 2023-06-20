@@ -26,6 +26,30 @@ class User {
     this.createdUser = user.createdUser;
   }
 
+  // CREATE
+  async newUser(name, email, phone, image, password, roleId, createdUser) {
+    try {
+      const sp = "CALL sp_create_user(?, ?, ?, ?, ?, ?, ?);";
+      const newUser = await query(sp, [name, email, phone, image, password, roleId, createdUser]);
+      return newUser;
+    } catch (err) {
+      console.error("Error executing query:", err);
+      throw err;
+    }
+  }
+
+   // UPDATE
+   async updateUser(userId, name, email, phone, image, status, roleId, updatedUser, updatedTime) {
+    try {
+      const sp = "CALL sp_update_user(?, ?, ?, ?, ?, ?, ?, ?, ?);";
+      const updateUser = await query(sp, [userId, name, email, phone, image, status, roleId, updatedUser, updatedTime]);
+      return updateUser;
+    } catch (err) {
+      console.error("Error executing query:", err);
+      throw err;
+    }
+  }
+
   async getByEmail(email) {
     try {
       const results = await query("SELECT * FROM user WHERE email = ?", [email]);
@@ -35,7 +59,7 @@ class User {
       throw error;
     }
   }
-  
+
   async getById(userId) {
     try {
       // const results = await query("SELECT * FROM user WHERE userId = ?", [

@@ -19,6 +19,13 @@ export const isAlphaNumbericString = (str) => {
     return alphanumbericRegex.test(str);
 };
 
+export const isAlphaNumbericSpecialString = (str) => {
+    // Sử dụng biểu thức chính quy để kiểm tra chuỗi chỉ chứa ký tự alphabet a-z, A-Z, , 0-9, ký tự đặc biệt
+    const alphanumbericspecialRegex = /^[a-zA-Z0-9\sÀ-ỹ~`!@#$%^&*()-_+=|\\:;'",.<>?/[\]{}]+$/;
+
+    return alphanumbericspecialRegex.test(str);
+};
+
 export const isValidateEmail = (email) => {
     // Sử dụng biểu thức chính quy để kiểm tra chuỗi chỉ chứa ký tự alphabet a-z, A-Z, 0-9, @, .
     const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z]+\.[a-zA-Z]+$/;
