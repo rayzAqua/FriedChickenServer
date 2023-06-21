@@ -20,6 +20,11 @@ class AuthController {
       if (!user || user.length === 0 || !compare(password, user.password)) {
         return res.send(message(false, "Sai tên đăng nhập hoặc mật khẩu!", ""));
       }
+      if (user.status != "active") {
+        return res.send(
+          message(false, "Tài khoản đã bị khóa không thể đăng nhập!", "")
+        );
+      }
 
       const listRole = await Role.getListRoleByUserId(user.userId);
       const token = getToken(user.email, listRole);
