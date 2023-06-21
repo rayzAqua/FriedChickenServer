@@ -53,6 +53,8 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
       details.map((detail, index) => {
         let object = {};
         object["foodId"] = detail["foodId"];
+        object["foodName"] = detail["name"];
+        object["foodImage"] = detail["image"];
         object["price"] = detail["price"];
         object["quantity"] = detail["quantity"];
         subTotal += +detail["price"] * +detail["quantity"];
@@ -76,7 +78,7 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
     res.setHeader("Content-Type", "application/json");
 
     res.send(
-      message(true, "Lấy dữ liệu thành công!", result, isShow, page, totalPage)
+      message(true, "Lấy dữ liệu thành công!", result, isShow, +page, totalPage)
     );
   } catch (error) {
     console.log(error);
