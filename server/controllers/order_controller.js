@@ -43,10 +43,12 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
       order["address"] = customer["address"];
       order["point"] = customer["point"];
 
-      order["promotionName"] = promotion["name"];
-      order["available"] = promotion["available"];
-      order["discount"] = promotion["discount"];
-      order["requirePoint"] = promotion["requirePoint"];
+      if (order["promoteId"] != null) {
+        order["promotionName"] = promotion["name"];
+        order["available"] = promotion["available"];
+        order["discount"] = promotion["discount"];
+        order["requirePoint"] = promotion["requirePoint"];
+      }
 
       let list = [];
       let subTotal = 0;
@@ -62,7 +64,12 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
       });
 
       order["details"] = list;
-      order["discountInmoney"] = (+promotion["discount"] * subTotal) / 100;
+      if (order["promoteId"] != null) {
+        order["discountInmoney"] = (+promotion["discount"] * subTotal) / 100;
+      } else {
+        order["discountInmoney"] = 0;
+      }
+
       order["subTotal"] = subTotal;
     });
 
