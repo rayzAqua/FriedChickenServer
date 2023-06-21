@@ -51,7 +51,7 @@ class PriceListController {
         );
       }
 
-      let respone = await Pricelist.getListDouble(type, startDate);
+      let respone = await Pricelist.getListDouble(type, startDate, endDate);
 
       if (respone.length > 0) {
         return res.send(
