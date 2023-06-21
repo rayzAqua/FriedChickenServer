@@ -58,10 +58,10 @@ class Pricelist {
     }
   }
 
-  async getListDouble(type, startDate) {
+  async getListDouble(type, startDate, endDate) {
     try {
-      const sp = "call sp_get_list_price_duble(?,?);";
-      const results = await query(sp, [type, startDate]);
+      const sp = "call sp_get_list_price_duble(?,?,?);";
+      const results = await query(sp, [type, startDate, endDate]);
       return results[0];
     } catch (error) {
       console.error("Error executing query:", error);
