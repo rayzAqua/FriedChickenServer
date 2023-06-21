@@ -1,13 +1,32 @@
 import Promote from "../models/Promote.js";
+import calculateStart, { calculateTotal } from "../utils/calculateStart.js";
 import message from "../utils/message.js";
 import { sendNewPromotion } from "../utils/sendMailNewPromotion.js";
 
 class PromotionController {
   //[GET] /promotion/list
   async list(req, res, next) {
+    const page = req.query.page || -1;
+    const key = req.query.key || "";
     try {
-      const promotions = await Promote.getAll();
-      return res.send(message(true, "Lấy dữ liệu thành công!", promotions));
+      let promotions;
+      promotions = await Promote.getAll(key);
+      if (page == -1) {
+        return res.send(message(true, "Lấy dữ liệu thành công!", promotions));
+      }
+
+      const totalPage = calculateTotal(promotions.length);
+      promotions = await Promote.getFollowPage(key, calculateStart(page));
+      return res.send(
+        message(
+          true,
+          "Lấy dữ liệu thành công!",
+          promotions,
+          true,
+          +page,
+          totalPage
+        )
+      );
     } catch (error) {
       console.log(error);
       return res.send(message(false, "Lấy dữ liệu thất bại!"));
