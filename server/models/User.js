@@ -74,6 +74,18 @@ class User {
       throw error;
     }
   }
+
+  // GET USER LIST
+  async getUserList(userId, k3y, page_limit, off_set) {
+    try {
+      const sp = "CALL sp_get_user_list(?, ?, ?, ?);";
+      const users = await query(sp, [userId, k3y, page_limit, off_set]);
+      return users;
+    } catch (err) {
+      console.log("Error executing query: ", err);
+      throw err;
+    }
+  }
 }
 
 const user = Singleton.getModel('user', User);

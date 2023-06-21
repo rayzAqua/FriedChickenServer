@@ -303,9 +303,67 @@ export const updateUser = async (req, res, next) => {
 
 // GET LIST
 export const getUserList = async (req, res, next) => {
-    try {
 
+    const userId = req.query.getUserId || null;
+    const k3y = req.query.key || null;
+    const page = Number(req.query.page) || 1;
+    const page_limit = page < 0 ? 1000 : 10;
+    const off_set = page < 0 ? 0 : (page - 1) * 10;
+
+    try {
+        const getUsers = await User.getUserList(userId, k3y, page_limit, off_set);
+        const filterUserArray = Array.isArray(getUsers[0]) ? getUsers[0] : [getUsers[0]];
+        const totalUsers = Array.isArray(getUsers[1]) ? getUsers[1] : [getUsers[1]];
+        const total_page = Math.ceil(totalUsers[0].total_users / page_limit);
+
+        // Tạo ra một đối tượng response để phản hồi kết quả truy vấn.
+        const response = {
+            state: true,
+            message: "Lấy dữ liệu thành công!",
+        }
+
+        if (filterUserArray.length > 0) {
+
+            const newUserArray = await Promise.all(filterUserArray.map(async (user) => {
+                const { createdUser, createdTime, updatedUser, updatedTime, ...otherDetails } = user;
+
+                const [created, updated] = await Promise.all([
+                    User.getById(createdUser),
+                    User.getById(updatedUser)
+                ]);
+
+                return {
+                    ...otherDetails,
+                    createdUser: created.length > 0 ? created[0].name : null,
+                    createdTime: createdTime,
+                };
+            }));
+
+            // Nếu truy vấn bằng customerId, chỉ địch danh họ tên, số điện thoại hoặc email thì không phân trang.
+            // Nếu không phải các trường hợp đặc biệt nêu trên thì phân trang.
+            if (userId) {
+                response.data = newUserArray;
+                res.status(200);
+            }
+            else if (page < 0) {
+                response.data = newUserArray;
+                res.status(200);
+            }
+            else {
+                response.data = newUserArray;
+                response.current_page = page;
+                response.total_page = total_page;
+                res.status(200);
+            }
+        } else {
+            response.state = false;
+            response.message = "Không tìm thấy dữ liệu!";
+            response.data = filterUserArray;
+            res.status(404);
+        }
+        // OUTPUT
+        res.json(response);
     } catch (err) {
         next(err);
     }
-}
+};
