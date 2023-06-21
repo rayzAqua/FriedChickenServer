@@ -68,7 +68,7 @@ export const getIngredientList = async (req, res, next) => {
                 const { warehouseName, quantity, ...otherDetails } = ingredient;
                 return {
                     ...otherDetails,
-                    inStock: quantity,
+                    inStock: quantity !== null ? Number(quantity) : quantity,
                 }
             });
 
