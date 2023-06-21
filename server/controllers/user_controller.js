@@ -10,7 +10,7 @@ export const createUser = async (req, res, next) => {
     const phone = req.body.phone;
     const image = req.body.image || null;
     const password = req.body.password;
-    const roleId = req.body.roleId;
+    const roleId = req.body.listRole;
     const createdUser = req.body.userId;
 
     try {
@@ -98,29 +98,31 @@ export const createUser = async (req, res, next) => {
             return;
         }
 
-        // Kiểm tra roleId
-        if (roleId) {
-            if (typeof roleId !== 'number') {
-                res.status(200).json({
-                    state: false,
-                    message: "Phải nhập số cho ID của role!",
-                    data: []
-                });
-                return;
-            }
-            const existedRole = await Role.findById(roleId);
-            if (existedRole.length <= 0) {
-                res.status(200).json({
-                    state: false,
-                    message: "Role không tồn tại!",
-                    data: []
-                });
-                return;
-            }
+        // Kiểm tra roleId - xử lý roleId
+        if (roleId && roleId.length > 0) {
+            await Promise.all(roleId.map(async (id) => {
+                if (typeof id !== 'number') {
+                    res.status(200).json({
+                        state: false,
+                        message: "Phải nhập số cho ID của role!",
+                        data: []
+                    });
+                    return;
+                }
+                const existedRole = await Role.findById(id);
+                if (existedRole.length <= 0) {
+                    res.status(200).json({
+                        state: false,
+                        message: "Role không tồn tại!",
+                        data: []
+                    });
+                    return;
+                }
+            }));
         } else {
             res.status(200).json({
                 state: false,
-                message: "Không được bỏ trống thông tin ID của quyền!",
+                message: "Không được bỏ trống listRole!",
                 data: []
             });
             return;
@@ -137,9 +139,8 @@ export const createUser = async (req, res, next) => {
             return;
         }
 
-
         const encodePassword = encode(password);
-        const newUser = await User.newUser(name, email, phone, image, encodePassword, roleId, createdUser);
+        const newUser = await User.newUser(name, email, phone, image, encodePassword, JSON.stringify(roleId), createdUser);
         const filterNewUser = Array.isArray(newUser[0]) ? newUser[0] : [newUser[0]];
         const filterNewRole = Array.isArray(newUser[1]) ? newUser[1] : [newUser[1]];
 
@@ -148,7 +149,7 @@ export const createUser = async (req, res, next) => {
                 const { ...otherDetails } = user;
                 return {
                     ...otherDetails,
-                    role: filterNewRole,
+                    listRole: filterNewRole,
                 }
             });
 
@@ -170,13 +171,12 @@ export const createUser = async (req, res, next) => {
 
 // UPDATE
 export const updateUser = async (req, res, next) => {
-    const userId = req.body.updateUserId;
+    const userId = req.body.updatedUserId;
     const name = req.body.name || null;
-    const email = req.body.userEmail || null;
     const phone = req.body.phone || null;
     const image = req.body.image || null;
     const status = req.body.status || null;
-    const roleId = req.body.roleId || null;
+    const roleId = req.body.listRole || null;
     const updatedUser = req.body.userId;
 
     try {
@@ -219,16 +219,6 @@ export const updateUser = async (req, res, next) => {
             return;
         }
 
-        // Kiểm tra email
-        if (email !== null && !isValidateEmail(email)) {
-            res.status(200).json({
-                state: false,
-                message: "Email không hợp lệ!",
-                data: []
-            });
-            return;
-        }
-
         // Kiểm tra thông tin phone
         if (phone) {
             if (phone.length !== 10) {
@@ -260,51 +250,39 @@ export const updateUser = async (req, res, next) => {
         }
 
         // Kiểm tra roleId
-        if (roleId) {
-            if (typeof roleId !== 'number') {
-                res.status(200).json({
-                    state: false,
-                    message: "Phải nhập số cho ID của role!",
-                    data: []
-                });
-                return;
-            }
-            const existedRole = await Role.findById(roleId);
-            if (existedRole.length <= 0) {
-                res.status(200).json({
-                    state: false,
-                    message: "Role không tồn tại!",
-                    data: []
-                });
-                return;
-            }
-        }
-
-        const isExistedEmail = await User.getByEmail(email);
-
-        if (email && isExistedEmail) {
-            if (isExistedEmail.email.toLowerCase() !== existedUser[0].email.toLowerCase()) {
-                res.status(200).json({
-                    state: false,
-                    message: "Email này đã tồn tại trong hệ thống!",
-                    data: []
-                });
-                return;
-            }
+        if (roleId !== null && roleId.length > 0) {
+            await Promise.all(roleId.map(async (id) => {
+                if (typeof id !== 'number') {
+                    res.status(200).json({
+                        state: false,
+                        message: "Phải nhập số cho ID của role!",
+                        data: []
+                    });
+                    return;
+                }
+                const existedRole = await Role.findById(id);
+                if (existedRole.length <= 0) {
+                    res.status(200).json({
+                        state: false,
+                        message: "Role không tồn tại!",
+                        data: []
+                    });
+                    return;
+                }
+            }));
         }
 
         const updatedTime = new Date();
-        const updateUser = await User.updateUser(userId, name, email, phone, image, status, roleId, updatedUser, updatedTime);
+        const updateUser = await User.updateUser(userId, name, phone, image, status, roleId !== null ? JSON.stringify(roleId) : null, updatedUser, updatedTime);
         const filterUpdateUser = Array.isArray(updateUser[0]) ? updateUser[0] : [updateUser[0]];
         const filterUpdateRole = Array.isArray(updateUser[1]) ? updateUser[1] : [updateUser[1]];
 
         if (filterUpdateUser.length > 0) {
-
             const user = filterUpdateUser.map((user) => {
                 const { ...otherDetails } = user;
                 return {
                     ...otherDetails,
-                    role: filterUpdateRole,
+                    listRole: filterUpdateRole,
                 }
             });
 

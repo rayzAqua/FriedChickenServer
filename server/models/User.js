@@ -39,10 +39,10 @@ class User {
   }
 
    // UPDATE
-   async updateUser(userId, name, email, phone, image, status, roleId, updatedUser, updatedTime) {
+   async updateUser(userId, name, phone, image, status, roleId, updatedUser, updatedTime) {
     try {
-      const sp = "CALL sp_update_user(?, ?, ?, ?, ?, ?, ?, ?, ?);";
-      const updateUser = await query(sp, [userId, name, email, phone, image, status, roleId, updatedUser, updatedTime]);
+      const sp = "CALL sp_update_user(?, ?, ?, ?, ?, ?, ?, ?);";
+      const updateUser = await query(sp, [userId, name, phone, image, status, roleId, updatedUser, updatedTime]);
       return updateUser;
     } catch (err) {
       console.error("Error executing query:", err);
