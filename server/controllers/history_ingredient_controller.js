@@ -25,7 +25,8 @@ export async function updateStock(req, res, next) {
     }
 
     const warehouse = await Warehouse.findById(wareHouseId);
-    if (warehouse == []) {
+
+    if (warehouse.length == 0) {
       return res.send(message(false, "Kho không tồn tại!"));
     }
 
@@ -61,9 +62,15 @@ export async function updateStock(req, res, next) {
       );
 
     let inStock = ingredientStockHistory[0].SoLuongTon;
+
     if (inStock == null) {
-      return res.send(message(false, "Nguyên liệu không tồn tại!"));
+      if (quantity < 0)
+        return res.send(
+          message(false, "Không tồn tại nguyên liệu đó trong kho này!")
+        );
+      inStock = 0;
     }
+
     inStock = +inStock + quantity;
     if (quantity < 0 && inStock < 0) {
       return res.send(message(false, "Số lượng nguyên liệu không đủ để xuất!"));
