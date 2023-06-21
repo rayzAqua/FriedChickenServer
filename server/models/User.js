@@ -30,7 +30,15 @@ class User {
   async newUser(name, email, phone, image, password, roleId, createdUser) {
     try {
       const sp = "CALL sp_create_user(?, ?, ?, ?, ?, ?, ?);";
-      const newUser = await query(sp, [name, email, phone, image, password, roleId, createdUser]);
+      const newUser = await query(sp, [
+        name,
+        email,
+        phone,
+        image,
+        password,
+        roleId,
+        createdUser,
+      ]);
       return newUser;
     } catch (err) {
       console.error("Error executing query:", err);
@@ -38,11 +46,40 @@ class User {
     }
   }
 
-   // UPDATE
-   async updateUser(userId, name, phone, image, status, roleId, updatedUser, updatedTime) {
+  // UPDATE
+  async updateUser(
+    userId,
+    name,
+    phone,
+    image,
+    status,
+    roleId,
+    updatedUser,
+    updatedTime
+  ) {
     try {
       const sp = "CALL sp_update_user(?, ?, ?, ?, ?, ?, ?, ?);";
-      const updateUser = await query(sp, [userId, name, phone, image, status, roleId, updatedUser, updatedTime]);
+      const updateUser = await query(sp, [
+        userId,
+        name,
+        phone,
+        image,
+        status,
+        roleId,
+        updatedUser,
+        updatedTime,
+      ]);
+      return updateUser;
+    } catch (err) {
+      console.error("Error executing query:", err);
+      throw err;
+    }
+  }
+
+  async updatePassword(userId, password) {
+    try {
+      const sp = "CALL sp_update_password(?, ?);";
+      const updateUser = await query(sp, [userId, password]);
       return updateUser;
     } catch (err) {
       console.error("Error executing query:", err);
@@ -52,7 +89,9 @@ class User {
 
   async getByEmail(email) {
     try {
-      const results = await query("SELECT * FROM user WHERE email = ?", [email]);
+      const results = await query("SELECT * FROM user WHERE email = ?", [
+        email,
+      ]);
       return results[0];
     } catch (error) {
       console.error("Error executing query:", error);
@@ -88,6 +127,6 @@ class User {
   }
 }
 
-const user = Singleton.getModel('user', User);
+const user = Singleton.getModel("user", User);
 
 export default user;
