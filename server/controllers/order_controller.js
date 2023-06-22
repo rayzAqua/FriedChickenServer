@@ -10,7 +10,7 @@ import Promote from "../models/Promote.js";
 import { calculateTotal } from "../utils/calculateStart.js";
 import message from "../utils/message.js";
 import { sendMailPromotion } from "../utils/mail.js";
-import moneyForPoint from "../utils/moneyForPoint.json" assert { type: "json" };
+// import moneyForPoint from "../utils/moneyForPoint.json" assert { type: "json" };
 
 async function getDetailOrder(res, result, isShow, page, totalPage) {
   const detailPromises = [];
@@ -355,7 +355,8 @@ class OrderController {
 
   async calculatePoint(req, res, next) {
     const money = Number(req.body.money);
-    const forCaculate = moneyForPoint.moneyForCaculatePoints;
+    // const forCaculate = moneyForPoint.moneyForCaculatePoints;
+    const forCaculate = 30000;
 
     try {
       // Tạo một đối tượng response để phản hồi.
