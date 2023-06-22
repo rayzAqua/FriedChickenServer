@@ -22,10 +22,7 @@ class ProductPrice {
     this.updatedUser = productPrice.updatedUser;
   }
 
-  async create(productId,
-    priceListId,
-    price,
-    createdUser) {
+  async create(productId, priceListId, price, createdUser) {
     try {
       // const results = await query(
       //   "insert into productprice(productId, priceListId, price, createdUser)" +
@@ -63,7 +60,7 @@ class ProductPrice {
       throw error;
     }
   }
-  
+
   async getListByProductId(productId, page) {
     try {
       // const results = await query(
@@ -96,8 +93,18 @@ class ProductPrice {
       throw error;
     }
   }
+  async updateProductPrice(prilistId, productId, price, userId) {
+    try {
+      const sp = "call sp_update_product_price(?, ?, ?, ?);";
+      const results = await query(sp, [prilistId, productId, price, userId]);
+      return results;
+    } catch (error) {
+      console.error("Error executing query:", error);
+      throw error;
+    }
+  }
 }
 
-const productPrice = Singleton.getModel('productPrice', ProductPrice);
+const productPrice = Singleton.getModel("productPrice", ProductPrice);
 
 export default productPrice;
