@@ -354,7 +354,7 @@ class OrderController {
   }
 
   async calculatePoint(req, res, next) {
-    const money = Number(req.body.money);
+    const money = Number(req.query.money);
     // const forCaculate = moneyForPoint.moneyForCaculatePoints;
     const forCaculate = 30000;
 
