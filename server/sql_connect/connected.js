@@ -3,8 +3,6 @@ import dotenv from "dotenv";
 import util from "util";
 import { Singleton } from "../designPattern/singletonPattern.js";
 
-dotenv.config();
-
 // Class tạo kết nối đến MySQL.
 class Database {
   constructor() {
@@ -24,27 +22,6 @@ class Database {
     return this.connection;
   }
 }
-
-// // Singleton Pattern đảm bảo chỉ có một thể hiện của đối tượng Database.
-// const Singleton = (function() {
-
-//   let instance = null;
-
-//   function createDBConnecting() {
-//       const database = new Database();
-//       const connecting = database.connect();
-//       return connecting;
-//   }
-
-//   return {
-//       getDBConnecting: function() {
-//           if (!instance) {
-//               instance = createDBConnecting();
-//           }
-//           return instance;
-//       }
-//   }
-// })();
 
 // Khởi tạo kết nối đến MySQL
 const database = Singleton.getModel('connecting', Database);

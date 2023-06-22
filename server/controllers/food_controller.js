@@ -10,7 +10,7 @@ export const createFood = async (req, res, next) => {
     const name = req.body.name;
     const unit = req.body.unit;
     const categoryId = req.body.categoryId;
-    const image = req.body.image || null;
+    const image = req.body.image ? (req.body.image === "" ? null : req.body.image) : null;
     const price = req.body.price;
     const priceListId = req.body.priceListId;
     const createdUser = req.body.userId;
@@ -169,11 +169,11 @@ export const createFood = async (req, res, next) => {
 // UPDATE
 export const updateFood = async (req, res, next) => {
     const foodId = req.body.foodId;
-    const name = req.body.name || null;
-    const unit = req.body.unit || null;
-    const image = req.body.image || null;
-    const available = String(req.body.available) || null;
-    const categoryId = req.body.categoryId || null;
+    const name = req.body.name ? (req.body.name === "" ? null : req.body.name) : null;
+    const unit = req.body.unit ? (req.body.unit === "" ? null : req.body.unit) : null;
+    const image = req.body.image ? (req.body.image === "" ? null : req.body.image) : null;
+    const available = String(req.body.available) ? (String(req.body.available) === "" ? null : String(req.body.available)) : null;
+    const categoryId = req.body.categoryId ? (req.body.categoryId === "" ? null : req.body.categoryId) : null;
     const updatedUser = req.body.userId;
 
     try {
