@@ -9,7 +9,7 @@ class OrderDetail {
     this.price = null;
     this.quantity = null;
   }
-  
+
   setOrderDetail(orderDetail) {
     this.orderDetailId = orderDetail.orderDetailId;
     this.orderId = orderDetail.orderTime;
@@ -17,7 +17,7 @@ class OrderDetail {
     this.price = orderDetail.price;
     this.quantity = orderDetail.quantity;
   }
-  
+
   async getByOrderId(orderId) {
     try {
       // const results = await query(
@@ -29,13 +29,14 @@ class OrderDetail {
       // );
       const sp = "CALL sp_get_order_by_id(?);";
       const results = await query(sp, [orderId]);
+
       return results[0];
     } catch (error) {
       console.error("Error executing query:", error);
       throw error;
     }
   }
-  
+
   async create(orderId, foodId, price, quantity) {
     try {
       // const results = await query(
@@ -55,6 +56,6 @@ class OrderDetail {
   }
 }
 
-const orderDetail = Singleton.getModel('orderDetail', OrderDetail);
+const orderDetail = Singleton.getModel("orderDetail", OrderDetail);
 
 export default orderDetail;

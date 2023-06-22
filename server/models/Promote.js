@@ -38,7 +38,7 @@ class Promote {
       console.error("Error executing query:", error);
       throw error;
     }
-  };
+  }
 
   async getById(promoteId) {
     try {
@@ -55,11 +55,22 @@ class Promote {
     }
   }
 
-  async getAll() {
+  async getAll(key) {
     try {
       // const results = await query("SELECT * FROM hethonggaran.promotion ");
-      const sp = "CALL sp_get_all_promote();";
-      const results = await query(sp);
+      const sp = "CALL sp_get_all_promote(?);";
+      const results = await query(sp, [key]);
+      return results[0];
+    } catch (error) {
+      console.error("Error executing query:", error);
+      throw error;
+    }
+  }
+  async getFollowPage(key, page) {
+    try {
+      // const results = await query("SELECT * FROM hethonggaran.promotion ");
+      const sp = "CALL sp_get_promote_follow_page(?, ?);";
+      const results = await query(sp, [key, page]);
       return results[0];
     } catch (error) {
       console.error("Error executing query:", error);

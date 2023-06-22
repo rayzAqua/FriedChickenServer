@@ -61,10 +61,10 @@ class PriceListController {
 
       respone = await Pricelist.create(type, startDate, endDate, userId);
 
-      startDate = respone[0][0].startDate;
-      respone[0][0].startDate.setDate(startDate.getDate() + 1);
-      endDate = respone[0][0].endDate;
-      respone[0][0].endDate.setDate(endDate.getDate() + 1);
+      // startDate = respone[0][0].startDate;
+      // respone[0][0].startDate.setDate(startDate.getDate() + 1);
+      // endDate = respone[0][0].endDate;
+      // respone[0][0].endDate.setDate(endDate.getDate() + 1);
 
       return res.send(
         message(true, "Thêm giá sản phẩm thành công!", respone[0])
@@ -81,12 +81,12 @@ class PriceListController {
 
     try {
       const priceList = await Pricelist.getList(calculateStart(page));
-      priceList.map((p) => {
-        let startDate = p.startDate;
-        p.startDate.setDate(startDate.getDate() + 1);
-        let endDate = p.endDate;
-        p.endDate.setDate(endDate.getDate() + 1);
-      });
+      // priceList.map((p) => {
+      //   let startDate = p.startDate;
+      //   p.startDate.setDate(startDate.getDate() + 1);
+      //   let endDate = p.endDate;
+      //   p.endDate.setDate(endDate.getDate() + 1);
+      // });
 
       const totalPage = calculateTotal(priceList.length);
 

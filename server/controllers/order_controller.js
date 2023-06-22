@@ -44,16 +44,20 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
       order["address"] = customer["address"];
       order["point"] = customer["point"];
 
-      order["promotionName"] = promotion["name"];
-      order["available"] = promotion["available"];
-      order["discount"] = promotion["discount"];
-      order["requirePoint"] = promotion["requirePoint"];
+      if (order["promoteId"] != null) {
+        order["promotionName"] = promotion["name"];
+        order["available"] = promotion["available"];
+        order["discount"] = promotion["discount"];
+        order["requirePoint"] = promotion["requirePoint"];
+      }
 
       let list = [];
       let subTotal = 0;
       details.map((detail, index) => {
         let object = {};
         object["foodId"] = detail["foodId"];
+        object["foodName"] = detail["name"];
+        object["foodImage"] = detail["image"];
         object["price"] = detail["price"];
         object["quantity"] = detail["quantity"];
         subTotal += +detail["price"] * +detail["quantity"];
@@ -61,7 +65,12 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
       });
 
       order["details"] = list;
-      order["discountInmoney"] = (+promotion["discount"] * subTotal) / 100;
+      if (order["promoteId"] != null) {
+        order["discountInmoney"] = (+promotion["discount"] * subTotal) / 100;
+      } else {
+        order["discountInmoney"] = 0;
+      }
+
       order["subTotal"] = subTotal;
     });
 
@@ -77,7 +86,7 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
     res.setHeader("Content-Type", "application/json");
 
     res.send(
-      message(true, "Lấy dữ liệu thành công!", result, isShow, page, totalPage)
+      message(true, "Lấy dữ liệu thành công!", result, isShow, +page, totalPage)
     );
   } catch (error) {
     console.log(error);
