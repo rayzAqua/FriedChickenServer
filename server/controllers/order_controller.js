@@ -345,7 +345,9 @@ class OrderController {
         //update point for customer
         await Customer.updatePoint(point, customerId);
       }
-
+      if (status == "Cancelled") {
+        return res.send(message(true, "Hủy đơn đặt thành công!"));
+      }
       return res.send(message(true, "Cập nhật trạng thái thành công!"));
     } catch (error) {
       console.log(error);

@@ -45,7 +45,8 @@ async function getMoreInfoProductPrice(res, result, page, totalPage) {
 class ProductPriceController {
   //[POST] /product-price/add
   async create(req, res, next) {
-    const { userId, productId, priceListId, price } = req.body;
+    const { userId, productId, priceListId } = req.body;
+    const price = req.body.price || -1;
 
     try {
       //check exist product
@@ -70,12 +71,27 @@ class ProductPriceController {
       }
 
       //check valid price
-      if (price <= 0) {
+      if (+price <= 0) {
         return res.send(message(false, "Giá sản phẩm phải lớn hơn 0!", ""));
       }
 
+      //check exit product price
+
+      let productPrice = await ProductPrice.updateProductPrice(
+        priceListId,
+        productId,
+        price,
+        userId
+      );
+
+      if (productPrice["affectedRows"] > 0) {
+        return res.send(
+          message(false, "Cập nhật giá sản phẩm thành công!", "")
+        );
+      }
+
       //check duplication productPrice
-      const productPrice = await ProductPrice.checkDuplicate(productId);
+      productPrice = await ProductPrice.checkDuplicate(productId);
       if (productPrice.length > 0) {
         return res.send(
           message(false, "Tồn tại giá khác trong thời gian này!", "")
