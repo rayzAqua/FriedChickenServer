@@ -8,8 +8,8 @@ export const createCustomer = async (req, res, next) => {
 
     const name = req.body.name;
     const phone = req.body.phone;
-    const email = req.body.customerEmail || null;
-    const address = req.body.address || null;
+    const email = req.body.customerEmail ? (req.body.customerEmail === "" ? null : req.body.customerEmail) : null;
+    const address = req.body.address ? (req.body.address === "" ? null : req.body.address) : null;
     const createdUser = req.body.userId;
 
     // console.log(name, phone, email, address);
@@ -106,10 +106,10 @@ export const createCustomer = async (req, res, next) => {
 // UPDATE CUSTOMER
 export const updateCustomer = async (req, res, next) => {
     const customerId = req.body.customerId;
-    const name = req.body.name || null;
-    const phone = req.body.phone || null;
-    const email = req.body.customerEmail || null;
-    const address = req.body.address || null;
+    const name = req.body.name ? (req.body.name === "" ? null : req.body.name) : null;
+    const phone = req.body.phone ? (req.body.phone === "" ? null : req.body.phone) : null;
+    const email = req.body.customerEmail ? (req.body.customerEmail === "" ? null : req.body.customerEmail) : null;
+    const address = req.body.address ? (req.body.address === "" ? null : req.body.address) : null;
     const updatedUser = req.body.userId;
 
     try {

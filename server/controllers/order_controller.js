@@ -10,6 +10,7 @@ import Promote from "../models/Promote.js";
 import { calculateTotal } from "../utils/calculateStart.js";
 import message from "../utils/message.js";
 import { sendMailPromotion } from "../utils/mail.js";
+// import moneyForPoint from "../utils/moneyForPoint.json" assert { type: "json" };
 
 async function getDetailOrder(res, result, isShow, page, totalPage) {
   const detailPromises = [];
@@ -355,9 +356,9 @@ class OrderController {
   }
 
   async calculatePoint(req, res, next) {
-    const customerId = req.query.customerId;
-    const orderId = req.query.orderId;
-    // const money = moneyForPointData;
+    const money = Number(req.body.money);
+    // const forCaculate = moneyForPoint.moneyForCaculatePoints;
+    const forCaculate = 30000;
 
     try {
       // Tạo một đối tượng response để phản hồi.
@@ -366,37 +367,18 @@ class OrderController {
         message: "Tính điểm tích luỹ thành công!",
       };
 
-      // Kiểm tra xem customerId và orderId có bị bỏ trống không.
-      if (customerId && orderId) {
-        // Kết quả sau khi thực thi truy vấn luôn trả về kèm theo thông tin truy vấn nên cần phải lọc lại.
-        const points = await Order.calculatePoint(customerId, orderId);
-        // Lọc lại kết quả sau khi thực thi truy vấn để lấy về dữ liệu.
-        const filterPointArray = Array.isArray(points[0])
-          ? points[0]
-          : [points[0]];
-
-        // Kiểm tra xem có lấy về được điểm tích luỹ mới nhất không.
-        // Nếu lấy được thì phản hồi điểm tích luỹ về cho client.
-        // Nếu không thì thông báo lỗi.
-        if (filterPointArray.length > 0) {
-          response.data = {
-            point: filterPointArray[0].customer_point,
-          };
-          res.status(200);
-        } else {
-          response.state = false;
-          response.message = "Không tính được điểm tích luỹ!";
-          response.data = filterPointArray;
-          res.status(404);
-        }
+      if (money) {
+        const points = Math.round(money / forCaculate);
+        response.data = {
+          point: points,
+        };
       } else {
         response.state = false;
-        response.message = "Không được bỏ trống customerId và orderId!";
+        response.message = "Không được bỏ trống số tiền!";
         response.data = [];
-        res.status(400);
       }
       // OUTPUT
-      res.json(response);
+      res.status(200).json(response);
     } catch (err) {
       next(err);
     }

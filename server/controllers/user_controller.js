@@ -14,7 +14,7 @@ export const createUser = async (req, res, next) => {
   const name = req.body.name;
   const email = req.body.userEmail;
   const phone = req.body.phone;
-  const image = req.body.image || null;
+  const image = req.body.image ? (req.body.image === "" ? null : req.body.image) : null;
   const password = req.body.password;
   const roleId = req.body.listRole;
   const createdUser = req.body.userId;
@@ -169,29 +169,34 @@ export const createUser = async (req, res, next) => {
         };
       });
 
-      res.status(200).json(user);
+
+      res.status(200).json({
+        state: true,
+        message: "Tạo mới user thành công!",
+        data: user,
+      });
       return;
     } else {
       res.status(200).json({
         state: false,
         message: "Tạo mới user thất bại!",
-        data: [],
+        data: []
       });
       return;
     }
   } catch (err) {
     next(err);
   }
-};
+}
 
 // UPDATE
 export const updateUser = async (req, res, next) => {
   const userId = req.body.updatedUserId;
-  const name = req.body.name || null;
-  const phone = req.body.phone || null;
-  const image = req.body.image || null;
-  const status = req.body.status || null;
-  const roleId = req.body.listRole || null;
+  const name = req.body.name ? (req.body.name === "" ? null : req.body.name) : null;
+  const phone = req.body.phone ? (req.body.phone === "" ? null : req.body.phone) : null;
+  const image = req.body.image ? (req.body.image === "" ? null : req.body.image) : null;
+  const status = req.body.status ? (req.body.status === "" ? null : req.body.status) : null;
+  const roleId = req.body.listRole ? (req.body.listRole === "" ? null : req.body.listRole) : null;
   const updatedUser = req.body.userId;
 
   try {
@@ -234,7 +239,7 @@ export const updateUser = async (req, res, next) => {
     }
 
     // Kiểm tra thông tin phone
-    if (phone) {
+    if (phone !== null) {
       if (phone.length !== 10) {
         res.status(200).json({
           state: false,
@@ -257,8 +262,8 @@ export const updateUser = async (req, res, next) => {
     if (status !== null && !isAlphaNumbericString(status)) {
       res.status(200).json({
         state: false,
-        message: "Status chỉ chấp nhận true hoặc false!",
-        data: [],
+        message: "Status chỉ chấp nhận ký tự chữ, số và khoảng trắng!",
+        data: []
       });
       return;
     }
@@ -315,20 +320,24 @@ export const updateUser = async (req, res, next) => {
         };
       });
 
-      res.status(200).json(user);
+      res.status(200).json({
+        state: true,
+        message: "Cập nhật user thành công!",
+        data: user,
+      });
       return;
     } else {
       res.status(200).json({
         state: false,
         message: "Cập nhật user thất bại!",
-        data: [],
+        data: []
       });
       return;
     }
   } catch (err) {
     next(err);
   }
-};
+}
 
 // GET LIST
 export const getUserList = async (req, res, next) => {
