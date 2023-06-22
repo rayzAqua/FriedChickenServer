@@ -11,13 +11,13 @@ import { encode } from "../utils/my-bcrypt.js";
 
 // CREATE
 export const createUser = async (req, res, next) => {
-    const name = req.body.name;
-    const email = req.body.userEmail;
-    const phone = req.body.phone;
-    const image = req.body.image ? (req.body.image === "" ? null : req.body.image) : null;
-    const password = req.body.password;
-    const roleId = req.body.listRole;
-    const createdUser = req.body.userId;
+  const name = req.body.name;
+  const email = req.body.userEmail;
+  const phone = req.body.phone;
+  const image = req.body.image ? (req.body.image === "" ? null : req.body.image) : null;
+  const password = req.body.password;
+  const roleId = req.body.listRole;
+  const createdUser = req.body.userId;
 
   try {
     // Kiểm tra name
@@ -170,19 +170,23 @@ export const createUser = async (req, res, next) => {
       });
 
 
-            res.status(200).json(user);
-            return;
-        } else {
-            res.status(200).json({
-                state: false,
-                message: "Tạo mới user thất bại!",
-                data: []
-            });
-            return;
-        }
-    } catch (err) {
-        next(err);
+      res.status(200).json({
+        state: true,
+        message: "Tạo mới user thành công!",
+        data: user,
+      });
+      return;
+    } else {
+      res.status(200).json({
+        state: false,
+        message: "Tạo mới user thất bại!",
+        data: []
+      });
+      return;
     }
+  } catch (err) {
+    next(err);
+  }
 }
 
 // UPDATE
@@ -254,15 +258,15 @@ export const updateUser = async (req, res, next) => {
       }
     }
 
-        // Kiểm tra thông tin status
-        if (status !== null && !isAlphaNumbericString(status)) {
-            res.status(200).json({
-                state: false,
-                message: "Status chỉ chấp nhận ký tự chữ, số và khoảng trắng!",
-                data: []
-            });
-            return;
-        }
+    // Kiểm tra thông tin status
+    if (status !== null && !isAlphaNumbericString(status)) {
+      res.status(200).json({
+        state: false,
+        message: "Status chỉ chấp nhận ký tự chữ, số và khoảng trắng!",
+        data: []
+      });
+      return;
+    }
 
     // Kiểm tra roleId
     if (roleId !== null && roleId.length > 0) {
@@ -316,19 +320,23 @@ export const updateUser = async (req, res, next) => {
         };
       });
 
-            res.status(200).json(user);
-            return;
-        } else {
-            res.status(200).json({
-                state: false,
-                message: "Cập nhật user thất bại!",
-                data: []
-            });
-            return;
-        }
-    } catch (err) {
-        next(err);
+      res.status(200).json({
+        state: true,
+        message: "Cập nhật user thành công!",
+        data: user,
+      });
+      return;
+    } else {
+      res.status(200).json({
+        state: false,
+        message: "Cập nhật user thất bại!",
+        data: []
+      });
+      return;
     }
+  } catch (err) {
+    next(err);
+  }
 }
 
 // GET LIST
