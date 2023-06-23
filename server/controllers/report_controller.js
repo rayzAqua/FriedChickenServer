@@ -1,5 +1,6 @@
 import { query } from "../sql_connect/connected.js";
 import Warehouse from "../models/Warehouse.js";
+import { toValidDate } from "../utils/checkInput.js";
 
 export const report = async (req, res, next) => {
     const from = req.query.from || null;
@@ -7,8 +8,8 @@ export const report = async (req, res, next) => {
     const wareHouseId = Number(req.query.wareHouseId);
     const topCustomer = Number(req.query.top);
     const currentDate = new Date();
-    const fromDate = from ? new Date(from) : null;
-    const toDate = to ? new Date(to) : null;
+    const fromDate = from ? toValidDate(from) : null;
+    const toDate = to ? toValidDate(to) : null;
 
     try {
 

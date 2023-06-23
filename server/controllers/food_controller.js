@@ -275,7 +275,7 @@ export const updateFood = async (req, res, next) => {
                     },
                     currentPrice: {
                         priceListId: priceId,
-                        price: price,
+                        price: price ? Number(price) : null,
                         type: type,
                     }
                 }
@@ -356,16 +356,17 @@ export const getFoodList = async (req, res, next) => {
             // Định dạng lại dữ liệu của các đối tượng food có trong mảng filterFoodArray để làm output.
             const foods = newFoodList.map((food) => {
 
-                const { categoryId, categoryName, priceId, price, type, ...otherDetails } = food;
+                const { categoryId, categoryName, priceId, price, type, sold, ...otherDetails } = food;
                 return {
                     ...otherDetails,
+                    sold: sold ? Number(sold) : null,
                     category: {
                         categoryId: categoryId,
                         categoryName: categoryName,
                     },
                     currentPrice: {
                         priceListId: priceId,
-                        price: price,
+                        price: price ? Number(price) : null,
                         type: type,
                     }
                 }

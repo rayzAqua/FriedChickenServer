@@ -10,7 +10,9 @@ import Promote from "../models/Promote.js";
 import { calculateTotal } from "../utils/calculateStart.js";
 import message from "../utils/message.js";
 import { sendMailPromotion } from "../utils/mail.js";
-// import moneyForPoint from "../utils/moneyForPoint.json" assert { type: "json" };
+import path from "path";
+import fs from "fs";
+import { getJsonData } from "../utils/getJsonData.js";
 
 async function getDetailOrder(res, result, isShow, page, totalPage) {
   const detailPromises = [];
@@ -358,7 +360,10 @@ class OrderController {
   async calculatePoint(req, res, next) {
     const money = Number(req.query.money);
     // const forCaculate = moneyForPoint.moneyForCaculatePoints;
-    const forCaculate = 30000;
+
+    const filePath = ["utils", "moneyForPoint.json"];
+    const data = getJsonData(filePath);
+    const forCaculate = data.moneyForCaculatePoints;
 
     try {
       // Tạo một đối tượng response để phản hồi.

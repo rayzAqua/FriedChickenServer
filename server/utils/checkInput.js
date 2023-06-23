@@ -32,3 +32,15 @@ export const isValidateEmail = (email) => {
     return emailRegex.test(email);
 };
 
+export const toValidDate = (date) => {
+    let dateForCheck = new Date(date);
+    if (!dateForCheck.getTime()) {
+        const dateArray = date.split("/");
+        let day = parseInt(dateArray[0]);
+        let month = parseInt(dateArray[1]);
+        let year = parseInt(dateArray[2]);
+        const validDate = month + "/" + day + "/" + year;
+        return new Date(validDate);
+    }
+    return new Date(date);
+};
