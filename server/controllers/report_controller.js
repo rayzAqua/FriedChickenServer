@@ -8,8 +8,10 @@ export const report = async (req, res, next) => {
     const wareHouseId = Number(req.query.wareHouseId);
     const topCustomer = Number(req.query.top);
     const currentDate = new Date();
-    const fromDate = from ? toValidDate(from) : null;
-    const toDate = to ? toValidDate(to) : null;
+    const fromDate = from ? (toValidDate(from).getTime() ? toValidDate(from): null) : null;
+    const toDate = to ? (toValidDate(to).getTime() ? toValidDate(to) : null) : null;
+
+    console.log(fromDate);
 
     try {
 
