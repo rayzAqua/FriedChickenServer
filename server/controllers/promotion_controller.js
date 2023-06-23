@@ -12,11 +12,19 @@ class PromotionController {
       let promotions;
       promotions = await Promote.getAll(key);
       if (page == -1) {
+        promotions.map((promotion) => {
+          promotion["createUser"] = promotion["userName"];
+          delete promotion["userName"];
+        });
         return res.send(message(true, "Lấy dữ liệu thành công!", promotions));
       }
 
       const totalPage = calculateTotal(promotions.length);
       promotions = await Promote.getFollowPage(key, calculateStart(page));
+      promotions.map((promotion) => {
+        promotion["createUser"] = promotion["userName"];
+        delete promotion["userName"];
+      });
       return res.send(
         message(
           true,
