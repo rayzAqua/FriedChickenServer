@@ -236,6 +236,7 @@ class OrderController {
 
         //check ingredient
         const ingredientFood = await Food.getIngredientOfFood(foodId);
+        // console.log(ingredientFood);
         ingredientFood.map((ingredient, index) => {
           //check ingredient available?
           if (ingredient["available"] == 0) {
@@ -248,23 +249,32 @@ class OrderController {
         // caculate number of food needs compare with stock
         let quantityFood = Number(details[i]["quantity"]);
         quantityFood = quantityFood - Number(foodstockHistory[0]["quantity"]);
+        // console.log(quantityFood);
+        // console.log(ingredientFood[0]["quantity"]);
 
         // still lack of food but can have ingredient to cook
         if (quantityFood != 0) {
           //check ingredient enough
-          for (var i = 0; i < ingredientFood.length; i++) {
-            const ingredient = ingredientFood[0];
+          // for (var i = 0; i < ingredientFood.length; i++) {
+          //   const ingredient = ingredientFood[0];
+          //   const ingredientId = ingredient["ingredientId"];
+          //   const ingredientstockhistory = await IngredientStockHistory.getByIngredientId(ingredientId);
+          //   console.log(Number(ingredient["quantity"]) * quantityFood);
+          //   console.log(Number(ingredientstockhistory[0]["quantity"]))
+          //   if (Number(ingredient["quantity"]) * quantityFood > Number(ingredientstockhistory[0]["quantity"])) {
+          //     return res.send(message(false, "Nguyên liệu không đủ!", ""));
+          //   }
+          // }
+          await Promise.all(ingredientFood.map(async (ingredient) => {
+            // const ingredient = ingredientFood[0];
             const ingredientId = ingredient["ingredientId"];
-            const ingredientstockhistory =
-              await IngredientStockHistory.getByIngredientId(ingredientId);
-
-            if (
-              Number(ingredient["quantity"]) * quantityFood >
-              Number(ingredientstockhistory[0]["quantity"])
-            ) {
+            const ingredientstockhistory = await IngredientStockHistory.getByIngredientId(ingredientId);
+            console.log(Number(ingredient["quantity"]) * quantityFood);
+            console.log(Number(ingredientstockhistory[0]["quantity"]))
+            if (Number(ingredient["quantity"]) * quantityFood > Number(ingredientstockhistory[0]["quantity"])) {
               return res.send(message(false, "Nguyên liệu không đủ!", ""));
             }
-          }
+          }));
         }
       }
 
@@ -275,10 +285,9 @@ class OrderController {
       });
 
       //subtract price promote
-
       if (promote || null) {
         totalMoney -= (totalMoney * Number(promote[0]["discount"])) / 100;
-      }
+      };
 
       //create order
       let order = await Order.create(
@@ -315,7 +324,7 @@ class OrderController {
       }
 
       //update point for customer
-      await Customer.updatePoint(point, customer[0]["customerId"]);
+      // await Customer.updatePoint(point, customer[0]["customerId"]);
 
       //get list promotion follows new point of customer
       const listPromotion = await Promote.getListCanUse(point);
@@ -349,6 +358,10 @@ class OrderController {
         return res.send(message(false, "Cập nhật trạng thái thất bại!", ""));
       }
 
+      if (status == "Cancelled") {
+        return res.send(message(true, "Hủy đơn đặt thành công!"));
+      }
+
       const promoteId = order[0]["promoteId"];
       if (promoteId != null) {
         const promotion = await Promote.getById(promoteId);
@@ -363,9 +376,7 @@ class OrderController {
         //update point for customer
         await Customer.updatePoint(point, customerId);
       }
-      if (status == "Cancelled") {
-        return res.send(message(true, "Hủy đơn đặt thành công!"));
-      }
+
       return res.send(message(true, "Cập nhật trạng thái thành công!"));
     } catch (error) {
       console.log(error);

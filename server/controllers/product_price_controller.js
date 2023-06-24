@@ -62,7 +62,7 @@ class ProductPriceController {
       }
 
       const startDate = pricelist[0]["startDate"];
-      const enddate = pricelist[0]["enddate"];
+      const enddate = pricelist[0]["endDate"];
       const nowdate = new Date();
 
       //check valid date apply

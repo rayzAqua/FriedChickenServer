@@ -6,7 +6,7 @@ class RoleController {
   async getList(req, res, next) {
     try {
       const role = await Role.getListRole();
-      return res.send(message(false, "Lấy dữ liệu thành công!", role));
+      return res.send(message(true, "Lấy dữ liệu thành công!", role));
     } catch (error) {
       console.log(error);
       return res.send(message(false, "Lấy dữ liệu thất bại!", ""));
