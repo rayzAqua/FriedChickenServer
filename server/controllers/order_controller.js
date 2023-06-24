@@ -49,7 +49,8 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
       const userCancle = userResponses[index][0];
 
       order["createdUser"] = user["name"];
-      order["canceledUser"] = userCancle["name"];
+      if (order["canceledUser"] != null)
+        order["canceledUser"] = userCancle["name"];
       order["customerId"] = customer["customerId"];
       order["customerName"] = customer["name"];
       order["phone"] = customer["phone"];
