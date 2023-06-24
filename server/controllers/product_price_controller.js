@@ -85,9 +85,7 @@ class ProductPriceController {
       );
 
       if (productPrice["affectedRows"] > 0) {
-        return res.send(
-          message(false, "Cập nhật giá sản phẩm thành công!", "")
-        );
+        return res.send(message(true, "Cập nhật giá sản phẩm thành công!", ""));
       }
 
       //check duplication productPrice

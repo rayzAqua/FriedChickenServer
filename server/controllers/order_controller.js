@@ -1,4 +1,3 @@
-import { response } from "express";
 import Customer from "../models/Customer.js";
 import Food from "../models/Food.js";
 import FoodstockHistory from "../models/FoodstockHistory.js";
@@ -7,37 +6,53 @@ import Order from "../models/Order.js";
 import OrderDetail from "../models/OrderDetail.js";
 import PaymentMethod from "../models/PaymentMethod.js";
 import Promote from "../models/Promote.js";
+import User from "../models/User.js";
 import { calculateTotal } from "../utils/calculateStart.js";
 import message from "../utils/message.js";
-import { sendMailPromotion } from "../utils/mail.js";
-import path from "path";
-import fs from "fs";
-import { getJsonData } from "../utils/getJsonData.js";
 
 async function getDetailOrder(res, result, isShow, page, totalPage) {
   const detailPromises = [];
   const promotionPromises = [];
   const customerPromises = [];
+  const userPromises = [];
+  const userCanclePromises = [];
 
   // Loop through each tour order and call Tour.getById() for its ID
   result.forEach((order) => {
     customerPromises.push(Customer.getById(order.customerId));
     promotionPromises.push(Promote.getAll(order.promoteId));
     detailPromises.push(OrderDetail.getByOrderId(order.orderId));
+    userPromises.push(User.getById(order.createdUser));
+    userCanclePromises.push(User.getById(order.canceledUser));
   });
 
   try {
-    const [detailResponses, customerResponses, promotionResponses] =
-      await Promise.all([
-        Promise.all(detailPromises),
-        Promise.all(customerPromises),
-        Promise.all(promotionPromises),
-      ]);
+    const [
+      detailResponses,
+      customerResponses,
+      promotionResponses,
+      userResponses,
+      userCancleResponses,
+    ] = await Promise.all([
+      Promise.all(detailPromises),
+      Promise.all(customerPromises),
+      Promise.all(promotionPromises),
+      Promise.all(userPromises),
+      Promise.all(userCanclePromises),
+    ]);
 
     result.map((order, index) => {
       const customer = customerResponses[index][0];
       const promotion = promotionResponses[index][0];
       const details = detailResponses[index];
+      const user = userResponses[index][0];
+      const userCancle = userCancleResponses[index][0];
+
+      if (order["createdUser"] && user) order["createdUser"] = user?.name;
+
+      if (order["canceledUser"] && userCancle) {
+        order["canceledUser"] = userCancle?.name;
+      }
 
       order["customerId"] = customer["customerId"];
       order["customerName"] = customer["name"];
@@ -46,11 +61,11 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
       order["address"] = customer["address"];
       order["point"] = customer["point"];
 
-      if (order["promoteId"] != null) {
-        order["promotionName"] = promotion["name"];
-        order["available"] = promotion["available"];
-        order["discount"] = promotion["discount"];
-        order["requirePoint"] = promotion["requirePoint"];
+      if (order["promoteId"] && promotion) {
+        order["promotionName"] = promotion?.name;
+        order["available"] = promotion?.available;
+        order["discount"] = promotion?.discount;
+        order["requirePoint"] = promotion?.requirePoint;
       }
 
       let list = [];
@@ -67,8 +82,8 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
       });
 
       order["details"] = list;
-      if (order["promoteId"] != null) {
-        order["discountInmoney"] = (+promotion["discount"] * subTotal) / 100;
+      if (order["promoteId"] && promotion) {
+        order["discountInmoney"] = (+promotion?.discount * subTotal) / 100;
       } else {
         order["discountInmoney"] = 0;
       }
@@ -360,10 +375,7 @@ class OrderController {
   async calculatePoint(req, res, next) {
     const money = Number(req.query.money);
     // const forCaculate = moneyForPoint.moneyForCaculatePoints;
-
-    const filePath = ["utils", "moneyForPoint.json"];
-    const data = getJsonData(filePath);
-    const forCaculate = data.moneyForCaculatePoints;
+    const forCaculate = 30000;
 
     try {
       // Tạo một đối tượng response để phản hồi.

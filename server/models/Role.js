@@ -26,7 +26,7 @@ class Role {
       console.error("Error executing query:", error);
       throw error;
     }
-  };
+  }
 
   async getListRoleByUserId(userId) {
     try {
@@ -40,7 +40,7 @@ class Role {
       // );
       const sp = "CALL sp_get_list_role_by_id(?);";
       const results = await query(sp, [userId]);
-      console.log(results[0]);
+
       return results[0];
     } catch (error) {
       console.error("Error executing query:", error);
@@ -57,7 +57,7 @@ class Role {
       console.error("Error executing query:", error);
       throw error;
     }
-  };
+  }
 }
 
 const role = Singleton.getModel("role", Role);

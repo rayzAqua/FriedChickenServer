@@ -1,5 +1,8 @@
 import express from "express";
-import { authenticateToken } from "../middlewares/authentication.js";
+import {
+  authenticateToken,
+  checkRoleManage,
+} from "../middlewares/authentication.js";
 import { report } from "../controllers/report_controller.js";
 
 const router = express.Router();
@@ -7,6 +10,6 @@ const router = express.Router();
 // CREATE
 
 // GET INGREDIENT LIST
-router.get("/", authenticateToken, report);
+router.get("/", checkRoleManage, report);
 
 export default router;
