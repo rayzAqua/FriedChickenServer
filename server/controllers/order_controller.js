@@ -15,7 +15,7 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
   const promotionPromises = [];
   const customerPromises = [];
   const userPromises = [];
-  const userCanclePromises = [];
+  // const userCanclePromises = [];
 
   // Loop through each tour order and call Tour.getById() for its ID
   result.forEach((order) => {
@@ -23,7 +23,7 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
     promotionPromises.push(Promote.getAll(order.promoteId));
     detailPromises.push(OrderDetail.getByOrderId(order.orderId));
     userPromises.push(User.getById(order.createdUser));
-    userCanclePromises.push(User.getById(order.createdUser));
+    // userCanclePromises.push(User.getById(order.canceledUser));
   });
 
   try {
@@ -32,13 +32,13 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
       customerResponses,
       promotionResponses,
       userResponses,
-      userCancleResponses,
+      // userCancleResponses,
     ] = await Promise.all([
       Promise.all(detailPromises),
       Promise.all(customerPromises),
       Promise.all(promotionPromises),
       Promise.all(userPromises),
-      Promise.all(userCanclePromises),
+      // Promise.all(userCanclePromises),
     ]);
 
     result.map((order, index) => {
@@ -46,11 +46,14 @@ async function getDetailOrder(res, result, isShow, page, totalPage) {
       const promotion = promotionResponses[index][0];
       const details = detailResponses[index];
       const user = userResponses[index][0];
-      const userCancle = userResponses[index][0];
 
       order["createdUser"] = user["name"];
-      if (order["canceledUser"] != null)
-        order["canceledUser"] = userCancle["name"];
+
+      // if (order["canceledUser"] != null && order["canceledUser"] != undefined) {
+      //   const userCancle = userCancleResponses[index][0];
+      //   order["canceledUser"] = userCancle["name"];
+      // }
+
       order["customerId"] = customer["customerId"];
       order["customerName"] = customer["name"];
       order["phone"] = customer["phone"];
