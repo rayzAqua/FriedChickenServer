@@ -72,23 +72,37 @@ export const report = async (req, res, next) => {
       filterCustomerRevenueArray.length > 0
     ) {
       const dateRevenues = filterDateRevenueArray.map((dateRevenue) => {
-        const { reportDate, ...otherDetails } = dateRevenue;
+        const { reportDate, totalRevenue, cash, banking, eWallet, other, ...otherDetails } = dateRevenue;
         const date = new Date(reportDate).toLocaleDateString();
         return {
           [date]: {
+            totalRevenue: Number(totalRevenue),
+            cash: Number(cash),
+            banking: Number(banking),
+            eWallet: Number(eWallet),
+            other: Number(other),
             ...otherDetails,
           },
         };
       });
 
       const foodRevenues = filterFoodRevenueArray.map((foodRevenue) => {
-        return foodRevenue;
+        const { quantity, totalRevenue, ...otherDetails } = foodRevenue;
+        return {
+          ...otherDetails,
+          quantity: quantity ? Number(quantity) : null,
+          totalRevenue: totalRevenue ? Number(totalRevenue) : null
+        };
       });
 
-      const customerRevenues = filterCustomerRevenueArray.map(
-        (customerRevenue) => {
-          return customerRevenue;
-        }
+      const customerRevenues = filterCustomerRevenueArray.map((customerRevenue) => {
+        const { point, totalRevenue, ...otherDetails } = customerRevenue;
+        return {
+          ...otherDetails,
+          totalRevenue: totalRevenue ? Number(totalRevenue) : null,
+          earnedPoint: point
+        };
+      }
       );
 
       const data = {

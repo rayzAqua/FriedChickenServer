@@ -312,7 +312,20 @@ export const updateUser = async (req, res, next) => {
       : [updateUser[1]];
 
     if (filterUpdateUser.length > 0) {
-      const user = filterUpdateUser.map((user) => {
+
+      const newUserArray = await Promise.all(filterUpdateUser.map(async (user) => {
+        const { createdUser, createdDate, ...otherDetails } = user;
+
+        const created = await User.getById(createdUser);
+
+        return {
+          ...otherDetails,
+          createdUser: created.length > 0 ? created[0].name : null,
+          createdTime: createdDate,
+        };
+      }));
+
+      const user = newUserArray.map((user) => {
         const { ...otherDetails } = user;
         return {
           ...otherDetails,

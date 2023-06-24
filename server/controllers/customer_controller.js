@@ -47,6 +47,8 @@ export const createCustomer = async (req, res, next) => {
                             // Lọc lại dữ liệu trả về sau khi tạo mới khách hàng.
                             const filterNewCustomer = Array.isArray(newCustomer[0]) ? newCustomer[0] : [newCustomer[0]];
 
+
+
                             // Kiểm tra xem filterNewCustomer có rỗng không, nếu nó rỗng thì nghĩa là tạo mới khách hàng thất bại.
                             // Còn nếu không thì trả về thông tin khách hàng vừa tạo cho client
                             if (filterNewCustomer.length > 0) {
@@ -203,7 +205,25 @@ export const updateCustomer = async (req, res, next) => {
             // Kiểm tra xem filterUpdatedCustomer có rỗng không, nếu nó rỗng thì nghĩa là cập nhật không thành công.
             // Nếu không thì trả về thông tin khách hàng đã được cập nhật cho client.
             if (filterUpdatedCustomer.length > 0) {
-                response.data = filterUpdatedCustomer;
+
+                const newCustomerArray = await Promise.all(filterUpdatedCustomer.map(async (customer) => {
+                    const { createdUser, createdTime, updatedUser, updatedTime, ...otherDetails } = customer;
+
+                    const [created, updated] = await Promise.all([
+                        User.getById(createdUser),
+                        User.getById(updatedUser)
+                    ]);
+
+                    return {
+                        ...otherDetails,
+                        createdUser: created.length > 0 ? created[0].name : null,
+                        createdTime: createdTime,
+                        updatedUser: updated.length > 0 ? updated[0].name : null,
+                        updatedTime: updatedTime
+                    };
+                }));
+
+                response.data = newCustomerArray;
                 res.status(200);
             } else {
                 response.state = false;
