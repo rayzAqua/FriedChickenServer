@@ -8,12 +8,12 @@ export const report = async (req, res, next) => {
   const wareHouseId = req.query.wareHouseId || null;
   const topCustomer = req.query.top || null;
   const currentDate = new Date();
-  const fromDate = from ? new Date(from) : null;
-  const toDate = to ? new Date(to) : null;
+  const fromDate = from ? (toValidDate(from).getTime() ? toValidDate(from) : null) : null;
+  const toDate = to ? (toValidDate(to).getTime() ? toValidDate(to) : null) : null;
 
   try {
     if (fromDate > currentDate) {
-      res.status(400).json({
+      res.status(200).json({
         state: false,
         message:
           "Thời gian bắt đầu (FROM) không thể lớn hơn thời gian hiện tại",
@@ -23,7 +23,7 @@ export const report = async (req, res, next) => {
     }
 
     if (fromDate && toDate && fromDate > toDate) {
-      res.status(400).json({
+      res.status(200).json({
         state: false,
         message:
           "Thời gian bắt đầu (FROM) không thể lớn hơn thời gian kết thúc (TO)",

@@ -18,7 +18,7 @@ export const createFood = async (req, res, next) => {
     try {
         if (name) {
             if (!isAlphaNumbericString(name)) {
-                res.status(400).json({
+                res.status(200).json({
                     state: false,
                     message: "Tên chỉ chấp nhận ký tự chữ, ký tự số và khoảng trắng!",
                     data: []
@@ -26,7 +26,7 @@ export const createFood = async (req, res, next) => {
                 return;
             }
         } else {
-            res.status(400).json({
+            res.status(200).json({
                 state: false,
                 message: "Không được bỏ trống thông tin name!",
                 data: []
@@ -35,7 +35,7 @@ export const createFood = async (req, res, next) => {
 
         if (unit) {
             if (!isAlphaNumbericString(unit)) {
-                res.status(400).json({
+                res.status(200).json({
                     state: false,
                     message: "Unit chỉ chấp nhận ký tự chữ!",
                     data: []
@@ -43,7 +43,7 @@ export const createFood = async (req, res, next) => {
                 return;
             }
         } else {
-            res.status(400).json({
+            res.status(200).json({
                 state: false,
                 message: "Không được bỏ trống thông tin unit!",
                 data: []
@@ -54,7 +54,7 @@ export const createFood = async (req, res, next) => {
         const existedCategory = await Category.getById(categoryId);
         if (categoryId) {
             if (typeof categoryId !== 'number') {
-                res.status(400).json({
+                res.status(200).json({
                     state: false,
                     message: "Phải nhập một số cho ID của Category!",
                     data: []
@@ -62,7 +62,7 @@ export const createFood = async (req, res, next) => {
                 return;
             }
             if (existedCategory.length <= 0) {
-                res.status(404).json({
+                res.status(200).json({
                     state: false,
                     message: "Category không tồn tại!",
                     data: []
@@ -70,7 +70,7 @@ export const createFood = async (req, res, next) => {
                 return;
             }
         } else {
-            res.status(400).json({
+            res.status(200).json({
                 state: false,
                 message: "Không được bỏ trống categoryId!",
                 data: []
@@ -80,7 +80,7 @@ export const createFood = async (req, res, next) => {
 
         if (price) {
             if (!isNumericString(price)) {
-                res.status(400).json({
+                res.status(200).json({
                     state: false,
                     message: "Price chỉ chấp nhận ký tự số!",
                     data: []
@@ -88,7 +88,7 @@ export const createFood = async (req, res, next) => {
                 return;
             }
         } else {
-            res.status(400).json({
+            res.status(200).json({
                 state: false,
                 message: "Không được bỏ trống price!",
                 data: []
@@ -100,7 +100,7 @@ export const createFood = async (req, res, next) => {
         const existedPriceListId = await Pricelist.getById(priceListId);
         if (priceListId) {
             if (typeof priceListId !== 'number') {
-                res.status(400).json({
+                res.status(200).json({
                     state: false,
                     message: "Phải nhập một số cho priceListId!",
                     data: []
@@ -108,7 +108,7 @@ export const createFood = async (req, res, next) => {
                 return;
             }
             if (existedPriceListId.length <= 0) {
-                res.status(404).json({
+                res.status(200).json({
                     state: false,
                     message: "priceListId không tồn tại!",
                     data: []
@@ -116,7 +116,7 @@ export const createFood = async (req, res, next) => {
                 return;
             }
         } else {
-            res.status(400).json({
+            res.status(200).json({
                 state: false,
                 message: "Không được bỏ trống priceListId!",
                 data: []
@@ -154,8 +154,8 @@ export const createFood = async (req, res, next) => {
         } else {
             response.state = false;
             response.message = "Tạo mới Food không thành công!";
-            response.data = filterUpdatedFood;
-            res.status(500);
+            response.data = filterCreatedFood;
+            res.status(200);
         }
         res.json(response);
 
@@ -387,7 +387,7 @@ export const getFoodList = async (req, res, next) => {
             response.state = false;
             response.message = "Không tìm thấy dữ liệu!";
             response.data = filterFoodArray;
-            res.status(404);
+            res.status(200);
         }
         // Trả về phản hổi đến client.
         res.json(response);

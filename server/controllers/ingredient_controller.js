@@ -75,7 +75,7 @@ export const getIngredientList = async (req, res, next) => {
             response.state = false
             response.message = 'Không lấy được dữ liệu!'
             response.data = filterIngredientArray
-            // res.status(404);
+            res.status(200);
         }
         // OUTPUT
         res.json(response)

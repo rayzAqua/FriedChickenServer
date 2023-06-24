@@ -403,7 +403,7 @@ export const getUserList = async (req, res, next) => {
       response.state = false;
       response.message = "Không tìm thấy dữ liệu!";
       response.data = filterUserArray;
-      res.status(404);
+      res.status(200);
     }
     // OUTPUT
     res.json(response);

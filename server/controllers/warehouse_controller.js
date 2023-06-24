@@ -40,7 +40,7 @@ export const getWarehouseListByStatus = async (req, res, next) => {
             response.state = false;
             response.message = "Không tìm thấy dữ liệu!";
             response.data = filterWarehouseList;
-            res.status(404);
+            res.status(200);
         }
         res.json(response);
     } catch (err) {
