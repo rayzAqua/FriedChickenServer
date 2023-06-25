@@ -43,7 +43,7 @@ class ProductPrice {
     }
   }
 
-  async checkDuplicate(productId) {
+  async checkDuplicate(productId, priceListId) {
     try {
       // const results = await query(
       //   "SELECT pricelist.priceId,  pricelist.startDate, pricelist.enddate, productprice.productId" +
@@ -52,8 +52,8 @@ class ProductPrice {
       //     " where startDate<= CURRENT_DATE() and enddate >= CURRENT_DATE()  and productprice.productId = ?",
       //   [productId]
       // );
-      const sp = "Call sp_checkDuplicate_ProductPrice(?);";
-      const results = await query(sp, [productId]);
+      const sp = "Call sp_checkDuplicate_ProductPrice(?, ?);";
+      const results = await query(sp, [productId, priceListId]);
       return results[0];
     } catch (error) {
       console.error("Error executing query:", error);

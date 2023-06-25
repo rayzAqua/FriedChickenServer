@@ -317,7 +317,7 @@ class OrderController {
 
       //caculate point = point current of customer + point extra from order - point subtract by promote
 
-      let point = Number(customer[0]["point"]) + Math.round(totalMoney / 3000);
+      let point = Number(customer[0]["point"]) + Math.round(totalMoney / 30000);
 
       if (promote || null) {
         point = point - Number(promote[0]["requirePoint"]);
