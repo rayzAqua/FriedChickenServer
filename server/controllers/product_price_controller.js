@@ -66,7 +66,7 @@ class ProductPriceController {
       const nowdate = new Date();
 
       //check valid date apply
-      if (startDate > nowdate || enddate < nowdate) {
+      if (enddate < nowdate) {
         return res.send(message(false, "Giá không thể áp dụng!", ""));
       }
 
