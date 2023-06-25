@@ -18,7 +18,7 @@ class Role {
 
   async findById(roleId) {
     try {
-      const q = "SELECT * FROM railway.role AS r WHERE r.roleId = ?;";
+      const q = "SELECT * FROM role AS r WHERE r.roleId = ?;";
       const results = await query(q, [roleId]);
       console.log(results);
       return results;

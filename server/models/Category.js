@@ -34,7 +34,7 @@ class Category {
 
   async getList() {
     try {
-      const results = await query("SELECT * FROM railway.category;");
+      const results = await query("SELECT * FROM category;");
       return results;
     } catch (error) {
       console.error("Error executing query:", error);
@@ -43,6 +43,6 @@ class Category {
   }
 }
 
-const category = Singleton.getModel('category', Category);
+const category = Singleton.getModel("category", Category);
 
 export default category;
