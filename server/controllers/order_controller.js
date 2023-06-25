@@ -330,7 +330,7 @@ class OrderController {
       }
 
       //update point for customer
-      // await Customer.updatePoint(point, customer[0]["customerId"]);
+      await Customer.updatePoint(point, customer[0]["customerId"]);
 
       //get list promotion follows new point of customer
       // const listPromotion = await Promote.getListCanUse(point);
