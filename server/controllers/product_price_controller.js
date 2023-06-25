@@ -89,7 +89,7 @@ class ProductPriceController {
       }
 
       //check duplication productPrice
-      productPrice = await ProductPrice.checkDuplicate(productId);
+      productPrice = await ProductPrice.checkDuplicate(productId, priceListId);
       if (productPrice.length > 0) {
         return res.send(
           message(false, "Tồn tại giá khác trong thời gian này!", "")
